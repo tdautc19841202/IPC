@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BenQGuru.eMES.DLLService</name>
+    </assembly>
+    <members>
+        <member name="T:BenQGuru.eMES.DLLService.DemoDomain">
+            <summary>
+            Domain类，为对应数据库表结构的实体类，每新增一张表，都要维护一个对应的实体类
+            </summary>
+        </member>
+        <member name="F:BenQGuru.eMES.DLLService.DemoDomain.VendorCode">
+            <summary>
+            供应商代码
+            </summary>
+        </member>
+        <member name="F:BenQGuru.eMES.DLLService.DemoDomain.VendorName">
+            <summary>
+            供应商名称
+            </summary>
+        </member>
+        <member name="F:BenQGuru.eMES.DLLService.DemoDomain.MaintainDate">
+            <summary>
+            [LastMaintainDate]
+            </summary>
+        </member>
+        <member name="F:BenQGuru.eMES.DLLService.DemoDomain.MaintainTime">
+            <summary>
+            [LastMaintainTime]
+            </summary>
+        </member>
+        <member name="F:BenQGuru.eMES.DLLService.DemoDomain.MaintainUser">
+            <summary>
+            [LastMaintainUser]
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:BenQGuru.eMES.DLLService.DemoDomain.EAttribute1" -->
+        <member name="T:BenQGuru.eMES.DLLService.QueryDemo">
+            <summary>
+            如果需要查询的栏位需要串其他表，则新建一个类，继承原来的类
+            </summary>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.DemoMESHelper.GetDemoInfo(System.String,System.String@)">
+            <summary>
+            接口方法入口
+            </summary>
+            <param name="strIn">传入参数</param>
+            <param name="oErrMessage">传入参数（传入为空），用于回抛数据
+            定义为out类型的参数必须在方法内赋值，否则编译不过</param>
+            <returns>方法类型为bool，则传回bool型数据</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.DemoMESHelper.DeleteDemosB">
+            <summary>
+            采用手动关闭数据库连接的方式
+            只要采用这种方式，其他方法中的数据库连接都需要手动关闭
+            在事务开始前，启用数据库连接手动关闭的方式，打开数据库连接
+            事务结束后，手动关闭数据库连接，继续使用数据库连接手动关闭的方式
+            
+            不写明手动关闭的情况，都是连接自动关闭，在回抛数据前调用DisposeConn()方法，
+            将数据库连接关闭，即可缓解性能问题
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:BenQGuru.eMES.DLLService.DemoMESHelper.DataProvider">
+            <summary>
+            DataProvider为数据库连接
+            全局都使用该DataProvider，确保只有一个数据库连接
+            否则不当的操作可能会造成数据库锁表等情况
+            </summary>
+        </member>
+        <member name="T:BenQGuru.eMES.DLLService.MESHelper">
+            <summary>
+            MESHelper的摘要说明
+            传入参数以i为首字符，传出参数以o为首字符
+            Copyright (c) 1999 -2013 明基逐鹿（BenQGuru）软件公司
+            创建人：Jarvis Chen
+            </summary>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.GetRcardMOInfo(System.String,System.String@,System.String@)">
+            <summary>
+             根据SN得到生产信息
+            </summary>
+            <param name="iSN">传入SN</param>
+            <param name="oMoCode">传出工单</param>
+            <param name="oErrMessage">异常信息</param>
+            <returns>是否正常返回</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.CheckUserAndResourcePassed(System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            检查登录界面对应的人员是否正确，资源是否正确，人员是否拥有资源权限
+            </summary>
+            <param name="iUserCode">用户代码</param>
+            <param name="iResCode">资源代码</param>
+            <param name="iPassWord">密码</param>
+            <param name="iJigCode">治具</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：检查通过true，否则false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.CheckRoutePassed(System.String,System.String,System.String@,System.Int32@)">
+            <summary>
+            检查SN是否按照途程生产
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iResCode">资源代码</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：检查通过true，否则false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.GetAddressRangeByMO(System.String,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@)">
+            <summary>
+            分配MAC或BT地址
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="oWIFI">回传WIFI地址</param>
+            <param name="oBT">回传蓝牙地址</param>
+            <param name="oCode1">回传扩展栏位1</param>
+            <param name="oCode2">回传扩展栏位2</param>
+            <param name="oCode3">回传扩展栏位3</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetAddressInfo(System.String,System.String,System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            测试工具回传数据，MES记录Mac或BT地址使用信息
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iWIFI">WIFI地址</param>
+            <param name="iBT">蓝牙地址</param>
+            <param name="iCode1">扩展栏位1</param>
+            <param name="iCode2">扩展栏位2</param>
+            <param name="iCode3">扩展栏位3</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetTestDetail(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            记录测试步骤信息
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iClass">项目大类</param>
+            <param name="iSubClass1">项目小类1</param>
+            <param name="iSubClass2">项目小类2</param>
+            <param name="iSubClass3">项目小类3</param>
+            <param name="iMaxValue">最大值</param>
+            <param name="iMinValue">最小值</param>
+            <param name="iActualValue">实际值</param>
+            <param name="iValue1">扩展栏位1</param>
+            <param name="iValue2">扩展栏位2</param>
+            <param name="iValue3">扩展栏位3</param>
+            <param name="iTestResult">测试结果</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.GetMEIOrNetCodeRange(System.String,System.String,System.String,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@)">
+            <summary>
+            根据IMEI或NetCode，获取IMEI、NETCODE、PSN信息（Check)
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iIMEI">IMEI1</param>
+            <param name="iNetCode">网标或称入网许可证</param>
+            <param name="oIMEI1">回传IMEI1</param>
+            <param name="oIMEI2">回传IMEI2</param>
+            <param name="oMEID">回传MEID</param>
+            <param name="oNetCode">回传网标</param>
+            <param name="oPSN">回传机身标签</param>
+            <param name="oID1">回传扩展栏位1（默认为IMEI3）</param>
+            <param name="oID2">回传扩展栏位2</param>
+            <param name="oID3">回传扩展栏位3</param>
+            <param name="oID4">回传扩展栏位4</param>
+            <param name="oID5">回传扩展栏位5</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetIMEIInfo(System.String,System.String,System.String@)">
+            <summary>
+            设备回传数据IMEI、NETCODE、PSN信息，MES系统记录使用信息
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iIMEI">IMEI1</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.GetMobileAllInfo(System.String,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@)">
+            <summary>
+            工具通过读取SN，获取MES所有记录信息（WIFI、BT、IMEI1、IMEI2、NETCODE、PSN）
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="oWIFI">回传WIFI地址</param>
+            <param name="oBT">回传蓝牙地址</param>
+            <param name="oCode1">回传扩展栏位1（MO和蓝牙、WIFI地址关系）</param>
+            <param name="oCode2">回传扩展栏位2（MO和蓝牙、WIFI地址关系）</param>
+            <param name="oCode3">回传扩展栏位3（MO和蓝牙、WIFI地址关系）</param>
+            <param name="oIMEI1">回传</param>
+            <param name="oIMEI2">回传</param>
+            <param name="oMEID">回传</param>
+            <param name="oNetCode">回传</param>
+            <param name="oPSN">回传机身标签</param>
+            <param name="oID1">回传扩展栏位1（默认为IMEI3）</param>
+            <param name="oID2">回传扩展栏位2</param>
+            <param name="oID3">回传扩展栏位3</param>
+            <param name="oID4">回传扩展栏位4</param>
+            <param name="oID5">回传扩展栏位5</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetPrintRecord(System.String,System.String,System.String@)">
+            <summary>
+            记录打印记录
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iOperator">操作者代码</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetMobileData(System.String,System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            MES接收生产管理资料（记录生产信息）
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iResCode">资源代码</param>
+            <param name="iOperator">操作者代码</param>
+            <param name="iResult">测试结果 (OK、NG)</param>
+            <param name="iErrCode">如为NG，则传出不良代码</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetMobileData(System.String,System.String,System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            MES接收生产管理资料（记录生产信息） 重载方法
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iResCode">资源代码</param>
+            <param name="iOperator">操作者代码</param>
+            <param name="iResult">测试结果 (OK、NG)</param>
+            <param name="iErrCode">如为NG，则传出不良代码</param>
+            <param name="oErrMessage">错误信息</param>
+            <param name="iTSMemo">不良备注</param>
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetMobileDataWithMO(System.String,System.String,System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            MES 良品不良品采集，带归属工单功能。
+            </summary>
+            <param name="iSN">SN</param>
+            <param name="iResCode">资源代码</param>
+            <param name="iOperator">操作者代码</param>
+            <param name="iResult">测试结果 (OK、NG)</param>
+            <param name="iErrCode">如为NG，则传出不良代码</param>
+            <param name="iMO">归属工单号</param>
+            <param name="oErrMessage">错误信息</param>        
+            <returns>bool值：成功true，失败false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.ImportImeiMacBt(System.String,System.String,System.String@)">
+            <summary>
+             导入IMEI 以及 MACBT
+            </summary>
+            <param name="strImputXml"></param>
+            <param name="iType"></param>
+            <param name="oErrMessage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.CheckJigControl(BenQGuru.eMES.Domain.BaseSetting.Resource,System.String,System.String@)">
+            <summary>
+            登录时治具初步管控检查
+            </summary>
+            <param name="res">资源对象</param>
+            <param name="jigCode">治具</param>
+            <param name="oErrMessage">返回具体出错信息，不出错为空</param>
+            <returns>True/False。当 True 时 oErrMessage为空；当 False 时 oErrMessage 为具体出错信息</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:BenQGuru.eMES.DLLService.MESHelper.CheckJigControlEX(BenQGuru.eMES.Domain.Equipment.Jig,System.String@)" -->
+        <!-- Badly formed XML comment ignored for member "M:BenQGuru.eMES.DLLService.MESHelper.JigAddUsedTimes(BenQGuru.eMES.Domain.Equipment.Jig)" -->
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetJig2Res(System.String,BenQGuru.eMES.Domain.BaseSetting.Resource)">
+            <summary>
+            治具绑定资源信息
+            </summary>
+            <param name="iJigCode">治具代码</param>
+            <param name="res">资源对象</param>        
+            <returns>无</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.ClearRes2Jig(System.String)">
+            <summary>
+            清除资源与治具的关系
+            </summary>
+            <param name="iResCode">资源代码</param>
+            <returns>无</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.GetAddressAndName">
+            <summary>
+            获取电脑名，Mac地址，IP地址
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetRes2Computer(System.String,System.String,System.String)">
+            <summary>
+            资源绑定mac地址，ip地址，用户名
+            </summary>        
+            <param name="iRes">资源代码</param>
+            <param name="iUserName">用户代码</param>
+            <param name="iMACAddress">MAC 地址</param>
+            <param name="iIPAddress">IP 地址</param>
+            <returns>无</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.ClearRes2Computer(System.String)">
+            <summary>
+            清除与资源关联的计算机信息
+            </summary>
+            <param name="iResCode">资源代码</param>
+            <returns>无</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.ATELogOut(System.String,System.String@)">
+            <summary>
+            ATE 接口LogOut
+            1>清除与资源关联的计算机信息
+            2>清除资源与治具的关系
+            </summary>    
+            <param name="iResCode">资源代码</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>bool值：LogOut成功返回true，失败返回false</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.SetColorBoxWeightData(System.String,System.String,System.String,System.Double,System.String@,System.Boolean@,System.String@)">
+            <summary>
+            彩盒称重界面封装方法
+            </summary>
+            <param name="iIMEI">IMEI</param>
+            <param name="iOperator">操作者代码</param>
+            <param name="iResCode">资源代码</param>
+            <param name="iWeight">重量数据</param>
+            <param name="oResult">返回结果(OK/NG)</param>
+            <param name="oIsNeedCheck">是否为抽检项目</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>true:操作成功，false:操作失败</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.InsertLot2CheckRcard(System.String,System.String,System.String)">
+            <summary>
+            送检
+            </summary>
+            <param name="rcard">产品条码</param>
+            <param name="moCode">工单号</param>
+            <param name="iOperator">送检人</param>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.CollectMaterial(System.String,System.String,System.String,System.String[],System.String,System.String,System.String,System.String@)">
+            <summary>
+            上料采集 DLL 封装方法
+            </summary>
+            <param name="iType">采集方式：批管控料+Keyparts采集 / 混合采集</param>
+            <param name="iRcard">产品序列号</param>
+            <param name="iMO">工单代码</param>        
+            <param name="iMaterialList">上料数据</param>   
+            <param name="iID1">ID1</param>
+            <param name="iOperator">登陆用户</param>
+            <param name="iResCode">登陆资源</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>执行结果：true:操作成功 / false:操作失败</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.CBLabelPrint(System.String,System.String,System.String,System.String,System.String@)">
+            <summary>
+            彩标打印 DLL 封装方法
+            </summary>
+            <param name="iRcard">产品序列号</param>        
+            <param name="iPrinter">打印机</param>        
+            <param name="iOperator">登陆用户</param>
+            <param name="iResCode">登陆资源</param>
+            <param name="oErrMessage">错误信息</param>
+            <returns>执行结果：true:操作成功 / false:操作失败</returns>
+        </member>
+        <member name="M:BenQGuru.eMES.DLLService.MESHelper.HasPrintRecords(System.String,System.String,System.String)">
+            <summary>
+            检查当前箱号是否已经有过打印记录，如果有返回True
+            </summary>
+            <param name="cartonNO"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

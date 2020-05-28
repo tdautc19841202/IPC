@@ -1,0 +1,2 @@
+#!/bin/sh
+PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-/home/karl.xiao/buildroot-2017.08/output/host/arm-buildroot-linux-uclibcgnueabihf/sysroot/usr/lib/pkgconfig:/home/karl.xiao/buildroot-2017.08/output/host/arm-buildroot-linux-uclibcgnueabihf/sysroot/usr/share/pkgconfig} PKG_CONFIG_SYSROOT_DIR=${PKG_CONFIG_SYSROOT_DIR:-/home/karl.xiao/buildroot-2017.08/output/host/arm-buildroot-linux-uclibcgnueabihf/sysroot} $(dirname $0)/pkgconf  $@

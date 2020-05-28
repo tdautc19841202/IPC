@@ -1,0 +1,23 @@
+CHIP = i6b0
+BOARD = 009A
+BOARD_NAME = SSC009A-S01B
+PRODUCT = ipc
+TOOLCHAIN = uclibc
+TOOLCHAIN_VERSION = 4.9.4
+KERNEL_VERSION = 4.9.84
+LIBC       = libuclibc-4.9.4
+BUSYBOX    = busybox-1.20.2-arm-buildroot-linux-uclibcgnueabihf-uclibc-4.9.4-static
+IMAGE_CONFIG = spinand.squashfs.partition.config
+CUSTOMER_OPTIONS = null_options.mk
+CUSTOMER_TAILOR = ipc_i6b0_tailor.mk
+MMAP = MMAP_I6B0_128.h
+IQ0 = imx307/imx307_iqfile.bin
+IQ1 = imx307/imx307_iqfile.bin
+IQ2 = imx307/imx307_iqfile.bin
+IQ3 = imx307/imx307_iqfile.bin
+EXBOOTARGS =
+KERNEL_BOOT_ENV = LX_MEM=$(KERNEL_MEMLEN) mma_heap=mma_heap_name0,miu=0,sz=0x5000000 mma_memblock_remove=1
+TOOLCHAIN_REL = arm-buildroot-linux-uclibcgnueabihf-
+SENSOR_LIST = imx291_MIPI.ko imx307_MIPI.ko sc4236_MIPI.ko SC4238_MIPI.ko
+SENSOR0 = imx307_MIPI.ko
+SENSOR0_OPT = chmap=1 lane_num=2 hdr_lane_num=2

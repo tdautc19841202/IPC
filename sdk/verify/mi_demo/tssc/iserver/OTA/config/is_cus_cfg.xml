@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cus_info schema_version="1" xml:lang="en" demo="true" strict_ver_ctrl="true" build_ver_prop="">
+	<device model_name="Sigmastar-model" brand_name="Sigmastar-brand" oem_name="Sigmastar" batch_info="202002121655"> </device>
+	<board_info id_src="mac" mac_src="eth0" ota_rsv="2097152"></board_info>
+	<path_info bin_path="./OTA/SStarOta.bin" ota_path="./OTA/" db_path="./OTA/Database/ISFwInfo.db"></path_info>
+	<host_info main_host="http://ota.iservernetwork.com"></host_info>
+</cus_info>

@@ -1,0 +1,16 @@
+config CAM_CLK
+	tristate "CamClk driver driver"
+	default n
+	help
+	
+config CAM_CLK_SYSFS
+    tristate "CamClk support for sysfs"
+    depends on CAM_CLK
+
+config CAMCLK_AUTOENABLE
+    tristate "CamClk support for auto enable all clk"
+    depends on CAM_CLK
+    
+config CAM_CLK_PROFILING
+    tristate "CamClk support for initial profiling"
+    depends on CAM_CLK

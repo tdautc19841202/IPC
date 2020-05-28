@@ -1,0 +1,23 @@
+1.交叉工具链搭建：
+
+# SigmaStar arm glibc
+PATH=$PATH:/home/tools/arm-linux-gnueabihf-4.8.3-201404/bin
+# SigmaStar arm uclibc
+PATH=$PATH:/home/chen/IPC/I6/tools/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin
+
+I6-SSC325-uclibc工具链主要用到arm-buildroot-linux-，工具链依赖共享库libiconv.so.2，
+Ubuntu16.04安装依赖库方法：
+1.获取安装包：
+wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.13.1.tar.gz
+2.解压安装包：
+tar zxvf libiconv-1.13.1.tar.gz
+cd libiconv-1.13.1
+3.配置libiconv
+./configure --prefix=/usr/local
+4.编译安装
+chmod a+x Makefile
+make
+sudo make install
+5.创建一个文件链接到Libiconv库
+sudo ln -s /usr/local/lib/libiconv.so /usr/lib
+sudo ln -s /usr/local/lib/libiconv.so.2 /usr/lib/libiconv.so.2
