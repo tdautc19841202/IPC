@@ -28,6 +28,8 @@ uname -v = #208-Ubuntu SMP Fri Aug 24 17:07:38 UTC 2018
 /bin/universe          = unknown
 
 PATH: /home/zhaoyh/ext/ssc333.ipcam/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin
+PATH: /home/zhaoyh/ext/ssc333.ipcam/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin
+PATH: /home/zhaoyh/ext/ssc333.ipcam/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin
 PATH: /home/zhaoyh/bin
 PATH: /home/zhaoyh/.local/bin
 PATH: /home/zhaoyh/devTool/repo
@@ -445,7 +447,7 @@ configure:13413: checking for shared library run path origin
 configure:13426: result: done
 configure:14008: checking for iconv
 configure:14040: arm-buildroot-linux-uclibcgnueabihf-gcc -o conftest -g -O2 -I/home/zhaoyh/ext/ssc333.ipcam/libiconv/_install/include  conftest.c  >&5
-/tmp/ccFukMgW.o: In function `main':
+/tmp/ccidJIXd.o: In function `main':
 /home/zhaoyh/ext/ssc333.ipcam/libiconv/conftest.c:34: undefined reference to `libiconv_open'
 /home/zhaoyh/ext/ssc333.ipcam/libiconv/conftest.c:35: undefined reference to `libiconv'
 /home/zhaoyh/ext/ssc333.ipcam/libiconv/conftest.c:36: undefined reference to `libiconv_close'
@@ -6342,7 +6344,9 @@ config.status:1495: creating tests/Makefile
 config.status:1495: creating include/iconv.h
 config.status:1495: creating include/iconv.h.inst
 config.status:1495: creating config.h
+config.status:1717: config.h is unchanged
 config.status:1495: creating lib/config.h
+config.status:1717: lib/config.h is unchanged
 config.status:1769: executing depfiles commands
 config.status:1769: executing libtool commands
 config.status:1769: executing po-directories commands

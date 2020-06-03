@@ -12,7 +12,18 @@ rootfs:
 	mkdir -p $(miservice$(RESOUCE))
 	mkdir -p $(OUTPUTDIR)/customer
 	cp -rf $(PROJ_ROOT)/board/ini/* $(OUTPUTDIR)/customer
+	cp -rf $(OUTPUTDIR)/../../../apical/release/bin               $(OUTPUTDIR)/customer
+	cp -rf $(OUTPUTDIR)/../../../apical/release/res               $(OUTPUTDIR)/customer
 	cp -rf $(PROJ_ROOT)/board/$(CHIP)/$(BOARD_NAME)/config/* $(miservice$(RESOUCE))
+	cp -f $(OUTPUTDIR)/../../../apical/tools/fw_setenv/fw_env_dev.config \
+	                                                              $(OUTPUTDIR)/customer/fw_env.config
+	cp -f $(OUTPUTDIR)/../../../apical/tools/fw_setenv/fw_printenv_dev \
+	                                                              $(OUTPUTDIR)/rootfs/bin/fw_printenv
+	ln -s /bin/fw_printenv                                        $(OUTPUTDIR)/rootfs/bin/fw_setenv
+	
+	cp -f $(OUTPUTDIR)/../../package/ext/bin/*                    $(OUTPUTDIR)/rootfs/bin
+	cp -d $(OUTPUTDIR)/../../package/ext/lib/*                    $(OUTPUTDIR)/rootfs/lib
+	
 	cp -vf $(PROJ_ROOT)/board/$(CHIP)/mmap/$(MMAP) $(miservice$(RESOUCE))/mmap.ini
 	cp -rvf $(LIB_DIR_PATH)/bin/config_tool/* $(miservice$(RESOUCE))
 	cd $(miservice$(RESOUCE)); chmod +x config_tool; ln -sf config_tool dump_config; ln -sf config_tool dump_mmap
@@ -181,6 +192,16 @@ rootfs:
 	echo "    /customer/demo.sh" >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
 	echo "fi;" >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
 	#add sshd, default password 1234
+	
+	echo export PATH=\$$PATH:/config >> ${OUTPUTDIR}/rootfs/etc/profile
+	echo export PATH=\$$PATH:/usr/bin:/usr/sbin:/customer/bin >> ${OUTPUTDIR}/rootfs/etc/profile
+	echo export TERMINFO=/config/terminfo >> ${OUTPUTDIR}/rootfs/etc/profile
+	sed -i '/^mount.*/d' $(OUTPUTDIR)/rootfs/etc/profile
+	echo mkdir -p /dev/pts >> ${OUTPUTDIR}/rootfs/etc/profile
+	echo mount -t sysfs none /sys >> $(OUTPUTDIR)/rootfs/etc/profile
+	echo mount -t tmpfs mdev /dev >> $(OUTPUTDIR)/rootfs/etc/profile
+	echo mount -t debugfs none /sys/kernel/debug/ >>  $(OUTPUTDIR)/rootfs/etc/profile
+	
 	if [[ "$(FLASH_TYPE)"x = "spinand"x ]]; then \
 		if [ $(TOOLCHAIN_VERSION) = "8.2.1" ]; then \
 			echo "root:5fXKAeftHX95A:0:0:Linux User,,,:/home/root:/bin/sh" > $(OUTPUTDIR)/rootfs/etc/passwd; \
