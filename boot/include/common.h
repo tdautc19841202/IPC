@@ -973,4 +973,6 @@ static inline phys_addr_t map_to_sysmem(const void *ptr)
 
 #define HERE printf("[%s]%d\n",__FILE__,__LINE__);
 
+#define CONFIG_AUTO_UPGRADE_SD
+
 #endif	/* __COMMON_H_ */

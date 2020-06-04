@@ -815,6 +815,7 @@ void Hal_SDMMC_TransCmdSetting(IPEmType eIP, TransEmType eTransType, U16_T u16Bl
 	if( (eTransType== EV_DMA) || (eTransType==EV_ADMA) )
 	{
 		CARD_REG(A_DMA_ADDR_15_0_REG(eIP))  = (U16_T)(u32BufAddr & 0xFFFF);
+        CARD_REG(A_DMA_ADDR_31_16_REG(eIP)) = (U16_T)((u32BufAddr) >> 16);
         if ((u32BufAddr & 0xF0000000) == RAM_START_ADDR) {
             CARD_REG(A_DMA_ADDR_31_16_REG(eIP)) = (U16_T)((u32BufAddr-RAM_START_ADDR) >> 16);
         }

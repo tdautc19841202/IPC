@@ -16,9 +16,35 @@
 
 
 #ifdef CONFIG_AUTO_UPGRADE_SD
+static int atoi(char *str)
+{
+    int val = 0;
+    int sign= 0;
+    while (*str) {
+        if (*str >= '0' && *str <= '9') break;
+        if      (*str == '-') sign = 1;
+        else if (*str == '+') sign = 0;
+        str++;
+    }
+    if (!*str) return 0;
+    while (*str) {
+        if (*str >= '0' && *str <= '9') {
+            val *= 10;
+            val += *str - '0';
+            str++;
+        } else break;
+    }
+    return sign ? -val : val;
+}
+
 int do_auto_upgrade_by_SD(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
     int ret = -1;
+    int   ledr = -1;
+    int   ledg = -1;
+    int   ledu = -1;
+    int   reversed = 0;
+    int led_red = -1;
     char cmdbuf[128];
     char *penv = NULL;
     unsigned int file_size = 0;
@@ -32,11 +58,38 @@ int do_auto_upgrade_by_SD(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
                 "sf write 0x21000000 0x000000 $(filesize)",
     };
 
+    penv = getenv("hwinfostr");
+    if (penv) {
+        char *pstr = strstr(penv, "R_");
+        if (pstr) ledr = atoi(pstr + 2);
+        pstr = strstr(penv, "G_");
+        if (pstr) ledg = atoi(pstr + 2);
+        pstr = strstr(penv, "U_");
+        if (pstr) ledu = atoi(pstr + 2);
+        pstr = strstr(penv, "LR");
+        if (pstr) reversed = atoi(pstr + 2);
+    }
+
+    // turn on red led
+    if (ledg > 0) { snprintf(cmdbuf, sizeof(cmdbuf), "gpio output %d %d\n", ledg,  reversed); run_command(cmdbuf, 0); }
+    if (ledu > 0) { snprintf(cmdbuf, sizeof(cmdbuf), "gpio output %d %d\n", ledu,  reversed); run_command(cmdbuf, 0); }
+    if (ledr > 0) { snprintf(cmdbuf, sizeof(cmdbuf), "gpio output %d %d\n", ledr, !reversed); run_command(cmdbuf, 0); }
     // clean the filesize in env
-    if(NULL != (penv = getenv("filesize")))
-    {
-        if(run_command("setenv filesize", 0) < 0)
-        {
+    if (NULL != (penv = getenv("filesize"))) {
+        if (run_command("setenv filesize", 0) < 0) {
+            printf("[%s:%d] run cmd \"setenv filesize\" fail!\n",__func__,__LINE__);
+            return -1;
+        }
+    }
+
+    if (run_command("fatsize mmc 0 a43727f8d6fe8a4ec28130ff26d73831", 0) < 0 || NULL == (penv = getenv("filesize"))) {
+        printf("failed to get upgrade signature file size !\n");
+        return -1;
+    }
+
+    // clean the filesize in env
+    if (NULL != (penv = getenv("filesize"))) {
+        if (run_command("setenv filesize", 0) < 0) {
             printf("[%s:%d] run cmd \"setenv filesize\" fail!\n",__func__,__LINE__);
             return -1;
         }
