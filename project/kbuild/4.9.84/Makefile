@@ -1,1 +1,1 @@
-/home/zhaoyh/ext/ssc333.ipcam/project/kbuild/4.9.84/i6b0/Makefile
+/home/zhaoyh/ext/msc333/project/kbuild/4.9.84/i6b0/Makefile

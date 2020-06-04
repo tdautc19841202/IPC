@@ -5,10 +5,3 @@ mkdir -p /dev/pts
 ulimit -c unlimited
 export PATH=$PATH:/config
 export TERMINFO=/config/terminfo
-export PATH=$PATH:/config
-export PATH=$PATH:/usr/bin:/usr/sbin:/customer/bin
-export TERMINFO=/config/terminfo
-mkdir -p /dev/pts
-mount -t sysfs none /sys
-mount -t tmpfs mdev /dev
-mount -t debugfs none /sys/kernel/debug/

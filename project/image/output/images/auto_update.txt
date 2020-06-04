@@ -1,4 +1,4 @@
--e estar scripts/[[mxp
+estar scripts/[[mxp
  estar scripts/[[ipl
  estar scripts/[[ipl_cust
  estar scripts/[[uboot

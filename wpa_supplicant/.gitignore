@@ -1,9 +1,0 @@
-!.gitignore
-*.o
-*.d
-wpa_supplicant/.config
-wpa_supplicant/wpa_cli
-wpa_supplicant/wpa_passphrase
-wpa_supplicant/wpa_supplicant
-
-

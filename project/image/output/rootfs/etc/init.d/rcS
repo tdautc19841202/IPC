@@ -18,7 +18,7 @@ mount -t tmpfs mdev /dev
 mount -t debugfs none /sys/kernel/debug/
 mkdir -p /var/lock
 mdev -s
--e mount -t squashfs /dev/mtdblock3 /config
+mount -t squashfs /dev/mtdblock3 /config
  mount -t jffs2 mtd:customer /customer
 
 mkdir -p /dev/pts

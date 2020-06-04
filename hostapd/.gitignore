@@ -1,7 +1,0 @@
-!.gitignore
-*.o
-*.d
-hostapd/.config
-hostapd/hostapd
-hostapd/hostapd_cli
-
