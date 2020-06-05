@@ -1,0 +1,17 @@
+!.gitignore
+*.o
+*.lo
+*.la
+Makefile
+/autom4te.cache
+/config.h
+/config.log
+/config.status
+/.deps
+/.libs
+/_install
+/libmad.list
+/libtool
+/mad.h
+/stamp-h1
+

@@ -8,10 +8,10 @@ srcdir = .
 # Programs used by "make":
 CC = arm-buildroot-linux-uclibcgnueabihf-gcc
 CFLAGS = -g -O2
-CPPFLAGS = -I/home/zhaoyh/ext/ssc333.ipcam/libiconv/_install/include
+CPPFLAGS = 
 LDFLAGS = 
 INCLUDES = -I. -I$(srcdir) -I../include -I$(srcdir)/../include -I../srclib -I$(srcdir)/../srclib -I../lib
-LIBTOOL = /bin/bash $(top_builddir)/libtool
+LIBTOOL = /bin/sh $(top_builddir)/libtool
 LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
 LIBTOOL_LINK = $(LIBTOOL) --mode=link
 LIBTOOL_INSTALL = $(LIBTOOL) --mode=install

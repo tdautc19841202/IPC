@@ -6,7 +6,7 @@
 srcdir = .
 
 # Directories used by "make install":
-prefix = /home/zhaoyh/ext/ssc333.ipcam/libiconv/_install
+prefix = /home/zhaoyh/ext/msc333/libiconv/_install
 local_prefix = /usr/local
 exec_prefix = ${prefix}
 libdir = ${exec_prefix}/lib
@@ -14,7 +14,7 @@ libdir = ${exec_prefix}/lib
 # Programs used by "make":
 CC = arm-buildroot-linux-uclibcgnueabihf-gcc
 CFLAGS = -g -O2 -fvisibility=hidden
-CPPFLAGS = -I/home/zhaoyh/ext/ssc333.ipcam/libiconv/_install/include
+CPPFLAGS = 
 LDFLAGS =  $(LDFLAGS_no)
 LDFLAGS_yes = -Wl,--export-all-symbols
 LDFLAGS_no =
@@ -25,7 +25,7 @@ DEFS = -DLIBDIR=\"$(libdir)\" -DBUILDING_LIBICONV -DBUILDING_DLL \
 -DENABLE_RELOCATABLE=1 -DIN_LIBRARY -DINSTALLDIR=\"$(libdir)\" -DNO_XMALLOC \
 -Dset_relocation_prefix=libiconv_set_relocation_prefix \
 -Drelocate=libiconv_relocate -DHAVE_CONFIG_H
-LIBTOOL = /bin/bash $(top_builddir)/libtool
+LIBTOOL = /bin/sh $(top_builddir)/libtool
 LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
 LIBTOOL_LINK = $(LIBTOOL) --mode=link
 LIBTOOL_INSTALL = $(LIBTOOL) --mode=install

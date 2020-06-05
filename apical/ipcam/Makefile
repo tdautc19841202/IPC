@@ -10,7 +10,7 @@ OPENSSL_TOP  = $(shell pwd)/../../openssl
 ZBAR_TOP     = $(shell pwd)/../../zbar
 LIBMAD_TOP   = $(shell pwd)/../../libmad
 LIBICONV_TOP = $(shell pwd)/../../libiconv
-LIBRTSP_TOP  = $(shell pwd)/../librtsp
+LIBAVKCP_TOP  = $(shell pwd)/../libavkcp
 TUYA_TOP     = $(shell pwd)/../tuya
 MIPACKAGE_TOP= $(shell pwd)/../MI_package
 
@@ -20,7 +20,7 @@ C_FLAGS += -fPIC -DPIC -DOMXILCOMPONENTSPATH=\"/$(BUILD_DIR)\" -DCONFIG_DEBUG_LE
 LDFLAGS := -ldl -lpthread -lm -lstdc++
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -L$(MIPACKAGE_TOP)/lib -lmi_package
-LDFLAGS += -L$(LIBRTSP_TOP)/lib -lrtsp
+LDFLAGS += -L$(LIBAVKCP_TOP)/lib -lavkcps
 LDFLAGS += -L$(APKAPI_TOP)/lib -lapkapi
 LDFLAGS += -L$(LIBMAD_TOP)/_install/lib -lmad
 LDFLAGS += -L$(OPENSSL_TOP)/_install/lib -lcrypto -lssl
@@ -33,7 +33,7 @@ LDFLAGS += -Wl,--end-group
 
 C_INCLUDES := -I$(MI_TOP)/include  \
 			-I$(MIPACKAGE_TOP)/include \
-			-I$(LIBRTSP_TOP) \
+			-I$(LIBAVKCP_TOP) \
 			-I$(APKAPI_TOP) \
 			-I$(TUYA_TOP)/include
 			# -I$(MD_TOP)/include  \

@@ -30,7 +30,7 @@
 #include "mi_isp.h"
 #include "mi_iqserver.h"
 #include "apkapi.h"
-#include "rtspserver.h"
+#include "avkcps.h"
 #include "settings.h"
 #include "updateuid.h"
 #include "mp3dec.h"
@@ -149,7 +149,7 @@ typedef struct {
     void           *zscanner;
     void           *motion;
     FILE           *fprec;
-    void           *rtsp;
+    void           *avkcps;
     void           *recorder;
     uint32_t        rectick;
     void           *motor;
@@ -519,7 +519,7 @@ static void * main_stream(void *argv)
                 s32Ret = MI_VENC_GetStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream, -1);
                 if(MI_SUCCESS == s32Ret)
                 {
-                    rtspserver_video(context->rtsp, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
+                    avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     if (!ftest)
                     {
                         main_video_rawrec(context, &vstream);
@@ -1627,7 +1627,7 @@ static void* audio_capture_proc(void *argv)
         {   
             if (context->settings.standby) { usleep(100*1000); continue; }
             if (MI_SUCCESS == MI_AI_GetFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL, -1)) {
-                rtspserver_audio(context->rtsp, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
+                avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
                 if(!ftest)tuya_audio(frame.apVirAddr[0], frame.u32Len);
@@ -1688,6 +1688,10 @@ static void* network_monitor_proc(void *argv)
     return NULL;    
 }
 
+void request_idr()
+{
+    MI_VENC_RequestIdr(1, 1);
+}
 int main(int argc, char *argv[])
 {
     CONTEXT      *context  = &g_app_ctx;
@@ -1732,14 +1736,14 @@ int main(int argc, char *argv[])
     wavein_init(ftest);
     context->mp3dec = mp3dec_init();
     if (!ftest && pid == -1) {
-        play_mp3_file(context, WELCOME_AUDIO_FILE, 0); // pid -1 mean safely start, -2 mean ipcam crashed then restart
+        play_mp3_file(context, WELCOME_AUDIO_FILE, 0); // pid -1 mean \safely start, -2 mean ipcam crashed then restart
     }
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);
     context->motor = motor_init();
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
-    context->rtsp = rtspserver_init(0,0,1405200);
+    context->avkcps = avkcps_init (8000, "alaw", 1, 8000, "h264", 1920, 1080, 25, request_idr);
     // init pthread attr
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);
@@ -1769,7 +1773,7 @@ int main(int argc, char *argv[])
     if (context->pthread_ptzm) pthread_join(context->pthread_ptzm, NULL);
     
     while (context->pthread_mp3) usleep(100*1000); // wait mp3 thread exit
-    rtspserver_exit(context->rtsp);
+    avkcps_exit(context->avkcps);
     waveout_exit();
     wavein_exit();
     /*mp3 decode exit*/

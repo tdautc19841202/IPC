@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -e
+
 IMAGES_DIR=$PWD/image/output/images
 
 if [ -f "one.bin" ]; then
-echo "delete one.bin"
+echo "** delete one.bin **"
 rm -f one.bin
 fi
 

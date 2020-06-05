@@ -4,3 +4,14 @@ release/include
 tools/apitool
 tools/calibration_tool
 configs/current.configs
+/image/output/
+/kbuild/4.9.84/*
+!/kbuild/4.9.84/i6b0/
+!/kbuild/4.9.84/kbuild.mk
+!/kbuild/4.9.84/usr/
+!/kbuild/4.9.84/release.sh
+/release/usbcam/*
+/release/ipc/i6/009A/uclibc/4.9.4/bin/kernel/nor/*
+/board/i6b0/boot/nor/uboot
+/package/*
+one.bin

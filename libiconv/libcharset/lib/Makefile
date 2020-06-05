@@ -6,7 +6,7 @@
 srcdir = .
 
 # Directories used by "make install":
-prefix = /home/zhaoyh/ext/ssc333.ipcam/libiconv/_install
+prefix = /home/zhaoyh/ext/msc333/libiconv/_install
 local_prefix = /usr/local
 exec_prefix = ${prefix}
 libdir = ${exec_prefix}/lib
@@ -23,7 +23,7 @@ DEFS = -DLIBDIR=\"$(libdir)\" -DBUILDING_LIBCHARSET -DBUILDING_DLL \
 -DENABLE_RELOCATABLE=1 -DIN_LIBRARY -DINSTALLDIR=\"$(libdir)\" -DNO_XMALLOC \
 -Dset_relocation_prefix=libcharset_set_relocation_prefix \
 -Drelocate=libcharset_relocate -DHAVE_CONFIG_H
-LIBTOOL = /bin/bash $(top_builddir)/libtool
+LIBTOOL = /bin/sh $(top_builddir)/libtool
 LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
 LIBTOOL_LINK = $(LIBTOOL) --mode=link
 LIBTOOL_INSTALL = $(LIBTOOL) --mode=install

@@ -18,7 +18,7 @@ IQ3 = imx307/imx307_iqfile.bin
 EXBOOTARGS =
 KERNEL_BOOT_ENV = LX_MEM=$(KERNEL_MEMLEN) mma_heap=mma_heap_name0,miu=0,sz=0x2000000 mma_memblock_remove=1
 TOOLCHAIN_REL = arm-buildroot-linux-uclibcgnueabihf-
-SENSOR_LIST = imx291_MIPI.ko imx307_MIPI.ko sc4236_MIPI.ko SC4238_MIPI.ko
-SENSOR0 = imx307_MIPI.ko
+SENSOR_LIST = gc2053_MIPI.ko
+SENSOR0 = gc2053_MIPI.ko
 SENSOR0_OPT = chmap=1 lane_num=2 hdr_lane_num=2
 FLASH_SIZE = 16M

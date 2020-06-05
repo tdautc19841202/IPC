@@ -45,7 +45,7 @@
 #define HAVE_VISIBILITY 1
 
 /* Define to the value of ${prefix}, as a string. */
-#define INSTALLPREFIX "/home/zhaoyh/ext/ssc333.ipcam/libiconv/_install"
+#define INSTALLPREFIX "/home/zhaoyh/ext/msc333/libiconv/_install"
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */

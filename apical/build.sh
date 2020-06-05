@@ -26,6 +26,7 @@ case "$1" in
 	make -C $PWD/ipcam
 	mkdir -p $APICAL_RELEASE_DIR/bin
 	cp $PWD/ipcam/bin/ipcam $APICAL_RELEASE_DIR/bin
+	cp $PWD/libavkcp/lib/libavkcps.so $APICAL_RELEASE_DIR/lib
 
 	# build rtwpriv
 	make -C $PWD/rtwpriv
@@ -81,7 +82,6 @@ distclean)
 	make -C $PWD/libuvc		clean
 	make -C $PWD/ipcam		clean
 	make -C $PWD/rtwpriv	clean
-	rm -rf $PWD/release
 	;;
 update-all)
 	rm -rf $PWD/update-all.tar.gz

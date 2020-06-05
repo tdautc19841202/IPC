@@ -137,7 +137,7 @@ static struct ST_Stream_Attr_T g_stStreamAttr[] =
         1, //u32InputPort
         1, //vencChn
         E_MI_VENC_MODTYPE_H264E, //eType
-        1, //f32Mbps
+        1.5, //f32Mbps
         1920, //u32Width
         1080, //u32Height
         15, //u32FrameRate
