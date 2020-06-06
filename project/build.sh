@@ -14,6 +14,5 @@ clean)
     ;;
 distclean)
     make clean
-	rm -rf ../apical/release
     ;;
 esac
