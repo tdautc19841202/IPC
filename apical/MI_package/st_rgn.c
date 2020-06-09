@@ -4,13 +4,14 @@
   Unless otherwise stipulated in writing, any and all information contained
  herein regardless in any format shall remain the sole proprietary of
  Sigmastar Technology Corp. and be kept in strict confidence
- (??Sigmastar Confidential Information??) by the recipient.
+ (ï¿½ï¿½Sigmastar Confidential Informationï¿½ï¿½) by the recipient.
  Any unauthorized act including without limitation unauthorized disclosure,
  copying, use, reproduction, sale, distribution, modification, disassembling,
  reverse engineering and compiling of the contents of Sigmastar Confidential
  Information is unlawful and strictly prohibited. Sigmastar hereby reserves the
  rights to any and all damages, losses, costs and expenses resulting therefrom.
 */
+
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -43,7 +44,8 @@
 
 #define ALIGN_MULTI(x, align)       (((x) % (align)) ? ((x) / (align) + 1) : ((x) / (align)))
 
-#define DMF_FONT_PREFIX             "/customer/font/"
+#define DMF_FONT_PREFIX             "./"
+#define DMF_FONT_PREFIX_ABSOLUTE    "/customer/mi_demo/"
 #define DMF_FONT_ASCII_8x16         "ascii_8x16"
 #define DMF_FONT_ASCII_16x32        "ascii_16x32"
 #define DMF_FONT_ASCII_24x48        "ascii_24x48"
@@ -80,6 +82,7 @@ typedef enum
 typedef struct
 {
     char            szFile[64];
+	char            szFileAbsolute[64];
     int             fd;
     uint8_t*        pBitMapAddr;
     struct stat     st;
@@ -89,16 +92,16 @@ typedef struct
 
 typedef struct
 {
-    int         charNumPerLine; // ??DD/ï¿½ï¿½ï¿½ï¿½D??ï¿½ï¿½o?|ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½?ï¿½ï¿½oy, ?D??ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½????ï¿½ï¿½??ï¿½ï¿½?
-    int         bgColor;        // ?ï¿½ï¿½3???ï¿½ï¿½|?
-    int         fgColor;        // ??????ï¿½ï¿½|?
-    int         leftMargin;     // margin ï¿½ï¿½o?D?
+    int         charNumPerLine; // ??DD/¡§¡éD??¡§o?|¨¬??¨¢??¡è?¡§oy, ?D??¡§¡ã2¡§¡ã????¨¢??¡è?
+    int         bgColor;        // ?¨¤3???¡§|?
+    int         fgColor;        // ??????¡§|?
+    int         leftMargin;     // margin ¡§o?D?
     int         rightMargin;
     int         upMargin;
     int         downMargin;
-    int         verticalFlag;   // ï¿½ï¿½oï¿½ï¿½2?????
-    int         charSpace;      // ?ï¿½ï¿½??ï¿½ï¿½????ï¿½ï¿½ï¿½ï¿½
-    int         lineSpace;      // DD???ï¿½ï¿½ï¿½ï¿½
+    int         verticalFlag;   // ¡§o¡§2?????
+    int         charSpace;      // ?¨¢??¡è????¡§¡è
+    int         lineSpace;      // DD???¡§¡è
 } DMF_BitMapAttr_S;
 
 static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT] =
@@ -106,6 +109,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
     {
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_ASCII_8x16,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_ASCII_8x16,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 8,
@@ -113,6 +117,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
         },
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_ASCII_16x32,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_ASCII_16x32,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 16,
@@ -120,6 +125,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
         },
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_ASCII_24x48,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_ASCII_24x48,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 24,
@@ -127,6 +133,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
         },
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_ASCII_32x64,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_ASCII_32x64,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 32,
@@ -136,6 +143,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
     {
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_HZ_16x16,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_HZ_16x16,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 16,
@@ -143,6 +151,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
         },
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_HZ_32x32,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_HZ_32x32,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 32,
@@ -150,6 +159,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
         },
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_HZ_48x48,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_HZ_48x48,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 48,
@@ -157,6 +167,7 @@ static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT]
         },
         {
             .szFile = DMF_FONT_PREFIX DMF_FONT_HZ_64x64,
+			.szFileAbsolute = DMF_FONT_PREFIX_ABSOLUTE DMF_FONT_HZ_64x64,
             .fd = -1,
             .pBitMapAddr = NULL,
             .width = 64,
@@ -204,7 +215,7 @@ MI_RGN_PaletteTable_t g_stPaletteTable =
          {255, 128,   0,   0}, {255, 128, 128,   0}, {255, 128,   0, 128}, {255,   0, 128,   0},
          {255,   0,   0,   0}, {255,   0, 128, 128}, {255, 128, 128, 128}, {255,  64,  64,  64},
          //index16 ~ index31
-         {  0,   0,   0,   0}, {  0,   0,   0,  30}, {  0,   0, 255,  60}, {  0, 128,   0,  90},
+         {255,   0,   0,   0}, {  0,   0,   0,  30}, {  0,   0, 255,  60}, {  0, 128,   0,  90},
          {255,   0,   0, 120}, {  0, 255, 255, 150}, {255, 255,   0, 180}, {  0, 255,   0, 210},
          {255,   0, 255, 240}, {192, 192, 192, 255}, {128, 128, 128,  10}, {  0,   0,   0,   0},
          {  0,   0,   0,   0}, {  0,   0,   0,   0}, {  0,   0,   0,   0}, {  0,   0,   0,   0},
@@ -348,8 +359,12 @@ void _OSD_BitmapFile_Init()
             fd = open(pstDMFBitMapFile->szFile, O_RDONLY);
             if (fd < 0)
             {
-                printf("%s %d, open %s fail\n", __func__, __LINE__, pstDMFBitMapFile->szFile);
-                continue;
+            	fd = open(pstDMFBitMapFile->szFileAbsolute, O_RDONLY);
+				if (fd < 0)
+				{
+		            printf("%s %d, open %s fail\n", __func__, __LINE__, pstDMFBitMapFile->szFile);
+		            continue;
+				}
             }
 
             if (-1 == fstat(fd, &pstDMFBitMapFile->st))
@@ -415,7 +430,7 @@ extern int _dmf_GetUtf8Length(const uint8_t *src);
 int _OSD_Utf8ToUnicode(const uint8_t *src, uint8_t *dst)
 {
     int length;
-	uint8_t unicode[2] = {0}; // D???Dï¿½ï¿½ï¿½ï¿½
+	uint8_t unicode[2] = {0}; // D???D¡§¡ã
 
     length = _dmf_GetUtf8Length(src);
     if (length < 0)
@@ -511,7 +526,7 @@ int _OSD_CalcCharNumGetGb2312Code(const char *string, int *charTotalNum, uint8_t
     uint8_t unicode[2] = {0};
     const uint8_t *ptr = NULL;
     uint16_t gb2312_code;
-    int gb2312codeLen = sizeof(_osd_gb2312code) / sizeof(_osd_gb2312code[0]) / 3;
+    int gb2312codeLen = sizeof(gb2312code) / sizeof(gb2312code[0]) / 3;
     uint8_t *ptr_gb2312;
 
     if (string == NULL)
@@ -544,7 +559,7 @@ int _OSD_CalcCharNumGetGb2312Code(const char *string, int *charTotalNum, uint8_t
             charNum ++;
 
             gb2312_code = _OSD_UnicodeToGb2312(unicode[0] +
-							        unicode[1] * 0x100, _osd_gb2312code, gb2312codeLen);
+							        unicode[1] * 0x100, gb2312code, gb2312codeLen);
 
             // printf("%s %d, 0x%X, %p\n", __func__, __LINE__, gb2312_code, ptr_gb2312);
             ptr_gb2312[0] = gb2312_code % 0x100;
@@ -643,7 +658,7 @@ void _OSD_CalcBMPWH(int charTotalNum, int *bmpWidth, int *bmpHeight, uint8_t *pG
 
     if (pstDMFBitMapAttr->verticalFlag == 0)
     {
-        // oï¿½ï¿½ï¿½ï¿½??
+        // o¡§¡é??
         width += pstDMFBitMapAttr->leftMargin +
                 pstDMFBitMapAttr->charSpace * (charTotalNum - 1) +
                 pstDMFBitMapAttr->rightMargin;
@@ -654,7 +669,7 @@ void _OSD_CalcBMPWH(int charTotalNum, int *bmpWidth, int *bmpHeight, uint8_t *pG
     }
     else if (pstDMFBitMapAttr->verticalFlag == 1)
     {
-        // ï¿½ï¿½oï¿½ï¿½2??
+        // ¡§o¡§2??
         width += pstDMFBitMapAttr->leftMargin +
                 pstDMFBitMapAttr->lineSpace * (lines - 1) +
                 pstDMFBitMapAttr->rightMargin;
@@ -684,9 +699,9 @@ void _OSD_FontDataToCanvas(const uint8_t *pFontdata, int x, int y, int width,
     }
 
 #if 0
-    for (i = 0; i < height; i ++) // |ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½|ï¿½ï¿½???ï¿½ï¿½a?
+    for (i = 0; i < height; i ++) // |¨¬1¡§¡é?¨¦|¨¬???¡§a?
 #else
-    for (i = height - 1; i >= 0; i--) // ?yï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½|ï¿½ï¿½???ï¿½ï¿½a?
+    for (i = height - 1; i >= 0; i--) // ?y¡§¡é?¨¦|¨¬???¡§a?
     {
         pFontdataTemp = (uint8_t *)pFontdata + (width + 7) / 8 * i;
 
@@ -830,7 +845,7 @@ void _OSD_DrawTextToCanvas(MI_RGN_HANDLE hHandle, ST_Point_T stPoint, const char
 
             if (pstDMFBitMapAttr->verticalFlag == 0)
             {
-                // oï¿½ï¿½ï¿½ï¿½??
+                // o¡§¡é??
                 xpos = pstDMFBitMapAttr->leftMargin + fontTotalWidth +
                         j * pstDMFBitMapAttr->lineSpace;
                 ypos = pstDMFBitMapAttr->upMargin + i * pstDMFBitMapFile->height +
@@ -840,7 +855,7 @@ void _OSD_DrawTextToCanvas(MI_RGN_HANDLE hHandle, ST_Point_T stPoint, const char
             }
             else if (pstDMFBitMapAttr->verticalFlag == 1)
             {
-                // ï¿½ï¿½oï¿½ï¿½2??
+                // ¡§o¡§2??
                 xpos = pstDMFBitMapAttr->leftMargin + i * pstDMFBitMapFile->width +
                         i * pstDMFBitMapAttr->lineSpace;
                 ypos = pstDMFBitMapAttr->upMargin + fontTotalHeight +
@@ -885,7 +900,28 @@ MI_S32 ST_OSD_Init(void)
 
     return MI_RGN_OK;
 }
+MI_S32 ST_OSD_Deinit(void)
+{
+    MI_U32 i = 0;
 
+    pthread_mutex_lock(&g_rgnOsd_mutex);
+    if (g_bInit == TRUE)
+    {
+        g_bInit = FALSE;
+        for (i = 0; i < MAX_RGN_NUM; i ++)
+        {
+            g_stRgnInfo[i].hHandle = -1;
+        }
+
+        _OSD_BitmapFile_UnInit();
+
+    	ExecFunc(MI_RGN_DeInit(), MI_RGN_OK);
+        // MI_RGN_Init(&stPaletteTable);
+    }
+    pthread_mutex_unlock(&g_rgnOsd_mutex);
+
+    return MI_RGN_OK;
+}
 MI_S32 ST_OSD_Create(MI_RGN_HANDLE hHandle, MI_RGN_Attr_t *pstRegion)
 {
     ExecFunc(MI_RGN_Create(hHandle, pstRegion), MI_RGN_OK);
@@ -898,7 +934,8 @@ MI_S32 ST_OSD_Create(MI_RGN_HANDLE hHandle, MI_RGN_Attr_t *pstRegion)
 MI_S32 ST_OSD_Destroy(MI_RGN_HANDLE hHandle)
 {
     ExecFunc(MI_RGN_Destroy(hHandle), MI_RGN_OK);
-	ExecFunc(MI_RGN_DeInit(),MI_RGN_OK);
+    memset(&g_stRgnInfo[hHandle], 0, sizeof(ST_RGN_Info_T));
+    g_stRgnInfo[hHandle].hHandle = MI_RGN_HANDLE_NULL;
 
     return MI_RGN_OK;
 }
@@ -1071,12 +1108,16 @@ MI_S32 ST_OSD_Update(MI_RGN_HANDLE hHandle)
 
 MI_S32 ST_OSD_GetCanvasInfo(MI_RGN_HANDLE hHandle, MI_RGN_CanvasInfo_t** ppstCanvasInfo)
 {
+    MI_S32 sRet = MI_RGN_OK;
+
     ST_OSD_INIT_CHECK(hHandle);
+    sRet = MI_RGN_GetCanvasInfo(hHandle, &g_stRgnInfo[hHandle].stCanvasInfo);
+    if (sRet == MI_RGN_OK)
+    {
+        *ppstCanvasInfo = &g_stRgnInfo[hHandle].stCanvasInfo;
+    }
 
-    MI_RGN_GetCanvasInfo(hHandle, &g_stRgnInfo[hHandle].stCanvasInfo);
-    *ppstCanvasInfo = &g_stRgnInfo[hHandle].stCanvasInfo;
-
-    return MI_RGN_OK;
+    return sRet;
 }
 static void ST_OSD_PrepareLine(MI_U8 u8BorderWidth, MI_U16 u16PixW, MI_U8 u8Color, MI_U8 *pu8Data)
 {
@@ -1094,6 +1135,11 @@ MI_S32 ST_OSD_ClearRectFast(MI_RGN_HANDLE hHandle, ST_Rect_T stRect)
 {
     MI_U8 *pu8StartAddr = NULL;
     MI_U32 i = 0;
+
+    ST_OSD_INIT_CHECK(hHandle);
+    if (stRect.u32X > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Width
+        || stRect.u32Y > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Height)
+        return MI_ERR_RGN_ILLEGAL_PARAM;
 
     stRect.u32X = (stRect.u32X < 0) ? 0 : stRect.u32X;
     stRect.u32Y = (stRect.u32Y < 0) ? 0 : stRect.u32Y;
@@ -1117,6 +1163,9 @@ MI_S32 ST_OSD_DrawRectFast(MI_RGN_HANDLE hHandle, ST_Rect_T stRect, MI_U8 u8Bord
     MI_U8 *pu8StartAddr = NULL;
 
     ST_OSD_INIT_CHECK(hHandle);
+    if (stRect.u32X > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Width
+        || stRect.u32Y > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Height)
+        return MI_ERR_RGN_ILLEGAL_PARAM;
 
     stRect.u32X = (stRect.u32X < 0) ? 0 : stRect.u32X;
     stRect.u32Y = (stRect.u32Y < 0) ? 0 : stRect.u32Y;
@@ -1150,6 +1199,9 @@ MI_S32 ST_OSD_DrawRect(MI_RGN_HANDLE hHandle, ST_Rect_T stRect, MI_U8 u8BorderWi
     ST_Point_T stPoint0, stPoint1;
 
     ST_OSD_INIT_CHECK(hHandle);
+    if (stRect.u32X > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Width
+        || stRect.u32Y > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Height)
+        return MI_ERR_RGN_ILLEGAL_PARAM;
 
     stRect.u32X = (stRect.u32X < 0) ? 0 : stRect.u32X;
     stRect.u32Y = (stRect.u32Y < 0) ? 0 : stRect.u32Y;
@@ -1195,6 +1247,9 @@ MI_S32 ST_OSD_FillRect(MI_RGN_HANDLE hHandle, ST_Rect_T stRect, MI_U32 u32Color)
     ST_Point_T stPoint0, stPoint1;
 
     ST_OSD_INIT_CHECK(hHandle);
+    if (stRect.u32X > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Width
+        || stRect.u32Y > g_stRgnInfo[hHandle].stCanvasInfo.stSize.u32Height)
+        return MI_ERR_RGN_ILLEGAL_PARAM;
 
     stRect.u32X = (stRect.u32X < 0) ? 0 : stRect.u32X;
     stRect.u32Y = (stRect.u32Y < 0) ? 0 : stRect.u32Y;

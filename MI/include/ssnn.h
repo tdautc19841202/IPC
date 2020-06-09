@@ -1,6 +1,9 @@
 #ifndef _SSNN_H
 #define _SSNN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 // ==================================================================================================
 //                                        Structure Definition
 // ==================================================================================================
@@ -16,6 +19,7 @@ typedef struct
     float nms_thresh;
     int num_threads;
     int max_detection;
+    int init_network_index;
 }network_config;
 
 typedef struct
@@ -32,6 +36,7 @@ typedef struct
     void *net;
     BBox *boxes;                    // Only for detector
     float *probs;                   // Only for classifier
+    float *feature;                 // Only for feature extractor
     int num_detection;
 }NetworkHandle;
 
@@ -42,7 +47,8 @@ typedef struct
 enum E_NETWORK_TYPE
 {
     CLASSIFIER,
-    DETECTOR
+    DETECTOR,
+    FEATURE
 };
 
 // ==================================================================================================
@@ -54,9 +60,15 @@ void Release_Network(NetworkHandle **phandle);
 int Forward_Network(NetworkHandle *handle, unsigned char *data, int height, int width, int color);
 int Get_Detection(NetworkHandle *handle, int img_height, int img_width);   // Only for detector
 int Get_Prob(NetworkHandle *handle);                                       // Only for classifier
+int Get_Feature(NetworkHandle *handle);                                    // Only for feature extractor
 int Change_Model(NetworkHandle *handle, int network_index);
 int Get_Num_Classes(NetworkHandle *handle);
 int Get_Network_Type(NetworkHandle *handle);
 int Get_Size_Alignment(NetworkHandle *handle);
+int Get_Feature_Size(NetworkHandle *handle);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

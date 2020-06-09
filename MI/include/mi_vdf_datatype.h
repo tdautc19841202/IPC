@@ -21,7 +21,7 @@
 #include "mi_vg.h"
 
 #define VDF_VERSION_MAXLEN            64
-#define MI_VDF_CHANNEL_MAX            48
+#define MI_VDF_CHANNEL_MAX            8
 #define MI_VDF_MAX_WIDTH              1920
 #define MI_VDF_MAX_HEIGHT             1080
 #define MI_VDF_MIN_WIDTH              320

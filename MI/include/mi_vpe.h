@@ -17,7 +17,7 @@
 #include "mi_vpe_datatype.h"
 
 #define VPE_MAJOR_VERSION 2
-#define VPE_SUB_VERSION 6
+#define VPE_SUB_VERSION 9
 #define MACRO_TO_STR(macro) #macro
 #define VPE_VERSION_STR(major_version,sub_version) ({char *tmp = sub_version/100 ? \
                                     "mi_vpe_version_" MACRO_TO_STR(major_version)"." MACRO_TO_STR(sub_version) : sub_version/10 ? \
@@ -57,6 +57,11 @@ MI_S32 MI_VPE_SetPortShowPosition(MI_VPE_CHANNEL VpeCh, MI_VPE_PORT VpePort, MI_
 MI_S32 MI_VPE_GetPortShowPosition(MI_VPE_CHANNEL VpeCh, MI_VPE_PORT VpePort, MI_SYS_WindowRect_t *pstPortPositionInfo);
 
 MI_S32 MI_VPE_SkipFrame(MI_VPE_CHANNEL VpeCh, MI_U32 u32FrameNum);
+
+MI_S32 MI_VPE_LDCBegViewConfig(MI_VPE_CHANNEL VpeCh);
+MI_S32 MI_VPE_LDCEndViewConfig(MI_VPE_CHANNEL VpeCh);
+MI_S32 MI_VPE_LDCSetViewConfig(MI_VPE_CHANNEL VpeCh, void *pConfigAddr, MI_U32 u32ConfigSize);
+
 MI_S32 MI_VPE_Alloc_IspDataBuf(MI_U32 u32Size,void **pUserVirAddr);
 MI_S32 MI_VPE_Free_IspDataBuf(void *pUserBuf);
 

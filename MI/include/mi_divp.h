@@ -21,7 +21,7 @@ extern "C" {
 #include "mi_divp_datatype.h"
 
 #define DIVP_MAJOR_VERSION 2
-#define DIVP_SUB_VERSION 3
+#define DIVP_SUB_VERSION 4
 #define MACRO_TO_STR(macro) #macro
 #define DIVP_VERSION_STR(major_version,sub_version) ({char *tmp = sub_version/100 ? \
                                     "mi_divp_version_" MACRO_TO_STR(major_version)"." MACRO_TO_STR(sub_version) : sub_version/10 ? \
@@ -125,6 +125,16 @@ MI_S32 MI_DIVP_GetOutputPortAttr (MI_DIVP_CHN DivpChn, MI_DIVP_OutputPortAttr_t 
 ///             MI_DIVP_ERR_FAILED: Fail to refresh a DIVP channel.
 //------------------------------------------------------------------------------
 MI_S32 MI_DIVP_RefreshChn(MI_DIVP_CHN DivpChn);
+
+//------------------------------------------------------------------------------
+/// @brief stretch or crop image in specified memory to target memory
+/// @param[in] pstSrcBuf: source buff info pointer
+/// @param[in] pstSrcCrop: crop info pointer
+/// @param[in] pstDstBuf: dest buff info pointer
+/// @return MI_SUCCESS: succeed in stretching image
+///             MI_DIVP_ERR_FAILED: Fail to stretch image
+//------------------------------------------------------------------------------
+MI_S32 MI_DIVP_StretchBuf(MI_DIVP_DirectBuf_t *pstSrcBuf, MI_SYS_WindowRect_t *pstSrcCrop, MI_DIVP_DirectBuf_t *pstDstBuf);
 
 #ifdef __cplusplus
 }

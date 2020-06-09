@@ -11,6 +11,7 @@
  Information is unlawful and strictly prohibited. Sigmastar hereby reserves the
  rights to any and all damages, losses, costs and expenses resulting therefrom.
 */
+
 #ifndef _ST_RGN_H_
 #define _ST_RGN_H_
 
@@ -31,7 +32,6 @@ extern "C"{
 #define I4_RED      (1)
 #define I4_GREEN    (2)
 #define I4_BLUE     (3)
-#define I4_WHITE    (7)
 #define I4_BLACK    (12)
 
 typedef enum
@@ -87,6 +87,8 @@ typedef struct
 } ST_OSD_Attr_T;
 
 MI_S32 ST_OSD_Init(void);
+
+MI_S32 ST_OSD_Deinit(void);
 
 MI_S32 ST_OSD_DrawPoint(MI_RGN_HANDLE hHandle, ST_Point_T stPoint, MI_U32 u32Color);
 

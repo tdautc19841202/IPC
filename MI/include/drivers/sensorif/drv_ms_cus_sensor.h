@@ -109,6 +109,19 @@ typedef enum {
     CUS_ORIT_M1F1,                  /**< mirror and flip changed */
 } CUS_CAMSENSOR_ORIT;
 
+
+/*! @brief Get input source type.*/
+typedef enum {
+    CUS_SNR_ANADEC_SRC_NO_READY,    /**< input no ready */
+    CUS_SNR_ANADEC_SRC_PAL,         /**< input type is PAL */
+    CUS_SNR_ANADEC_SRC_NTSC,        /**< input type is NTSC */
+    CUS_SNR_ANADEC_SRC_HD,          /**< input source type is HD */
+    CUS_SNR_ANADEC_SRC_FHD,         /**< input source type is FHD */
+    CUS_SNR_ANADEC_SRC_DISCNT,      /**< input disconnect */
+    CUS_SNR_ANADEC_SRC_MAX,         /**< input num max */
+}CUS_SNR_ANADEC_SRC_TYPE;
+
+
 /*! @brief ISP AE event notifycation*/
 typedef enum {
     CUS_FRAME_INACTIVE = 0, /**< Frame end */
@@ -156,6 +169,11 @@ typedef enum {
     CUS_CLK_POL_NEG         /**< Low active */
 } CUS_CLK_POL;
 
+typedef enum
+{
+    CUS_SENSOR_YUV_ORDER_CY = 0,
+    CUS_SENSOR_YUV_ORDER_YC = 1,
+}CUS_SENSOR_YUV_ORDER;
 
 /*! @brief Sensor master clock select */
 typedef enum {
@@ -348,6 +366,7 @@ typedef enum
     CUS_HDR_MODE_EMBEDDED_RAW12 = 5,
     CUS_HDR_MODE_EMBEDDED_RAW16 = 6, //Only for OV2718?
     CUS_HDR_MODE_LI = 7,
+    CUS_HDR_MODE_MULTI_VC = 8,
 }CUS_HDR_MODE;
 
 typedef enum
@@ -432,28 +451,40 @@ typedef struct __ISensorIfAPI //isp sensor interface API
     void* pdata;
 
     /** @brief Set sensor power down pin.
-    @param[in] handle Handle to sensor driver.
-    @param[in] idx Reserved, Always 0
+    @param[in] idx Sensor pad ID.
     @param[in] pol pin polarity.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*PowerOff)(u32 idx, CUS_CLK_POL pol);
 
     /** @brief Set sensor power reset pin.
-    @param[in] handle Handle to sensor driver.
-    @param[in] idx Reserved, Always 0
+    @param[in] idx Sensor pad ID.
     @param[in] pol pin polarity.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*Reset)(u32 idx, CUS_CLK_POL pol);
 
     /** @brief Configure sensor master clock.
-    @param[in] handle Handle to sensor driver.
-    @param[in] bONOFF clock ON/OFF control
-    @param[in] mclk Clock frequency Hz
+    @param[in] idx Sensor pad ID.
+    @param[in] bONOFF Clock ON/OFF control.
+    @param[in] mclk Clock frequency Hz.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*MCLK)(u32 idx, u8 bONOFF, CUS_MCLK_FREQ mclk);
+
+    /** @brief Query sensor master clock.
+    @param[in] idx Sensor pad ID.
+    @param[in] mclk Query if clock frequency Hz is available.
+    @retval SUCCESS or FAIL if error occurs.
+    */
+    int (*QueryMCLK)(u32 idx, CUS_MCLK_FREQ mclk);
+
+    /** @brief Query MIPI lane number.
+    @param[in] idx Sensor pad ID.
+    @param[in] lane_num Query max lane number.
+    @retval SUCCESS or FAIL if error occurs.
+    */
+    int (*QueryLaneNum)(u32 idx, u8 *max_lane);
 #if 0
     /** @brief Select pixel clock source
     @remarks Parallel interface only
@@ -535,9 +566,9 @@ typedef struct __ISensorIfAPI //isp sensor interface API
     int (*Set3ATaskOrder)(CUS_INT_TASK_ORDER tasks);
 #endif
     /** @brief Select sensor IO pin assignment
-    @param[in] handle Handle to sensor driver.
-    @param[in] cfg Pin config.
-    @image html SensorPinAssignment.jpg
+    @param[in] idx Sensor pad ID.
+    @param[in] ulSnrType Interface type.
+    @param[in] ulSnrPadCfg Pin config.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetIOPad)(u32 idx, CUS_SENIF_BUS ulSnrType, u32 ulSnrPadCfg);
@@ -545,53 +576,54 @@ typedef struct __ISensorIfAPI //isp sensor interface API
     //FOR CSI
 
     /** @brief Set maximum mipi data rate (amount of all lans)
-    @remarks MIPI interface only
-    @param[in] handle Handle to sensor driver.
-    @param[in] clk Max data rate
+    @remarks MIPI interface only.
+    @param[in] idx Sensor pad ID.
+    @param[in] clk Max data rate.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetCSI_Clk)(u32 idx, CUS_CSI_CLK clk);
 
     /** @brief Set number of MIPI lanes
-    @remarks MIPI interface only
-    @param[in] handle Handle to sensor driver.
-    @param[in] num_lan Number of lanes
+    @remarks MIPI interface only.
+    @param[in] idx Sensor pad ID.
+    @param[in] num_lan Number of lanes.
+    @param[in] bon_off Clock ON/OFF control.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetCSI_Lane)(u32 idx, u16 num_lan, u8 bon_off);
 
     /** @brief Enable long packet type
     @remarks MIPI interface only
-    @param[in] handle Handle to sensor driver.
-    @param[in] ctl_flg Control flag , This parameter can be combination of following value.\
-    @ref CSI_LONG_PACKET_TYPE_NULL , to
-    @ref CSI_LONG_PACKET_TYPE_USER_DEF8 ,
+    @param[in] idx Sensor pad ID.
+    @param[in] ctl_cfg0_15 Control flag bit[0:15]
+    @param[in] ctl_cfg16_31 Control flag bit[16:31]
+    @param[in] ctl_cfg32_47 Control flag bit[32:47]
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetCSI_LongPacketType)(u32 idx, u16 ctl_cfg0_15, u16 ctl_cfg16_31, u16 ctl_cfg32_47);
 
     /** @brief Virtual channel0 hsync mode
     @remarks MIPI interface only
-    @param[in] handle Handle to sensor driver.
-    @param[in] mode
+    @param[in] idx Sensor pad ID.
+    @param[in] mode HSYNC mode.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetCSI_VC0HSmode)(CUS_CSI_VC_HS_MODE mode);
 
     /** @brief Configure MIPI capture start timing
     @remarks MIPI interface only
-    @param[in] handle Handle to sensor driver.
+    @param[in] idx Sensor pad ID.
     @param[in] rx_clk_skip_ns
-     @param[in] rx_clk_skip_ns
+    @param[in] rx_data_skip_ns
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetCSI_clk_data_skip)(u32 idx, u8 rx_clk_skip_ns,u8 rx_data_skip_ns);
 
     /** @brief Configure MIPI hdr mode
     @remarks MIPI interface only
-    @param[in] handle Handle to sensor driver.
-    @param[in] hdr_mode
-    @param[in] bon_off
+    @param[in] idx Sensor pad ID.
+    @param[in] hdr_mode HDR mode.
+    @param[in] bon_off Clock ON/OFF control.
     @retval SUCCESS or FAIL if error occurs.
     */
     int (*SetCSI_hdr_mode)(u32 idx, CUS_HDR_MODE hdr_mode, u8 bon_off);
@@ -916,6 +948,14 @@ typedef struct __ms_cus_sensor{
    @retval Return SUCCESS or FAIL if error occurs.
    */
    int (*pCus_sensor_CustDefineFunction)(struct __ms_cus_sensor* handle,u32 cmd_id, void *param);
+
+   //Get Source Type
+   /** @brief Get Source Type
+   @param[in] handle Handle to sensor driver.
+   @param[out] psrc_type info
+   @retval Return SUCCESS or FAIL if error occurs.
+   */
+   int (*pCus_sensor_GetSrcType)(struct __ms_cus_sensor* handle, CUS_SNR_ANADEC_SRC_TYPE *psrc_type);
 
 } ms_cus_sensor;
 

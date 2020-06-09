@@ -22,6 +22,7 @@ typedef enum
 {
     E_MI_RGN_MODID_VPE = 0,
     E_MI_RGN_MODID_DIVP,
+    E_MI_RGN_MODID_LDC,
     E_MI_RGN_MODID_MAX
 }MI_RGN_ModId_e;
 

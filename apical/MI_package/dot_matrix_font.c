@@ -4,13 +4,14 @@
   Unless otherwise stipulated in writing, any and all information contained
  herein regardless in any format shall remain the sole proprietary of
  Sigmastar Technology Corp. and be kept in strict confidence
- (??Sigmastar Confidential Information??) by the recipient.
+ (��Sigmastar Confidential Information��) by the recipient.
  Any unauthorized act including without limitation unauthorized disclosure,
  copying, use, reproduction, sale, distribution, modification, disassembling,
  reverse engineering and compiling of the contents of Sigmastar Confidential
  Information is unlawful and strictly prohibited. Sigmastar hereby reserves the
  rights to any and all damages, losses, costs and expenses resulting therefrom.
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -22,7 +23,7 @@
 #include <stdint.h>
 
 #include "dot_matrix_font.h"
-#include "gb2312_code_dot.h"
+#include "gb2312_code.h"
 
 #define MAX_BUF_LEN                 1024
 #define BITS_PER_PIXEL              16
@@ -529,10 +530,10 @@ int _dmf_BMPWrite(DMF_BMP_S *pstBMP, char *szPath)
         return -1;
     }
 
-    // unsigned char head[BMP_HEAD_LEN];
+    unsigned char head[BMP_HEAD_LEN];
     int i = 0, j = 0;
     int fd = 0;
-    // unsigned long len = 0;
+    unsigned long len = 0;
 
 #if 0
     memset(head, 0, BMP_HEAD_LEN);
@@ -801,7 +802,7 @@ int DMF_DumpToBMPFile(const char *string, char *szFile)
     totalLines = ALIGN_MULTI(charTotalNum, pstDMFBitMapAttr->charNumPerLine);
     totalLines = MIN(totalLines, MAX_LINES);
 
-    memset(&charNumPerLine, 0, sizeof(charNumPerLine));
+    memset(&charNumPerLine, 0, MAX_LINES);
     charRemainNum = charTotalNum;
     for (i = 0; i < totalLines; i ++)
     {
@@ -943,7 +944,7 @@ int DMF_DumpToBMPBuf(const char *string, DMF_BitMapData_S *pstBitMapData)
     totalLines = ALIGN_MULTI(charTotalNum, pstDMFBitMapAttr->charNumPerLine);
     totalLines = MIN(totalLines, MAX_LINES);
 
-    memset(&charNumPerLine, 0, sizeof(charNumPerLine));
+    memset(&charNumPerLine, 0, MAX_LINES);
     charRemainNum = charTotalNum;
     for (i = 0; i < totalLines; i ++)
     {

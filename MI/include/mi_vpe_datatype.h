@@ -19,14 +19,6 @@
 extern "C" {
 #endif
 
-#define MI_VPE_MAX_CHANNEL_NUM (2)
-#define MI_VPE_REALTIMEMODE_MAXCHNL_NUM (1)
-#define MI_VPE_MAX_PORT_NUM (4)
-#define MI_VPE_MAX_WORKINGLIST_NODE (2)
-
-#define MI_VPE_CHANNEL_MAX_WIDTH  (2560)
-#define MI_VPE_CHANNEL_MAX_HEIGHT (1440)
-
 
 #define MI_VPE_OK (0)
 #define MI_ERR_VPE_INVALID_CHNID (0xA0078001) //The VPE channel ID is invalid.
@@ -93,6 +85,16 @@ typedef enum
     E_MI_VPE_3DNR_LEVEL_NUM
 }MI_VPE_3DNR_Level_e;
 
+typedef enum
+{
+    E_MI_VPE_ZOOM_LDC_NULL,
+    E_MI_VPE_ZOOM_LDC_PORT0 = 0X01,
+    E_MI_VPE_ZOOM_LDC_PORT1 = 0X02,
+    E_MI_VPE_ZOOM_LDC_PORT2 = 0X04,
+    E_MI_VPE_ZOOM_LDC_MAX = E_MI_VPE_ZOOM_LDC_PORT0|
+                            E_MI_VPE_ZOOM_LDC_PORT1|E_MI_VPE_ZOOM_LDC_PORT2,
+}MI_VPE_ChnPortMode_e;
+
 typedef struct MI_VPE_IspApiHeader_s
 {
     MI_U32 u32HeadSize;    //Size of MIIspApiHeader_t
@@ -101,6 +103,13 @@ typedef struct MI_VPE_IspApiHeader_s
     MI_U32 u32Channel;     //Isp channel number
     MI_S32 s32Ret;         //Isp api retuen value
 } MI_VPE_IspApiHeader_t;
+
+typedef struct MI_VPE_IspInitPara_s
+{
+    MI_U32 u32Revision;
+    MI_U32 u32Size;
+    MI_U8  u8Data[64];
+}MI_VPE_IspInitPara_t;
 
 typedef struct MI_VPE_ChannelAttr_s
 {
@@ -117,6 +126,9 @@ typedef struct MI_VPE_ChannelAttr_s
     MI_BOOL bUvInvert;
     MI_BOOL bRotation;
     MI_VPE_RunningMode_e eRunningMode;
+    MI_VPE_IspInitPara_t tIspInitPara;
+    MI_BOOL  bEnLdc; // true port3 for ldc or for Isp(skip pass2)
+    MI_U32   u32ChnPortMode;
 }MI_VPE_ChannelAttr_t;
 
 typedef struct MI_VPE_PqParam_s
@@ -139,7 +151,10 @@ typedef struct MI_VPE_ChannelPara_s
    MI_VPE_PqParam_t      stPqParam; // only dvr use
    MI_VPE_HDRType_e      eHDRType;
    MI_VPE_3DNR_Level_e   e3DNRLevel;
+   MI_BOOL               bMirror;
+   MI_BOOL               bFlip;
    MI_BOOL               bWdrEn;    //Wdr on/off not use
+   MI_BOOL               bEnLdc;
 } MI_VPE_ChannelPara_t;
 
 typedef struct MI_VPE_RegionInfo_s

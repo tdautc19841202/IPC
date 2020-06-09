@@ -36,6 +36,12 @@ typedef struct _I2C_ARRAY{
     u16 data; /**< Data.*/
 } I2C_ARRAY;
 
+/*! @brief I2C burst read/write data.*/
+typedef struct _I2C_ARRAY_BURST{
+    u16 reg; /**< Register address.*/
+    u16 *data; /**< Data.*/
+} I2C_ARRAY_BURST;
+
 /*! @brief I2C data direction*/
 typedef enum {
     I2C_RW_R, /**< Data direction read.*/
@@ -121,6 +127,15 @@ typedef struct _i2c_handle_t {
     @retval SENSOR_I2C_SUCCESS or SENSOR_I2C_FAIL if error occurs.
     */
     int (*i2c_array_tx)(struct _i2c_handle_t* handle, app_i2c_cfg cfg, I2C_ARRAY *pdata, int len);
+
+    /** @brief Burst write to device.
+    @param[in] handle Handle to isp i2c api.
+    @param[in] cfg I2C config, fmd and address are necessary in this stage.
+    @param[in] pdata Data array.
+    @param[in] len Array size.
+    @retval SENSOR_I2C_SUCCESS or SENSOR_I2C_FAIL if error occurs.
+    */
+    int (*i2c_burst_tx)(struct _i2c_handle_t* handle, app_i2c_cfg cfg, I2C_ARRAY_BURST *pdata, int len);
 
     /** @brief Batch read from device.
     @param[in] handle Handle to isp i2c api.

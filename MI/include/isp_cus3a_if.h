@@ -6,11 +6,21 @@ extern "C"
 {
 #endif
 
-#if 1
+#define CUS3A_VER_STR "CUS3A_V1.1"
+#define CUS3A_VER_MAJOR 1
+#define CUS3A_VER_MINOR 1
+
+#include "cam_os_wrapper.h"
+
+#if 0
 typedef unsigned char   u8;
+//typedef signed char   s8;
 typedef unsigned short  u16;
-typedef unsigned long   u32;
+//typedef signed short  s16;
+typedef unsigned int   u32;
+//typedef signed int   s32;
 typedef unsigned long long u64;
+//typedef signed long long s64;
 #endif
 
 #define MV_WIN_NUM                 25
@@ -30,6 +40,7 @@ typedef unsigned long long u64;
 #define MS_WDR_LOC_TBL             88
 
 #define MS_CAM_AF_MAX_WIN_NUM 16 //
+#define MAX_CUST_3A_CHINFO_NUM (16)
 
 /*------AE/AWB interface--------*/
 /*! @brief API error code*/
@@ -71,7 +82,12 @@ typedef struct
     u32 CurRGain;
     u32 CurGGain;
     u32 CurBGain;
-    ISP_AWB_SAMPLE *avgs;
+    ISP_AWB_SAMPLE *avgs;   /*awb statis for linear frame or HDR long frame*/
+    /*CUS3A V1.1*/
+    u8  HDRMode;             /**< Noramal or HDR mode*/
+    ISP_AWB_SAMPLE*  pAwbStatisShort; /**<awb statis for HDR short Shutter AWB statistic data */
+    u8 u4BVx16384;      /**< From AE output, Bv * 16384 in APEX system, EV = Av + Tv = Sv + Bv */
+    u32 WeightY;                /**< frame brightness with ROI weight*/
 } __attribute__((packed, aligned(1))) ISP_AWB_INFO;
 #endif
 
@@ -116,6 +132,14 @@ typedef struct
     u32 ShutterHDRShort;           /**< Current shutter in us*/
     u32 SensorGainHDRShort;        /**< Current Sensor gain, 1X = 1024 */
     u32 IspGainHDRShort;           /**< Current ISP gain, 1X = 1024*/
+
+    /*CUS3A V1.1*/
+    u32 PreAvgY;                   /**< Previous frame brightness*/
+    u8  HDRCtlMode;                /**< 0 = Separate shutter/sensor gain settings; */
+                                   /**< 1 = Separate shutter & Share sensor gain settings */
+    u32 FNx10;                     /**< Aperture in FNx10*/
+    u32 CurFPS;                    /**Current sensor FPS */
+    u32 PreWeightY;             /**< Previous frame brightness with ROI weight*/
 } __attribute__((packed, aligned(1))) ISP_AE_INFO;
 
 //AE algorithm result
@@ -133,6 +157,10 @@ typedef struct
     u32 u4BVx16384;      /**< Bv * 16384 in APEX system, EV = Av + Tv = Sv + Bv */
     u32 AvgY;            /**< frame brightness */
     u32 HdrRatio;   /**< hdr ratio, 1X = 1024 */
+    /*CUS3A V1.1*/
+    u32 FNx10;                     /**< F number * 10*/
+    u32 DebandFPS;       /** Target fps when running auto debanding**/
+    u32 WeightY;                /**< frame brightness with ROI weight*/
 } __attribute__((packed, aligned(1))) ISP_AE_RESULT;
 
 /*! @brief ISP initial status*/
@@ -156,6 +184,8 @@ typedef struct _isp_ae_init_param
     u32 shutterHDRShort_max;            /**< shutter Shutter max us*/
     u32 sensor_gainHDRShort_min;        /**< sensor_gain_min Minimum Sensor gain, 1X = 1024*/
     u32 sensor_gainHDRShort_max;        /**< sensor_gain_max Maximum Sensor gain, 1X = 1024*/
+    u32 AvgBlkX;  /**< HW statistics average block number*/
+    u32 AvgBlkY;  /**< HW statistics average block number*/
 } ISP_AE_INIT_PARAM;
 
 typedef enum
@@ -327,18 +357,18 @@ typedef struct isp_af_interface
     int (*ctrl)(void *pdata, ISP_AF_CTRL_CMD cmd, void* param);
 } ISP_AF_INTERFACE;
 
+unsigned int CUS3A_GetVersion(char* pVerStr);
 int CUS3A_Init(void);
 void CUS3A_Release(void);
 int CUS3A_RegInterface(u32 nCh,ISP_AE_INTERFACE *pAE,ISP_AWB_INTERFACE *pAWB,ISP_AF_INTERFACE *pAF);
 int CUS3A_AERegInterface(u32 nCh,ISP_AE_INTERFACE *pAE);
 int CUS3A_AWBRegInterface(u32 nCh,ISP_AWB_INTERFACE *pAWB);
 int CUS3A_AFRegInterface(u32 nCh,ISP_AF_INTERFACE *pAF);
-void* pAllocDmaBuffer(const char* pName, u32 nReqSize, u32 *pPhysAddr, u32 *pMiuAddr, u8 bCache);
-int FreeDmaBuffer(const char* pName, u32 u32MiuAddr, void *pVirtAddr, u32 u32FreeSize);
+//void* pAllocDmaBuffer(const char* pName, u32 nReqSize, u32 *pPhysAddr, u32 *pMiuAddr, u8 bCache);
+//int FreeDmaBuffer(const char* pName, u32 u32MiuAddr, void *pVirtAddr, u32 u32FreeSize);
 int Cus3AOpenIspFrameSync(int *fd0, int *fd1);
 int Cus3ACloseIspFrameSync(int fd0, int fd1);
 unsigned int Cus3AWaitIspFrameSync(int fd0, int fd1, int timeout);
-
 #ifdef __cplusplus
 }
 #endif

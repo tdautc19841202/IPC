@@ -58,6 +58,7 @@ typedef MI_S32 MI_IVE_HANDLE;
 typedef MI_S32 MI_VPE_DEV;
 typedef MI_S32 MI_DIVP_CHN;
 typedef MI_U32 MI_RGN_HANDLE;
+typedef MI_U32 MI_SED_CHN;
 typedef MI_S32  MI_HANDLE;
 //-------------------------------------------------------------------------------------------------
 //  Macros
@@ -138,6 +139,18 @@ typedef MI_S32  MI_HANDLE;
 #endif
 #endif
 
+#define TO_STR_NATIVE(e) #e
+#define TO_STR_PROXY(m, e) m(e)
+#define MACRO_TO_STRING(e) TO_STR_PROXY(TO_STR_NATIVE, e)
+#define COMPILE_DATE_TIME() __DATE__ __TIME__
+
+///ASCII color code
+#define ASCII_COLOR_RED                          "\033[1;31m"
+#define ASCII_COLOR_WHITE                        "\033[1;37m"
+#define ASCII_COLOR_YELLOW                       "\033[1;33m"
+#define ASCII_COLOR_BLUE                         "\033[1;36m"
+#define ASCII_COLOR_GREEN                        "\033[1;32m"
+#define ASCII_COLOR_END                          "\033[0m"
 
 //-------------------------------------------------------------------------------------------------
 //  Structures
@@ -172,12 +185,17 @@ typedef enum
     E_MI_MODULE_ID_OD = 19,
     E_MI_MODULE_ID_SHADOW = 20,
     E_MI_MODULE_ID_WARP = 21,
-	E_MI_MODULE_ID_UAC = 22,
-	E_MI_MODULE_ID_LDC = 23,
-	E_MI_MODULE_ID_SD = 24,
+    E_MI_MODULE_ID_UAC = 22,
+    E_MI_MODULE_ID_LDC = 23,
+    E_MI_MODULE_ID_SD = 24,
     E_MI_MODULE_ID_PANEL = 25,
-	E_MI_MODULE_ID_CIPHER = 26,
-	E_MI_MODULE_ID_SNR = 27,
+    E_MI_MODULE_ID_CIPHER = 26,
+    E_MI_MODULE_ID_SNR = 27,
+    E_MI_MODULE_ID_WLAN =28,
+    E_MI_MODULE_ID_IPU = 29,
+    E_MI_MODULE_ID_MIPITX = 30,
+    E_MI_MODULE_ID_GYRO = 31,
+    //E_MI_MODULE_ID_SED  = 29,
     E_MI_MODULE_ID_MAX,
 } MI_ModuleId_e;
 
@@ -187,7 +205,7 @@ typedef enum
     E_MI_ERR_LEVEL_WARNING,    /* warning conditions                           */
     E_MI_ERR_LEVEL_ERROR,      /* error conditions                             */
     E_MI_ERR_LEVEL_BUTT
-}MI_ErrLevel_e;
+} MI_ErrLevel_e;
 
 typedef enum
 {
@@ -232,5 +250,17 @@ typedef enum
                                           ** must be greater than it                      */
 }MI_ErrCode_e;
 
+typedef enum
+{
+    MI_DBG_NONE = 0,
+    MI_DBG_ERR,
+    MI_DBG_WRN,
+    MI_DBG_API,
+    MI_DBG_KMSG,
+    MI_DBG_INFO,
+    MI_DBG_DEBUG,
+    MI_DBG_TRACE,
+    MI_DBG_ALL
+}MI_DBG_LEVEL_e;
 
 #endif///_MI_COMMON_DATATYPE_H_

@@ -1,15 +1,17 @@
-/******************************************************************************
+/* Copyright (c) 2018-2019 Sigmastar Technology Corp.
+ All rights reserved.
 
-  Copyright (C),
+  Unless otherwise stipulated in writing, any and all information contained
+ herein regardless in any format shall remain the sole proprietary of
+ Sigmastar Technology Corp. and be kept in strict confidence
+ (��Sigmastar Confidential Information��) by the recipient.
+ Any unauthorized act including without limitation unauthorized disclosure,
+ copying, use, reproduction, sale, distribution, modification, disassembling,
+ reverse engineering and compiling of the contents of Sigmastar Confidential
+ Information is unlawful and strictly prohibited. Sigmastar hereby reserves the
+ rights to any and all damages, losses, costs and expenses resulting therefrom.
+*/
 
- ******************************************************************************
-  File Name     : mi_ive.h
-  Version       : Initial Draft
-  Author        :
-  Created       :
-  Description   :
-  History       :
-******************************************************************************/
 #ifndef _MI_IVE_H_
 #define _MI_IVE_H_
 
@@ -511,7 +513,7 @@ MI_S32 MI_IVE_CannyEdge(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstEdge, MI_IV
 *                  The stride must be 16-pixel-aligned.
 *   History:
 *****************************************************************************/
-MI_S32 MI_IVE_Lbp(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrc,
+MI_S32 MI_IVE_Lbp(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrc1, MI_IVE_SrcImage_t *pstSrc2,
     MI_IVE_DstImage_t *pstDst, MI_IVE_LbpCtrrl_t *pstLbpCtrl, MI_BOOL bInstant);
 
 /*****************************************************************************
@@ -701,7 +703,7 @@ MI_S32 MI_IVE_NoiseRemoveVer(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrcDst
 *   History:
 *****************************************************************************/
 MI_S32 MI_IVE_Acc(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrc0,
-    MI_IVE_SrcImage_t *pstSrc1, MVE_IVE_AccCtrl_t *pstAccCtrl, MI_BOOL bInstant);
+    MI_IVE_SrcImage_t *pstSrc1, MI_IVE_DstImage_t *pstDst, MVE_IVE_AccCtrl_t *pstAccCtrl, MI_BOOL bInstant);
 
 /*****************************************************************************
 *   Prototype    : MI_MVE_BAT
@@ -720,6 +722,46 @@ MI_S32 MI_IVE_Acc(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrc0,
 *****************************************************************************/
 MI_S32 MI_IVE_BAT(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrc,
     MI_IVE_DstMemInfo_t *pstDstH, MI_IVE_DstMemInfo_t *pstDstV, MVE_IVE_BatCtrl_t *pstCtrl, MI_BOOL bInstant);
+
+/*****************************************************************************
+*   Prototype    : MI_IVE_Matrix_Transform
+*   Description  : Matrix transform operation.
+*   Parameters   : MI_IVE_HANDLE          hHandle   Handle ID of a task
+*                  MI_IVE_SrcImage_t     *pstSrc1      Input source 1.
+*                  MI_IVE_SrcImage_t     *pstSrc2      Input source 2.
+*                  MI_IVE_SrcImage_t     *pstSrc3      Input source 3.
+*                  MI_IVE_DstImage_t     *pstDst1       Output result 1
+*                  MI_IVE_DstImage_t     *pstDst2       Output result 2
+*                  MI_IVE_DstImage_t     *pstDst3       Output result 3
+*                  MI_IVE_MatrTranfCtrl_t      *pstMatrTranfCtrl   Control parameter
+*                  MI_BOOL              bInstant     Reserved
+*   Return Value : MI_SUCCESS: Success;Error codes: Failure.
+*   Spec         : The size of the input data ranges from 64x64 pixels to 1920x1080 pixels.
+*                  The stride must be 16-pixel-aligned.
+*                  The types, widths, heights of input sources must be the same.
+*   History:
+*****************************************************************************/
+MI_S32 MI_IVE_Matrix_Transform(MI_IVE_HANDLE hHandle,
+    MI_IVE_SrcImage_t *pstSrc1, MI_IVE_SrcImage_t *pstSrc2, MI_IVE_SrcImage_t *pstSrc3,
+    MI_IVE_DstImage_t *pstDst1, MI_IVE_DstImage_t *pstDst2, MI_IVE_DstImage_t *pstDst3,
+    MI_IVE_MatrTranfCtrl_t *pstMatrTranfCtrl, MI_BOOL bInstant);
+
+/*****************************************************************************
+*   Prototype    : MI_IVE_Image_Dot
+*   Description  : Matrix transform operation.
+*   Parameters   : MI_IVE_HANDLE          hHandle   Handle ID of a task
+*                  MI_IVE_SrcImage_t     *pstSrc1      Input source 1.
+*                  MI_IVE_SrcImage_t     *pstSrc2      Input source 2.
+*                  MI_IVE_DstImage_t     *pstDst       Output result.
+*                  MI_BOOL              bInstant     Reserved
+*   Return Value : MI_SUCCESS: Success;Error codes: Failure.
+*   Spec         : The size of the input data ranges from 64x64 pixels to 1920x1080 pixels.
+*                  The stride must be 16-pixel-aligned.
+*                  The types, widths, heights of input sources must be the same.
+*   History:
+*****************************************************************************/
+MI_S32 MI_IVE_Image_Dot(MI_IVE_HANDLE hHandle, MI_IVE_SrcImage_t *pstSrc1, MI_IVE_SrcImage_t *pstSrc2,
+    MI_IVE_DstImage_t *pstDst, MI_BOOL bInstant);
 
 #ifdef __cplusplus
 #if __cplusplus

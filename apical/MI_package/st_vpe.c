@@ -42,7 +42,7 @@ MI_S32 ST_Vpe_CreateChannel(MI_VPE_CHANNEL VpeChannel, ST_VPE_ChannelInfo_T *pst
     stChannelVpeAttr.ePixFmt = pstChannelInfo->eFormat;
     stChannelVpeAttr.eRunningMode = pstChannelInfo->eRunningMode;
     stChannelVpeAttr.bRotation = pstChannelInfo->bRotation;
-    stChannelVpeAttr.eHDRType  = E_MI_VPE_HDR_TYPE_OFF;
+    stChannelVpeAttr.eHDRType  = pstChannelInfo->eHDRtype;
     printf("beal.......mode %d %d  .....\n", E_MI_VPE_RUN_REALTIME_MODE, pstChannelInfo->eRunningMode);
     ExecFunc(MI_VPE_CreateChannel(VpeChannel, &stChannelVpeAttr), MI_VPE_OK);
 #if 0

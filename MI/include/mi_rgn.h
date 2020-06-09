@@ -22,7 +22,7 @@ extern "C" {
 #include "mi_rgn_datatype.h"
 
 #define RGN_MAJOR_VERSION 2
-#define RGN_SUB_VERSION 6
+#define RGN_SUB_VERSION 7
 #define MACRO_TO_STR(macro) #macro
 #define RGN_VERSION_STR(major_version,sub_version) ({char *tmp = sub_version/100 ? \
                                     "mi_rgn_version_" MACRO_TO_STR(major_version)"." MACRO_TO_STR(sub_version) : sub_version/10 ? \

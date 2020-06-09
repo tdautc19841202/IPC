@@ -37,10 +37,10 @@
 #include "st_uvc_datatype.h"
 #include "motor.h"
 #include "fft.h"
-#include "tuya_ipc_main.h"
+//#include "tuya_ipc_main.h"
 #include <errno.h>
 #include "motiondet.h"
-#include "tuya_ipc_main.h"
+//#include "tuya_ipc_main.h"
 #include "st_rtsp.h"
 extern int pthread_setname_np(pthread_t __target_thread, const char *__name);
 
@@ -364,17 +364,17 @@ void *UpdateRgnOsdTimeProc(void *argv)
 
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE, NULL);
-                (void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_WHITE, DMF_Font_Size_48x48);
+                (void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_RED, DMF_Font_Size_48x48);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE);
 
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE1, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE1, NULL);
-                (void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
+                (void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE1);
 
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE2, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE2, NULL);
-                (void)ST_OSD_DrawText(RGN_OSD_HANDLE2, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
+                (void)ST_OSD_DrawText(RGN_OSD_HANDLE2, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE2);
                 canvas_unlock();
             }
@@ -523,7 +523,7 @@ static void * main_stream(void *argv)
                     if (!ftest)
                     {
                         main_video_rawrec(context, &vstream);
-                        tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
+                        //tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
                     }
                 }
                 else{
@@ -625,7 +625,7 @@ static void * sub_stream(void *argv)
             s32Ret = MI_VENC_GetStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream, -1);
             if(MI_SUCCESS == s32Ret)
             {
-                if (!ftest) tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 1);
+                if (!ftest); //tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 1);
             }
             else{
                 printf("MI_VENC_GetStream failed\n");
@@ -653,7 +653,7 @@ static void handle_motion_det(CONTEXT *context, uint8_t *data, int diff)
     int        hmax  = (context->settings.md_timeperiod >> 0) & 0xff;
     if (tmnow->tm_hour >= hmin && tmnow->tm_hour <= hmax) {
         int motion = motion_detect_run(context->motion, (char*)data, diff);
-        tuya_motion_event(motion, get_tick_count());
+        //tuya_motion_event(motion, get_tick_count());
     }
 }
 
@@ -1049,10 +1049,10 @@ int soft_light_sensor(CONTEXT *context)
     MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t isp_init;  //isp初始化返回值
     static MI_ISP_AE_EXPO_INFO_TYPE_t       pExpInfo;  //判断白天黑夜的结构体
     int cur_irmode = context->last_irmode;
-    if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
-        printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
-        return -1;
-    }
+    //if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
+    //    printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
+    //    return -1;
+   // }
     if(!isp_init.stParaAPI.bFlag){
         printf("ISP init failed!\n");
         return -1;
@@ -1630,7 +1630,7 @@ static void* audio_capture_proc(void *argv)
                 avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
-                if(!ftest)tuya_audio(frame.apVirAddr[0], frame.u32Len);
+                if(!ftest)//tuya_audio(frame.apVirAddr[0], frame.u32Len);
                 MI_AI_ReleaseFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL);
             } else {
                 printf("MI_AI_GetFrame failed !\n");
@@ -1674,7 +1674,7 @@ static void* network_monitor_proc(void *argv)
             get_dev_mac("wlan0", wlan0_mac, sizeof(wlan0_mac));  //获取当前wlan0的mac地址
             set_dev_ids(NULL, wlan0_mac, NULL, NULL);  //保存mac地址，以保证下次用同样的mac启动wlan0
             context->status |= FLAG_WIFI_CONNECTED;
-            if (!ftest && get_mqtt_status() == 0 && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
+            if (!ftest && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
             {
                 system("kill `ps | awk '$5==\"udhcpc\" && $7==\"wlan0\" {printf $1}'`");
                 system("udhcpc -i wlan0 &");
@@ -1716,7 +1716,7 @@ int main(int argc, char *argv[])
     system("echo 1 > /proc/sys/vm/overcommit_memory");
 
     shmid = shmget((key_t)SDSTATUS_SHMID, sizeof(SDSTATUS), 0666|IPC_CREAT);
-    ST_ConfigSet(&context->pstConfig);
+    ST_DefaultArgs(&context->pstConfig);
     context->status |= FLAG_SD_FIRST_INSERT;
     if (shmid != -1) {
         context->sdstatus = (SDSTATUS*)shmat(shmid, NULL, 0);
@@ -1759,7 +1759,7 @@ int main(int argc, char *argv[])
     pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
     pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
-    if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
+    //if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
     if (context->pthread_led ) pthread_join(context->pthread_led , NULL);
     if (context->pthread_dmon) pthread_join(context->pthread_dmon, NULL);
     if (context->pthread_nmon) pthread_join(context->pthread_nmon, NULL);

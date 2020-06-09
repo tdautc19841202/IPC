@@ -15,12 +15,12 @@ insmod /lib/modules/4.9.84/ehci-hcd.ko force_host=1
 insmod /lib/modules/4.9.84/cfg80211.ko
 insmod /lib/modules/4.9.84/8188fu.ko
 
-dd if=/dev/mtdblock5 of=/tmp/apkipcam bs=1 count=8
-dd if=/dev/mtdblock5 of=/tmp/wlan_mac bs=1 count=17 skip=27
-APK_TAG=`cat /tmp/apkipcam`
-WLAN_MAC=`cat /tmp/wlan_mac`
-rm /tmp/apkipcam
-rm /tmp/wlan_mac
+#dd if=/dev/mtdblock5 of=/tmp/apkipcam bs=1 count=8
+#dd if=/dev/mtdblock5 of=/tmp/wlan_mac bs=1 count=17 skip=27
+#APK_TAG=`cat /tmp/apkipcam`
+#WLAN_MAC=`cat /tmp/wlan_mac`
+#rm /tmp/apkipcam
+#rm /tmp/wlan_mac
 if [ "$APK_TAG"x = "APKIPCAM"x -a "$WLAN_MAC"x != "00:00:00:00:00:00"x ]; then
 	ifconfig wlan0 hw ether $WLAN_MAC
 else

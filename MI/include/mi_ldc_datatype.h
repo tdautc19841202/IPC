@@ -11,6 +11,7 @@
  Information is unlawful and strictly prohibited. Sigmastar hereby reserves the
  rights to any and all damages, losses, costs and expenses resulting therefrom.
 */
+
 #ifndef _MI_LDC_DATATYPE_H_
 #define _MI_LDC_DATATYPE_H_
 #include "mi_sys_datatype.h"
@@ -18,13 +19,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-#define MI_LDC_MAX_DEVICE_NUM           1
-#define MI_LDC_MAX_CHN_NUM              1
-#define MI_LDC_MAX_INPUTPORT_NUM        1
-#define MI_LDC_MAX_OUTPUTPORT_NUM       1
-
 
 typedef enum
 {
@@ -36,31 +30,17 @@ typedef enum
     E_MI_LDC_ERR_CHN_NOT_STOP,                                      // chn is still working
     E_MI_LDC_ERR_CHN_NOT_DESTROY,                                   // chn not be destroyed
     E_MI_LDC_ERR_PORT_NOT_UNBIND,                                   // port not unbind
-}MI_LDC_ErrCode_e;
+} MI_LDC_ErrCode_e;
 
 typedef MI_U32 MI_LDC_DEV;
 typedef MI_U32 MI_LDC_CHN;
 
-typedef enum
-{
-    E_LDC_OFF_MODE,         // slc2 only
-    E_LDC_ON_MODE           // ldc + slc2
-}MI_LDC_WorkMode_e;
-
 typedef struct MI_LDC_OutputPortAttr_s
 {
-    MI_U16 u16Width;                        // scl2 output width
-    MI_U16 u16Height;                       // scl2 output height
-    MI_SYS_PixelFormat_e  ePixelFmt;        // scl2 output fmt
-    MI_SYS_CompressMode_e eCompressMode;
-    MI_SYS_WindowRect_t stCropRect;
-}MI_LDC_OutputPortAttr_t;
-
-typedef struct MI_LDC_ChannelAttr_s
-{
-    MI_U16 u16MaxW;
-    MI_U16 u16MaxH;
-}MI_LDC_ChannelAttr_t;
+    MI_U16 u16Width;
+    MI_U16 u16Height;
+    MI_SYS_PixelFormat_e  ePixelFmt;
+} MI_LDC_OutputPortAttr_t;
 
 #define MI_LDC_OK                      MI_DEF_ERR(E_MI_MODULE_ID_LDC, E_MI_ERR_LEVEL_INFO, MI_SUCCESS)
 #define MI_ERR_LDC_ILLEGAL_PARAM       MI_DEF_ERR(E_MI_MODULE_ID_LDC, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_ILLEGAL_PARAM)

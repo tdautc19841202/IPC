@@ -17,7 +17,7 @@
 #include "mi_sensor_datatype.h"
 
 #define SENSOR_MAJOR_VERSION 2
-#define SENSOR_SUB_VERSION 3
+#define SENSOR_SUB_VERSION 4
 #define MACRO_TO_STR(macro) #macro
 #define SENSOR_VERSION_STR(major_version,sub_version) ({char *tmp = sub_version/100 ? \
                                     "mi_sensor_version_" MACRO_TO_STR(major_version)"." MACRO_TO_STR(sub_version) : sub_version/10 ? \
@@ -51,6 +51,7 @@ MI_S32 MI_SNR_GetOrien(MI_SNR_PAD_ID_e      ePADId, MI_BOOL *pbMirror, MI_BOOL *
 MI_S32 MI_SNR_SetPlaneMode(MI_SNR_PAD_ID_e      ePADId, MI_BOOL bEnable);
 MI_S32 MI_SNR_GetPlaneMode(MI_SNR_PAD_ID_e      ePADId, MI_BOOL *pbEnable);
 
+MI_S32 MI_SNR_CustFunction(MI_SNR_PAD_ID_e ePADId, MI_U32 u32CmdId, MI_U32 u32DataSize, void *pCustData, MI_SNR_CUST_DIR_e eDir);
 #ifdef __cplusplus
 }
 #endif

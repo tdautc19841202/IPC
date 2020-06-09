@@ -14,7 +14,7 @@ libdir = ${exec_prefix}/lib
 # Programs used by "make":
 CC = arm-buildroot-linux-uclibcgnueabihf-gcc
 CFLAGS = -g -O2 -fvisibility=hidden
-CPPFLAGS = 
+CPPFLAGS = -I/home/zhaoyh/ext/msc333/libiconv/_install/include
 LDFLAGS =  $(LDFLAGS_no)
 LDFLAGS_yes = -Wl,--export-all-symbols
 LDFLAGS_no =

@@ -34,7 +34,7 @@
 #define MI_ERR_SNR_FAIL                  MI_DEF_ERR(E_MI_MODULE_ID_SNR, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_FAILED)
 
 #define MI_SNR_MAX_PADNUM 4
-#define MI_SNR_MAX_PLANENUM 2
+#define MI_SNR_MAX_PLANENUM 3
 
 typedef struct MI_SNR_Res_s
 {
@@ -46,12 +46,6 @@ typedef struct MI_SNR_Res_s
 	MI_S8 strResDesc[32];	// Need to put “HDR” here if the resolution is for HDR
 } __attribute__((packed, aligned(4))) MI_SNR_Res_t;
 
-typedef struct MI_SNR_Res_List_s
-{
-    MI_U32 u32NumRes;/**< number of sensor resolution in list */
-    MI_U32 u32CurResIndex;/**< current sensor resolution*/
-    MI_SNR_Res_t stRes[12]; /**< resolution list */
-} __attribute__((packed, aligned(4))) MI_SNR_Res_List_t;
 
 typedef enum
 {
@@ -82,6 +76,13 @@ typedef enum
     E_MI_SNR_HDR_SOURCE_VC3,
     E_MI_SNR_HDR_SOURCE_MAX
 } MI_SNR_HDRSrc_e;
+
+typedef enum
+{
+    E_MI_SNR_CUSTDATA_TO_DRIVER,
+    E_MI_SNR_CUSTDATA_TO_USER,
+    E_MI_SNR_CUSTDATA_MAX = E_MI_SNR_CUSTDATA_TO_USER,
+} MI_SNR_CUST_DIR_e;
 
 typedef struct MI_SNR_AttrParallel_s
 {
@@ -122,6 +123,7 @@ typedef struct MI_SNR_PADInfo_s
     MI_VIF_IntfMode_e    eIntfMode;
     MI_VIF_HDRType_e     eHDRMode;
     MI_SNR_IntfAttr_u    unIntfAttr;
+    MI_BOOL              bEarlyInit;
 } MI_SNR_PADInfo_t;
 
 typedef struct MI_SNR_PlaneInfo_s
@@ -132,6 +134,10 @@ typedef struct MI_SNR_PlaneInfo_s
     MI_SYS_BayerId_e        eBayerId;
     MI_SYS_DataPrecision_e  ePixPrecision;
     MI_SNR_HDRSrc_e         eHdrSrc;
+    MI_U32                  u32ShutterUs;
+    MI_U32                  u32SensorGainX1024;
+    MI_U32                  u32CompGain;
+    MI_SYS_PixelFormat_e    ePixel;
 } MI_SNR_PlaneInfo_t;
 
 typedef enum

@@ -1,15 +1,17 @@
-/******************************************************************************
+/* Copyright (c) 2018-2019 Sigmastar Technology Corp.
+ All rights reserved.
 
-  Copyright (C),
+  Unless otherwise stipulated in writing, any and all information contained
+ herein regardless in any format shall remain the sole proprietary of
+ Sigmastar Technology Corp. and be kept in strict confidence
+ (��Sigmastar Confidential Information��) by the recipient.
+ Any unauthorized act including without limitation unauthorized disclosure,
+ copying, use, reproduction, sale, distribution, modification, disassembling,
+ reverse engineering and compiling of the contents of Sigmastar Confidential
+ Information is unlawful and strictly prohibited. Sigmastar hereby reserves the
+ rights to any and all damages, losses, costs and expenses resulting therefrom.
+*/
 
- ******************************************************************************
-  File Name     : mi_ive_datatype.h
-  Version       : Initial Draft
-  Author        :
-  Created       :
-  Description   :
-  History       :
-******************************************************************************/
 #ifndef _MI_IVE_DATATYPE_H_
 #define _MI_IVE_DATATYPE_H_
 
@@ -215,22 +217,8 @@ typedef struct MI_IVE_FilterCtrl_s
 */
 typedef enum
 {
-    E_MI_IVE_CSC_MODE_VIDEO_BT601_YUV2RGB =  0x0,   /*CSC: YUV2RGB, video transfer mode, RGB value range [16, 235]*/
-    E_MI_IVE_CSC_MODE_VIDEO_BT709_YUV2RGB =  0x1,   /*CSC: YUV2RGB, video transfer mode, RGB value range [16, 235]*/
-    E_MI_IVE_CSC_MODE_PIC_BT601_YUV2RGB   =  0x2,   /*CSC: YUV2RGB, picture transfer mode, RGB value range [0, 255]*/
-    E_MI_IVE_CSC_MODE_PIC_BT709_YUV2RGB   =  0x3,   /*CSC: YUV2RGB, picture transfer mode, RGB value range [0, 255]*/
-
-    E_MI_IVE_CSC_MODE_PIC_BT601_YUV2HSV   =  0x4,   /*CSC: YUV2HSV, picture transfer mode, HSV value range [0, 255]*/
-    E_MI_IVE_CSC_MODE_PIC_BT709_YUV2HSV   =  0x5,   /*CSC: YUV2HSV, picture transfer mode, HSV value range [0, 255]*/
-
-    E_MI_IVE_CSC_MODE_PIC_BT601_YUV2LAB   =  0x6,   /*CSC: YUV2LAB, picture transfer mode, Lab value range [0, 255]*/
-    E_MI_IVE_CSC_MODE_PIC_BT709_YUV2LAB   =  0x7,   /*CSC: YUV2LAB, picture transfer mode, Lab value range [0, 255]*/
-
-    E_MI_IVE_CSC_MODE_VIDEO_BT601_RGB2YUV =  0x8,   /*CSC: RGB2YUV, video transfer mode, YUV value range [0, 255]*/
-    E_MI_IVE_CSC_MODE_VIDEO_BT709_RGB2YUV =  0x9,   /*CSC: RGB2YUV, video transfer mode, YUV value range [0, 255]*/
-    E_MI_IVE_CSC_MODE_PIC_BT601_RGB2YUV   =  0xA,   /*CSC: RGB2YUV, picture transfer mode, Y:[16, 235],U\V:[16, 240]*/
-    E_MI_IVE_CSC_MODE_PIC_BT709_RGB2YUV   =  0xB,   /*CSC: RGB2YUV, picture transfer mode, Y:[16, 235],U\V:[16, 240]*/
-
+    E_MI_IVE_CSC_MODE_PIC_BT601_YUV2RGB   =  0x0,   /*CSC: YUV2RGB, picture transfer mode, RGB value range [0, 255]*/
+    E_MI_IVE_CSC_MODE_PIC_BT601_RGB2YUV   =  0x1,   /*CSC: RGB2YUV, picture transfer mode, Y:[16, 235],U\V:[16, 240]*/
     E_MI_IVE_CSC_MODE_MAX
 }MI_IVE_CscMode_e;
 
@@ -344,7 +332,7 @@ typedef struct MI_IVE_ThreshCtrl_s
 */
 typedef enum
 {
-    E_MI_IVE_SUB_MODE_ABS   =  0x0,     /*Absolute value of the difference*/
+    E_MI_IVE_SUB_MODE_ABS    =  0x0,     /*Absolute value of the difference*/
     E_MI_IVE_SUB_MODE_SMIFT  =  0x1,    /*The output result is obtained by shifting the result one digit right to reserve the signed bit.*/
     E_MI_IVE_SUB_MODE_MAX
 }MI_IVE_SubMode_e;
@@ -499,10 +487,22 @@ typedef struct MI_IVE_EqualizeHistCtrl_s
 }MI_IVE_EqualizeHistCtrl_t;
 
 /*
+*Mode of Add
+*/
+typedef enum
+{
+    E_MI_IVE_ADD_MODE_ROUNDING       =  0x0,
+    E_MI_IVE_ADD_MOD_CLIPPING        =  0x1,
+
+    E_MI_IVE_ADD_MODE_MAX
+}MI_IVE_AddMode_e;
+
+/*
 *Add control parameters,created by Chen Quanfu 2013-07-17
 */
 typedef struct MI_IVE_AddCtrl_s
 {
+    MI_IVE_AddMode_e eMode;
     MI_U0Q16 u0q16X;         /*x of "xA+yB"*/
     MI_U0Q16 u0q16Y;         /*y of "xA+yB"*/
 }MI_IVE_AddCtrl_t;
@@ -590,11 +590,23 @@ typedef struct MI_IVE_CannyStackSize_s
 */
 typedef enum
 {
-    E_MI_IVE_LBP_CMP_MODE_NORMAL = 0x0,     /* P(x)-P(center)>= un8BitThr.s8Val, s(x)=1; else s(x)=0; */
-    E_MI_IVE_LBP_CMP_MODE_ABS    = 0x1,     /* Abs(P(x)-P(center))>=un8BitThr.u8Val, s(x)=1; else s(x)=0; */
+    E_MI_IVE_LBP_CMP_MODE_NORMAL    = 0x0,     /* P(x)-P(center)>= un8BitThr.s8Val, s(x)=1; else s(x)=0; */
+    E_MI_IVE_LBP_CMP_MODE_ABS       = 0x1,     /* Abs(P(x)-P(center))>=un8BitThr.u8Val, s(x)=1; else s(x)=0; */
+    E_MI_IVE_LBP_CMP_MODE_ABS_MUL   = 0x2,
 
     E_MI_IVE_LBP_CMP_MODE_MAX
 }MI_IVE_LbpCmpMode_e;
+
+/*
+*LBP channel mode
+*/
+typedef enum
+{
+    E_MI_IVE_LBP_CHAL_MODE_U8C1    = 0x0,
+    E_MI_IVE_LBP_CHAL_MODE_U8C2    = 0x1,
+
+    E_MI_IVE_LBP_CHAL_MODE_MAX
+}MI_IVE_LbpChalMode_e;
 
 /*
 *LBP control struct
@@ -602,6 +614,7 @@ typedef enum
 typedef struct MI_IVE_LbpCtrrl_s
 {
     MI_IVE_LbpCmpMode_e eMode;
+    MI_IVE_LbpChalMode_e chMode;
     MI_IVE_Length8bit_u un8BitThr;
 }MI_IVE_LbpCtrrl_t;
 
@@ -688,7 +701,8 @@ typedef enum
     E_MI_IVE_RESIZE_TYPE_U8C3_PLANAR      = 0x1,
     E_MI_IVE_RESIZE_TYPE_U8C3_PACKAGE     = 0x2,
     E_MI_IVE_RESIZE_TYPE_YUV420SP         = 0x3,
-    E_MI_IVE_RESIZE_TYPE_BUTT             = 0xFF
+
+    E_MI_IVE_RESIZE_TYPE_MAX
 }MVE_IVE_ResizeMode_e;
 
 typedef struct _MVE_IVE_ResizeCtrl_s
@@ -699,8 +713,9 @@ typedef struct _MVE_IVE_ResizeCtrl_s
 typedef enum
 {
     E_MI_IVE_BERNSEN_MODE_NORMAL              = 0x00,
-    E_MI_IVE_BERNSEN_MODE_THRESH               = 0x01,
-    E_MI_IVE_BERNSEN_MODE_BUTT                    = 0xFF
+    E_MI_IVE_BERNSEN_MODE_THRESH              = 0x01,
+
+    E_MI_IVE_BERNSEN_MODE_MAX
 } MVE_IVE_BernsenMode_e;
 
 typedef struct MVE_IVE_BernsenCtrl_s
@@ -745,9 +760,11 @@ typedef struct MVE_IVE_NoiseRemoveVerCtrl_s
 
 typedef enum
 {
-    E_MI_IVE_ACC_MODE_INCREASE       = 0x0,
-    E_MI_IVE_ACC_MODE_DECREASE       = 0x1,
-    E_MI_IVE_ACC_MODE_BUTT
+    E_MI_IVE_ACC_MODE_INCREASE             = 0x0,
+    E_MI_IVE_ACC_MODE_DECREASE             = 0x1,
+    E_MI_IVE_ACC_MODE_INCREASE_MAP_255TO1  = 0x2,
+
+    E_MI_IVE_ACC_MODE_MAX
 } MVE_IVE_AccMode_e;
 
 typedef struct MVE_IVE_AccCtrl_s
@@ -757,10 +774,11 @@ typedef struct MVE_IVE_AccCtrl_s
 
 typedef enum
 {
-    E_MI_IVE_BAT_OUT_CTRL_BOTH = 0x0,  /*Output horizontal and vertical*/
-    E_MI_IVE_BAT_OUT_CTRL_HOR   = 0x1,  /*Output horizontal*/
+    E_MI_IVE_BAT_OUT_CTRL_BOTH   = 0x0,  /*Output horizontal and vertical*/
+    E_MI_IVE_BAT_OUT_CTRL_HOR    = 0x1,  /*Output horizontal*/
     E_MI_IVE_BAT_OUT_CTRL_VER    = 0x2,  /*Output vertical*/
-    E_MI_IVE_BAT_OUT_CTRL_BUTT  = 0xFF
+
+    E_MI_IVE_BAT_OUT_CTRL_MAX
 } MVE_IVE_BatMode_e;
 
 typedef struct MVE_IVE_BatCtrl_s
@@ -769,6 +787,21 @@ typedef struct MVE_IVE_BatCtrl_s
     MI_U16 u16HorTimes;
     MI_U16 u16VerTimes;
 } MVE_IVE_BatCtrl_t;
+
+typedef enum
+{
+    E_MI_IVE_MATRIX_TRANSFORM_TYPE_C1     = 0x0,
+    E_MI_IVE_MATRIX_TRANSFORM_TYPE_C2     = 0x1,
+    E_MI_IVE_MATRIX_TRANSFORM_TYPE_C3     = 0x2,
+
+    E_MI_IVE_MATRIX_TRANSFORM_TYPE_MAX
+}MVE_IVE_MatrTranfMode_e;
+
+typedef struct MI_IVE_MatrTranfCtrl_S
+{
+    MVE_IVE_MatrTranfMode_e enMode;    /*Input channel mode*/
+    MI_S16 s16MatrixArray[9];  //Official
+} MI_IVE_MatrTranfCtrl_t;
 
 #ifdef __cplusplus
 #if __cplusplus

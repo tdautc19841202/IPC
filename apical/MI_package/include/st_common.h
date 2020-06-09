@@ -16,7 +16,7 @@
 
 #ifdef __cplusplus
 extern "C"{
-#endif  // __cplusplus
+#endif	// __cplusplus
 
 #include <stdio.h>
 #include <unistd.h>
@@ -175,6 +175,16 @@ typedef struct
     MI_U32 u32Y;
 } ST_Point_T;
 
+typedef enum
+{
+    ST_Sensor_Type_IMX291 = 0,
+    ST_Sensor_Type_IMX307,
+    ST_Sensor_Type_AR0237,
+    ST_Sensor_Type_os08a10,
+    ST_Sensor_Type_IMX274,
+    ST_Sensor_Type_BUTT,
+} ST_Sensor_Type_T;
+
 MI_S32 ST_Sys_Init(void);
 MI_S32 ST_Sys_Exit(void);
 
@@ -185,7 +195,7 @@ MI_U64 ST_Sys_GetPts(MI_U32 u32FrameRate);
 
 #ifdef __cplusplus
 }
-#endif  // __cplusplus
+#endif	// __cplusplus
 
 #endif //_ST_COMMON_H_
 

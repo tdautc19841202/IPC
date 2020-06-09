@@ -16,7 +16,7 @@
 
 #include "mi_common.h"
 #define MI_SYS_MAX_INPUT_PORT_CNT   (16)
-#define MI_SYS_MAX_OUTPUT_PORT_CNT  (4)
+#define MI_SYS_MAX_OUTPUT_PORT_CNT  (5)
 #define MI_SYS_MAX_DEV_CHN_CNT      (48)
 #define MI_SYS_INVLAID_SEQUENCE_NUM ((MI_U32)-1)
 
@@ -58,16 +58,16 @@
 #define MI_ERR_SYS_CHN_NOT_STARTED MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_CHN_NOT_STARTED)
 #define MI_ERR_SYS_CHN_NOT_STOPED MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_CHN_NOT_STOPED)
 #define MI_ERR_SYS_NOT_INIT MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOT_INIT)
+#define MI_ERR_SYS_INITED MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_INITED)
 #define MI_ERR_SYS_NOT_ENABLE MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOT_ENABLE)
-#define MI_ERR_SYS_NOT_DISABLE MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOT_DISABLE)
+#define MI_ERR_SYS_NOT_DISABLE MI_DEF_ERR(E_MI_MODULE_ID_SYS,E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOT_DISABLE)
 #define MI_ERR_SYS_TIMEOUT MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_SYS_TIMEOUT)
-#define MI_ERR_SYS_DEV_NOT_STARTED MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_DEV_NOT_STARTED)
-#define MI_ERR_SYS_DEV_NOT_STOPED MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_DEV_NOT_STOPED)
-#define MI_ERR_SYS_CHN_NO_CONTENT MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_CHN_NO_CONTENT)
-#define MI_ERR_SYS_NOVASAPCE MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOVASPACE)
+#define MI_ERR_SYS_DEV_NOT_STARTED MI_DEF_ERR(E_MI_MODULE_ID_SYS,E_MI_ERR_LEVEL_ERROR, E_MI_ERR_DEV_NOT_STARTED)
+#define MI_ERR_SYS_DEV_NOT_STOPED MI_DEF_ERR(E_MI_MODULE_ID_SYS,E_MI_ERR_LEVEL_ERROR, E_MI_ERR_DEV_NOT_STOPED)
+#define MI_ERR_SYS_CHN_NO_CONTENT MI_DEF_ERR(E_MI_MODULE_ID_SYS,E_MI_ERR_LEVEL_ERROR, E_MI_ERR_CHN_NO_CONTENT)
+#define MI_ERR_SYS_NOVASAPCE MI_DEF_ERR(E_MI_MODULE_ID_SYS,E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOVASPACE)
 #define MI_ERR_SYS_NOITEM MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_NOITEM)
 #define MI_ERR_SYS_FAILED MI_DEF_ERR(E_MI_MODULE_ID_SYS, E_MI_ERR_LEVEL_ERROR, E_MI_ERR_FAILED)
-
 
 typedef MI_S32 MI_VB_POOL_HANDLE;
 typedef MI_S32 MI_VB_BLK_HANDLE;
@@ -193,14 +193,20 @@ typedef enum
     E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_422,
     E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_420,
     E_MI_SYS_PIXEL_FRAME_YUV_MST_420,
+    E_MI_SYS_PIXEL_FRAME_YUV422_UYVY,
+    E_MI_SYS_PIXEL_FRAME_YUV422_YVYU,
+    E_MI_SYS_PIXEL_FRAME_YUV422_VYUY,
 
     //vdec sigmastar private video format
     E_MI_SYS_PIXEL_FRAME_YC420_MSTTILE1_H264,
     E_MI_SYS_PIXEL_FRAME_YC420_MSTTILE2_H265,
-    E_MI_SYS_PIXEL_FRAME_YC420_MSTTILE3_H265 = 15,
+    E_MI_SYS_PIXEL_FRAME_YC420_MSTTILE3_H265,
 
     E_MI_SYS_PIXEL_FRAME_RGB_BAYER_BASE,
     E_MI_SYS_PIXEL_FRAME_RGB_BAYER_NUM = E_MI_SYS_PIXEL_FRAME_RGB_BAYER_BASE + E_MI_SYS_DATA_PRECISION_MAX*E_MI_SYS_PIXEL_BAYERID_MAX-1,
+
+    E_MI_SYS_PIXEL_FRAME_RGB888,
+    E_MI_SYS_PIXEL_FRAME_BGR888,
 
     E_MI_SYS_PIXEL_FRAME_FORMAT_MAX,
 } MI_SYS_PixelFormat_e;
@@ -246,6 +252,7 @@ typedef enum
 {
     E_MI_SYS_BUFDATA_RAW = 0,
     E_MI_SYS_BUFDATA_FRAME,
+    E_MI_SYS_BUFDATA_META,
 } MI_SYS_BufDataType_e;
 
 typedef enum
@@ -273,6 +280,13 @@ typedef enum
    E_MI_SYS_PER_DEV_PRIVATE_POOL=2,
    E_MI_SYS_PER_CHN_PORT_OUTPUT_POOL=3,
 }MI_SYS_InsidePrivatePoolType_e;
+
+typedef enum
+{
+    E_MI_SYS_FRAME_ISP_INFO_TYPE_NONE,
+    E_MI_SYS_FRAME_ISP_INFO_TYPE_GLOBAL_GRADIENT
+}MI_SYS_FrameIspInfoType_e;
+
 
 typedef struct MI_SYS_ChnPort_s
 {
@@ -308,7 +322,7 @@ typedef struct MI_SYS_RawData_s
     MI_U64  u64SeqNum;
 } MI_SYS_RawData_t;
 
-typedef struct MI_SYS_PerFrameMetaBuf_s
+typedef struct MI_SYS_MetaData_s
 {
     void*  pVirAddr;
     MI_PHY phyAddr;//notice that this is miu bus addr,not cpu bus addr.
@@ -316,7 +330,7 @@ typedef struct MI_SYS_PerFrameMetaBuf_s
     MI_U32 u32Size;
     MI_U32 u32ExtraData;    /*driver special flag*/
     MI_ModuleId_e eDataFromModule;
-} MI_SYS_PerFrameMetaBuf_t;
+} MI_SYS_MetaData_t;
 
 typedef enum
 {
@@ -329,7 +343,14 @@ typedef enum
 #define MI_SYS_REALTIME_MAGIC_VADDR ((void*)0x46414B45) //"FAKE"
 #define MI_SYS_REALTIME_MAGIC_PITCH ((MI_U32)0x46414B45) //"FAKE"
 
-
+typedef struct MI_SYS_FrameIspInfo_s
+{
+    MI_SYS_FrameIspInfoType_e eType;
+    union
+    {
+        MI_U32 u32GlobalGradient;
+    }uIspInfo;
+}MI_SYS_FrameIspInfo_t;
 
 //N.B. in MI_SYS_FrameData_t should never support u32Size,
 //for other values are enough,and not support u32Size is general standard method.
@@ -351,9 +372,11 @@ typedef  struct  MI_SYS_FrameData_s
     MI_U32 u32Stride[3];
     MI_U32 u32BufSize;//total size that allocated for this buffer,include consider alignment.
 
-
     MI_U16 u16RingBufStartLine;//Valid in case RINGBUF_FRAME_DATA,  u16RingBufStartLine must be LGE than 0 and less than u16Height
     MI_U16 u16RingBufRealTotalHeight;///Valid in case RINGBUF_FRAME_DATA,  u16RingBufStartLine must be LGE than u16Height
+
+    MI_SYS_FrameIspInfo_t stFrameIspInfo;//isp info of each frame
+    MI_SYS_WindowRect_t stContentCropWindow;
 } MI_SYS_FrameData_t;
 
 typedef  struct  MI_SYS_BufInfo_s
@@ -364,21 +387,24 @@ typedef  struct  MI_SYS_BufInfo_s
     MI_BOOL bEndOfStream;
     MI_BOOL bUsrBuf;
     MI_U32 u32SequenceNumber;
+    MI_BOOL bDrop;
     union
     {
         MI_SYS_FrameData_t stFrameData;
         MI_SYS_RawData_t stRawData;
+        MI_SYS_MetaData_t stMetaData;
     };
-    MI_SYS_PerFrameMetaBuf_t stPerFrameMetaBuf;
 } MI_SYS_BufInfo_t;
 
 typedef struct MI_SYS_FrameBufExtraConfig_s
 {
-  //Buf alighment requirement in horizontal
+  //Buf alignment requirement in horizontal
   MI_U16 u16BufHAlignment;
-  //Buf alighment requirement in vertical
+  //Buf alignment requirement in vertical
   MI_U16 u16BufVAlignment;
-  //Clear Padding flag
+  //Buf alignment requirement in chroma
+  MI_U16 u16BufChromaAlignment;
+  //Clear padding flag
   MI_BOOL bClearPadding;
 }MI_SYS_FrameBufExtraConfig_t;
 

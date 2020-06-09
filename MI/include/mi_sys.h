@@ -18,7 +18,7 @@
 #include "mi_sys_datatype.h"
 
 #define SYS_MAJOR_VERSION 2
-#define SYS_SUB_VERSION 9
+#define SYS_SUB_VERSION 15
 #define MACRO_TO_STR(macro) #macro
 #define SYS_VERSION_STR(major_version,sub_version) ({char *tmp = sub_version/100 ? \
                                     "mi_sys_version_" MACRO_TO_STR(major_version)"." MACRO_TO_STR(sub_version) : sub_version/10 ? \
@@ -53,6 +53,8 @@ MI_S32 MI_SYS_SyncPts (MI_U64 u64Pts);
 MI_S32 MI_SYS_SetReg (MI_U32 u32RegAddr, MI_U16 u16Value, MI_U16 u16Mask);
 
 MI_S32 MI_SYS_GetReg (MI_U32 u32RegAddr, MI_U16 *pu16Value);
+
+MI_S32 MI_SYS_ReadUuid (MI_U64 *u64Uuid);
 
 MI_S32 MI_SYS_SetChnMMAConf (MI_ModuleId_e eModId, MI_U32 u32DevId, MI_U32 u32ChnId, MI_U8 *pu8MMAHeapName);
 
@@ -94,6 +96,10 @@ MI_S32 MI_SYS_BufFillPa(MI_SYS_FrameData_t *pstBuf, MI_U32 u32Val, MI_SYS_Window
 
 MI_S32 MI_SYS_BufBlitPa(MI_SYS_FrameData_t *pstDstBuf, MI_SYS_WindowRect_t *pstDstRect, MI_SYS_FrameData_t *pstSrcBuf, MI_SYS_WindowRect_t *pstSrcRect);
 
+MI_S32 MI_SYS_PrivateDevChnHeapAlloc(MI_ModuleId_e eModule, MI_U32 u32Devid, MI_S32 s32ChnId, MI_U8 *pu8BufName, MI_U32 u32blkSize, MI_PHY *pphyAddr, MI_BOOL bTailAlloc);
+
+MI_S32 MI_SYS_PrivateDevChnHeapFree(MI_ModuleId_e eModule, MI_U32 u32Devid, MI_S32 s32ChnId, MI_PHY phyAddr);
+
 /*
 N.B.
 below MMAHeapName can only be NULL or real mma heap name, do not set it with random character string.
@@ -107,7 +113,7 @@ MI_S32 MI_SYS_Mmap(MI_U64 phyAddr, MI_U32 u32Size , void **ppVirtualAddress , MI
 MI_S32 MI_SYS_Munmap(void *pVirtualAddress, MI_U32 u32Size);
 MI_S32 MI_SYS_FlushInvCache(void *pVirtualAddress, MI_U32 u32Length);
 
-#ifndef __KERNEL__
+#ifdef __USER__
 #define DEBUG_YUV_USER_API
 #ifdef DEBUG_YUV_USER_API
 typedef  FILE* FILE_HANDLE;
