@@ -503,13 +503,13 @@ static void * main_stream(void *argv)
         int ftest = strcmp(context->settings.ft_mode, "");
         while(!(context->status & FLAG_EXIT_OTHER_THEADS))
         {
-            if(context->status & FLAG_WIFI_CONNECTED)
+            //if(context->status & FLAG_WIFI_CONNECTED)
             {
                 memset(&vstream, 0, sizeof(vstream));
                 memset(&stPack, 0, sizeof(stPack));
                 vstream.pstPack = stPack;
                 s32Ret = MI_VENC_Query((MI_VENC_CHN)pstChnPort->u32ChnId, &stStat);
-                // printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
+                printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
                 if(s32Ret != MI_SUCCESS || stStat.u32CurPacks == 0)
                 {
                     usleep(100*1000); continue;
@@ -533,10 +533,10 @@ static void * main_stream(void *argv)
                 MI_VENC_ReleaseStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream);
                 context->g_stRgnOsd.bRun = TRUE;
             }
-            else
-            {
-                usleep(100*1000);continue;
-            }  
+            //else
+           // {
+             //   usleep(100*1000);continue;
+            //}  
         }
         context->g_stRgnOsd.bRun = FALSE;
         if(pstStreamAttr[i].enInput == ST_Sys_Input_VPE)
@@ -1714,6 +1714,7 @@ int main(int argc, char *argv[])
     system("ifconfig lo up");
     system("wifi_on.sh &");
     system("echo 1 > /proc/sys/vm/overcommit_memory");
+    system("wifi_connect.sh \"hp\" \"zyh1567890\"");
 
     shmid = shmget((key_t)SDSTATUS_SHMID, sizeof(SDSTATUS), 0666|IPC_CREAT);
     ST_DefaultArgs(&context->pstConfig);

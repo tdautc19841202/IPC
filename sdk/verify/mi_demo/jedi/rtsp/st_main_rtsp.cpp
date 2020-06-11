@@ -4733,7 +4733,7 @@ int main(int argc, char **argv)
     sigAction.sa_flags = 0;
     sigaction(SIGINT, &sigAction, NULL);
 
-#if 1
+#if 0
     ST_ResetArgs(&g_stConfig);
 #else
     ST_DefaultArgs(&g_stConfig);

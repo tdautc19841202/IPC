@@ -56,4 +56,4 @@ done
 
 sleep 3
 udhcpc -i wlan0 -T 10 &
-wifi_check.sh &
+#wifi_check.sh &

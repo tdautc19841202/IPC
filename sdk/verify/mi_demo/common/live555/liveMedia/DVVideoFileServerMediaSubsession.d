@@ -1,0 +1,35 @@
+../common/live555/liveMedia/DVVideoFileServerMediaSubsession.o : ../common/live555/liveMedia/DVVideoFileServerMediaSubsession.d ../common/live555/liveMedia/DVVideoFileServerMediaSubsession.cpp\
+ ../common/live555/liveMedia/DVVideoFileServerMediaSubsession.cpp \
+ ../common/live555/liveMedia/include/DVVideoFileServerMediaSubsession.hh \
+ ../common/live555/liveMedia/include/FileServerMediaSubsession.hh \
+ ../common/live555/liveMedia/include/ServerMediaSession.hh \
+ ../common/live555/liveMedia/include/RTCP.hh \
+ ../common/live555/liveMedia/include/RTPSink.hh \
+ ../common/live555/liveMedia/include/MediaSink.hh \
+ ../common/live555/liveMedia/include/FramedSource.hh \
+ ../common/live555/groupsock/include/NetCommon.h \
+ ../common/live555/liveMedia/include/MediaSource.hh \
+ ../common/live555/liveMedia/include/Media.hh \
+ ../common/live555/liveMedia/include/liveMedia_version.hh \
+ ../common/live555/UsageEnvironment/include/HashTable.hh \
+ ../common/live555/UsageEnvironment/include/Boolean.hh \
+ ../common/live555/UsageEnvironment/include/UsageEnvironment.hh \
+ ../common/live555/UsageEnvironment/include/UsageEnvironment_version.hh \
+ ../common/live555/UsageEnvironment/include/strDup.hh \
+ ../common/live555/liveMedia/include/RTPInterface.hh \
+ ../common/live555/groupsock/include/Groupsock.hh \
+ ../common/live555/groupsock/include/groupsock_version.hh \
+ ../common/live555/groupsock/include/NetInterface.hh \
+ ../common/live555/groupsock/include/NetAddress.hh \
+ ../common/live555/groupsock/include/GroupEId.hh \
+ ../common/live555/liveMedia/include/RTPSource.hh \
+ ../common/live555/liveMedia/include/OnDemandServerMediaSubsession.hh \
+ ../common/live555/liveMedia/include/BasicUDPSink.hh \
+ ../common/live555/liveMedia/include/DVVideoRTPSink.hh \
+ ../common/live555/liveMedia/include/VideoRTPSink.hh \
+ ../common/live555/liveMedia/include/MultiFramedRTPSink.hh \
+ ../common/live555/liveMedia/include/DVVideoStreamFramer.hh \
+ ../common/live555/liveMedia/include/FramedFilter.hh \
+ ../common/live555/liveMedia/include/ByteStreamFileSource.hh \
+ ../common/live555/liveMedia/include/FramedFileSource.hh \
+ ../common/live555/liveMedia/include/DVVideoStreamFramer.hh

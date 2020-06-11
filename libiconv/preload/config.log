@@ -28,7 +28,6 @@ uname -v = #208-Ubuntu SMP Fri Aug 24 17:07:38 UTC 2018
 /bin/universe          = unknown
 
 PATH: /home/zhaoyh/ext/msc333/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin
-PATH: /home/zhaoyh/ext/msc333/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin
 PATH: /home/zhaoyh/bin
 PATH: /home/zhaoyh/.local/bin
 PATH: /home/zhaoyh/devTool/repo
