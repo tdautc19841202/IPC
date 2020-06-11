@@ -66,6 +66,11 @@ endif
 	$(MAKE) images
 	$(MAKE) boot_images
 	$(MAKE) scripts
+ifeq ($(FLASH_SIZE), 8M)
+	cp -rf $(PROJ_ROOT)/board/$(CHIP)/boot/$(FLASH_TYPE)/partition/MXP_SF_8M.bin $(IMAGEDIR)/boot/MXP_SF.bin
+else
+	cp -rf $(PROJ_ROOT)/board/$(CHIP)/boot/$(FLASH_TYPE)/partition/MXP_SF.bin $(IMAGEDIR)/boot/MXP_SF.bin
+endif
 
 clean:
 	rm -rf $(OUTPUTDIR)
