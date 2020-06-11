@@ -52,7 +52,7 @@ MI_AUDIO_HpfConfig_t stHpfCfg = {
 
 int wavein_init(int ftest)
 {
-    MI_BOOL  bAiEnableVqe = 1;  //语音质量增强
+    MI_BOOL  bAiEnableVqe = 0;  //语音质量增强
     MI_BOOL  bAiEnableAenc = 1;  //音频编码功能
     MI_BOOL  bAiEnableHpf = FALSE;  //高通滤波功能
     MI_BOOL  bAiEnableAgc = FALSE;  //自动增益控制

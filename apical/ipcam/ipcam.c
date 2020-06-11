@@ -509,7 +509,7 @@ static void * main_stream(void *argv)
                 memset(&stPack, 0, sizeof(stPack));
                 vstream.pstPack = stPack;
                 s32Ret = MI_VENC_Query((MI_VENC_CHN)pstChnPort->u32ChnId, &stStat);
-                printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
+                //printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
                 if(s32Ret != MI_SUCCESS || stStat.u32CurPacks == 0)
                 {
                     usleep(100*1000); continue;
@@ -1717,7 +1717,7 @@ int main(int argc, char *argv[])
     system("wifi_connect.sh \"hp\" \"zyh1567890\"");
 
     shmid = shmget((key_t)SDSTATUS_SHMID, sizeof(SDSTATUS), 0666|IPC_CREAT);
-    ST_DefaultArgs(&context->pstConfig);
+    ST_ConfigSet(&context->pstConfig);
     context->status |= FLAG_SD_FIRST_INSERT;
     if (shmid != -1) {
         context->sdstatus = (SDSTATUS*)shmat(shmid, NULL, 0);
