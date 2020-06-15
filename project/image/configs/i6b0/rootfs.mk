@@ -173,6 +173,7 @@ rootfs:
 		cp $(OUTPUTDIR)/customer/demotemp.sh $(OUTPUTDIR)/customer/demo.sh ; \
 		rm $(OUTPUTDIR)/customer/demotemp.sh ; \
 	fi;
+	echo "/customer/bin/watchdog.sh &">> $(OUTPUTDIR)/customer/demo.sh; \
 	echo mdev -s >> $(OUTPUTDIR)/customer/demo.sh
 	if [ $(BENCH) = "yes" ]; then \
 		cd $(PROJ_ROOT)/../bench ; \

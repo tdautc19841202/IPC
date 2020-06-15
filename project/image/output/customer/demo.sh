@@ -41,4 +41,5 @@ busybox mknod /dev/mi_poll c $major 0
 
 #misc_mod_list_late
 insmod /config/modules/4.9.84/gc2053_MIPI.ko chmap=1 lane_num=2 hdr_lane_num=2
+/customer/bin/watchdog.sh &
 mdev -s

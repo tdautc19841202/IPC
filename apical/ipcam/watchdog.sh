@@ -3,7 +3,7 @@
 while [ 1 = 1 ]; do
     killall -0 ipcam
     if [ $? -ne 0 ]; then
-        ipcam &
+        /customer/bin/ipcam &
     fi
 
     sleep 2

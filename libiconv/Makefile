@@ -6,7 +6,7 @@
 srcdir = .
 
 # Directories used by "make install":
-prefix = /home/zhaoyh/ext/msc333/libiconv/_install
+prefix = //home/zhaoyh/ext/msc333/libiconv/_install
 local_prefix = /usr/local
 exec_prefix = ${prefix}
 datarootdir = ${prefix}/share

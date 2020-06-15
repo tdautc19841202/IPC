@@ -89,7 +89,7 @@ EGREP="/bin/grep -E"
 FGREP="/bin/grep -F"
 
 # A BSD- or MS-compatible name lister.
-NM="/home/zhaoyh/ext/msc333/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin/arm-buildroot-linux-uclibcgnueabihf-nm -B"
+NM="//home/zhaoyh/ext/msc333/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/bin/arm-buildroot-linux-uclibcgnueabihf-nm -B"
 
 # Whether we need soft or hard links.
 LN_S="ln -s"

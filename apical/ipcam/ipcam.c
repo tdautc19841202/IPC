@@ -114,6 +114,7 @@ typedef struct {
     pthread_t       pthread_ptzm;
     pthread_t       pthread_jpeg;
     pthread_t       pthread_led ;
+    pthread_t       pthread_avkcp ;
 
     struct tm       current_time;
     uint32_t        playstoptick;
@@ -171,6 +172,7 @@ typedef struct {
     uint8_t         snapshot_buf[64 * 1024];
     int32_t         snapshot_len;
     int32_t         ptz_move;
+    int             inited_avkcp;
 } CONTEXT;
 static CONTEXT g_app_ctx = { 0, 3, 4, 0, 3 };
 
@@ -503,7 +505,7 @@ static void * main_stream(void *argv)
         int ftest = strcmp(context->settings.ft_mode, "");
         while(!(context->status & FLAG_EXIT_OTHER_THEADS))
         {
-            //if(context->status & FLAG_WIFI_CONNECTED)
+            if(context->status & FLAG_WIFI_CONNECTED)
             {
                 memset(&vstream, 0, sizeof(vstream));
                 memset(&stPack, 0, sizeof(stPack));
@@ -519,6 +521,7 @@ static void * main_stream(void *argv)
                 s32Ret = MI_VENC_GetStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream, -1);
                 if(MI_SUCCESS == s32Ret)
                 {
+                    //printf("MI_VENC_GetStream succeed!!!\n\n\n");
                     avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     if (!ftest)
                     {
@@ -532,11 +535,11 @@ static void * main_stream(void *argv)
                 }
                 MI_VENC_ReleaseStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream);
                 context->g_stRgnOsd.bRun = TRUE;
-            }
-            //else
-           // {
-             //   usleep(100*1000);continue;
-            //}  
+           }
+            else
+            {
+                usleep(100*1000);continue;
+            }  
         }
         context->g_stRgnOsd.bRun = FALSE;
         if(pstStreamAttr[i].enInput == ST_Sys_Input_VPE)
@@ -1049,10 +1052,10 @@ int soft_light_sensor(CONTEXT *context)
     MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t isp_init;  //isp初始化返回值
     static MI_ISP_AE_EXPO_INFO_TYPE_t       pExpInfo;  //判断白天黑夜的结构体
     int cur_irmode = context->last_irmode;
-    //if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
-    //    printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
-    //    return -1;
-   // }
+    if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
+        printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
+        return -1;
+    }
     if(!isp_init.stParaAPI.bFlag){
         printf("ISP init failed!\n");
         return -1;
@@ -1429,11 +1432,11 @@ static void* device_monitor_proc(void *argv)
     // }
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (thread_counter % 10 == 0) { // 1s
-            soft_light_sensor(context);
+            //soft_light_sensor(context);
             run_sdcard_check (context);
-            run_aging_test   (context, thread_counter);
-            run_motor_test   (context, thread_counter, context->settings.ft_mode);
-            handle_spk_pwroff(context);
+            //run_aging_test   (context, thread_counter);
+            //run_motor_test   (context, thread_counter, context->settings.ft_mode);
+           // handle_spk_pwroff(context);
         }
         if(thread_counter % 60 == 0){
             ipcam_settings_save(&context->settings, 1);
@@ -1692,6 +1695,27 @@ void request_idr()
 {
     MI_VENC_RequestIdr(1, 1);
 }
+
+static void * init_avkcp_thread(void *argv)
+{
+    CONTEXT *context = (CONTEXT*)argv;
+    context->inited_avkcp = 0;
+    while(1)
+    {
+         if((context->status & FLAG_WIFI_CONNECTED) && (context->inited_avkcp == 0))
+         {
+             printf("avkcps init now !!!\n\n\n");
+             context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 25, request_idr);
+             context->inited_avkcp = 1;
+         }
+         else
+         {
+             usleep(200*1000);
+         }
+    }
+}   
+
+
 int main(int argc, char *argv[])
 {
     CONTEXT      *context  = &g_app_ctx;
@@ -1712,12 +1736,12 @@ int main(int argc, char *argv[])
     set_led(GPIO_LED_R, 1);
     set_led(GPIO_LED_G, 0);
     system("ifconfig lo up");
-    system("wifi_on.sh &");
+    system("/customer/bin/wifi_on.sh &");
     system("echo 1 > /proc/sys/vm/overcommit_memory");
-    system("wifi_connect.sh \"hp\" \"zyh1567890\"");
+    //system("/customer/bin/wifi_connect.sh \"hp\" \"zyh1567890\"");
 
     shmid = shmget((key_t)SDSTATUS_SHMID, sizeof(SDSTATUS), 0666|IPC_CREAT);
-    ST_ConfigSet(&context->pstConfig);
+    ST_DefaultArgs(&context->pstConfig);
     context->status |= FLAG_SD_FIRST_INSERT;
     if (shmid != -1) {
         context->sdstatus = (SDSTATUS*)shmat(shmid, NULL, 0);
@@ -1732,6 +1756,7 @@ int main(int argc, char *argv[])
         settings.main_venc_type = 1;
         ipcam_settings_save(&settings, 0);
     }
+ 
     STCHECKRESULT(ST_BaseModuleInit(&context->pstConfig));  //MI的各模块初始化，要放在wavein_init之前
     waveout_init();
     wavein_init(ftest);
@@ -1739,13 +1764,17 @@ int main(int argc, char *argv[])
     if (!ftest && pid == -1) {
         play_mp3_file(context, WELCOME_AUDIO_FILE, 0); // pid -1 mean \safely start, -2 mean ipcam crashed then restart
     }
+ 
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);
     context->motor = motor_init();
-    get_dev_uid(context->devuid, sizeof(context->devuid));
-    get_dev_sid(context->devsid, sizeof(context->devsid));
-    context->avkcps = avkcps_init (8000, "alaw", 1, 8000, "h264", 1920, 1080, 25, request_idr);
+    context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 15, request_idr);
+    //get_dev_uid(context->devuid, sizeof(context->devuid));
+    //get_dev_sid(context->devsid, sizeof(context->devsid));
+   
+    
     // init pthread attr
+    
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);
     // apply settings
@@ -1753,28 +1782,35 @@ int main(int argc, char *argv[])
     context->settings.paired  = context->settings.hflip_en = context->settings.md_en = context->settings.light_mode = -1;
     ipcam_apply_settings(context, &settings);
 
+    //pthread_create(&context->pthread_dmon, &context->pthread_attr, device_monitor_proc   , context);
     pthread_create(&context->pthread_led , &context->pthread_attr, run_led_proc          , context);
-    pthread_create(&context->pthread_dmon, &context->pthread_attr, device_monitor_proc   , context);
     pthread_create(&context->pthread_nmon, &context->pthread_attr, network_monitor_proc  , context);
-    pthread_create(&context->pthread_test, &context->pthread_attr, ftest_and_rpc_proc    , context);
-    pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
+    //pthread_create(&context->pthread_avkcp , &context->pthread_attr, init_avkcp_thread          , context);
+    //pthread_create(&context->pthread_test, &context->pthread_attr, ftest_and_rpc_proc    , context);
+    //pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
-    pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
+    //pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
+
+   
     //if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
     if (context->pthread_led ) pthread_join(context->pthread_led , NULL);
     if (context->pthread_dmon) pthread_join(context->pthread_dmon, NULL);
     if (context->pthread_nmon) pthread_join(context->pthread_nmon, NULL);
-    if (context->pthread_scan) pthread_join(context->pthread_scan, NULL);
-    if (context->pthread_sub ) pthread_join(context->pthread_sub , NULL);
+    //if (context->pthread_scan) pthread_join(context->pthread_scan, NULL);
+    //if (context->pthread_sub ) pthread_join(context->pthread_sub , NULL);
     if (context->pthread_main) pthread_join(context->pthread_main, NULL);
-    if (context->pthread_jpeg) pthread_join(context->pthread_jpeg, NULL);
-    if (context->pthread_test) pthread_join(context->pthread_test, NULL);
-    if (context->pthread_rgn)  pthread_join(context->pthread_rgn , NULL);
+    //if (context->pthread_jpeg) pthread_join(context->pthread_jpeg, NULL);
+    //if (context->pthread_test) pthread_join(context->pthread_test, NULL);
+    //if (context->pthread_rgn)  pthread_join(context->pthread_rgn , NULL);
     if (context->pthread_audc) pthread_join(context->pthread_audc, NULL);
-    if (context->pthread_ptzm) pthread_join(context->pthread_ptzm, NULL);
+    //if (context->pthread_ptzm) pthread_join(context->pthread_ptzm, NULL);
+    //if (context->pthread_avkcp) pthread_join(context->pthread_avkcp, NULL);
     
-    while (context->pthread_mp3) usleep(100*1000); // wait mp3 thread exit
-    avkcps_exit(context->avkcps);
+    while (context->pthread_mp3) usleep(200*1000); // wait mp3 thread exit
+    //if (context->inited_avkcp == 1)
+    //{
+    //    avkcps_exit(context->avkcps);
+    //}
     waveout_exit();
     wavein_exit();
     /*mp3 decode exit*/

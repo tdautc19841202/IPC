@@ -65,5 +65,5 @@
 #define WORDS_LITTLEENDIAN 1
 
 /* Define to the value of ${prefix}, as a string. */
-#define INSTALLPREFIX "/home/zhaoyh/ext/msc333/libiconv/_install"
+#define INSTALLPREFIX "//home/zhaoyh/ext/msc333/libiconv/_install"
 

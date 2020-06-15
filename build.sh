@@ -5,7 +5,7 @@ set -e
 TOPDIR=$PWD
 
 	cd $TOPDIR/boot           && ./build.sh $1
-#	cd $TOPDIR/kernel         && ./build.sh $1
+	cd $TOPDIR/kernel         && ./build.sh $1
 	cd $TOPDIR/busybox        && ./build.sh $1
 	cd $TOPDIR/zlib           && ./build.sh $1
 	cd $TOPDIR/mtd-utils      && ./build.sh $1
