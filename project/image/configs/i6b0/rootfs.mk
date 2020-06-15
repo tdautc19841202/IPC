@@ -241,9 +241,9 @@ rootfs:
 	echo mkdir -p /dev/pts >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
 	echo mount -t devpts devpts /dev/pts >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
 	echo "busybox telnetd&" >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
-	echo "if [ -e /customer/demo.sh ]; then" >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
-	echo "    /customer/demo.sh" >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
-	echo "fi;" >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
+	echo "if [ -e /customer/demo.sh ]; then" >> $(OUTPUTDIR)/rootfs/etc/profile
+	echo "    /customer/demo.sh" >> $(OUTPUTDIR)/rootfs/etc/profile
+	echo "fi;" >> $(OUTPUTDIR)/rootfs/etc/profile
 	#add sshd, default password 1234
 	if [[ "$(FLASH_TYPE)"x = "spinand"x ]]; then \
 		if [ $(TOOLCHAIN_VERSION) = "8.2.1" ]; then \

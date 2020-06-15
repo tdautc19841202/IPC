@@ -24,6 +24,3 @@ mount -t squashfs /dev/mtdblock3 /config
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 busybox telnetd&
-if [ -e /customer/demo.sh ]; then
-    /customer/demo.sh
-fi;

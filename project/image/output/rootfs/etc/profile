@@ -6,3 +6,6 @@ ulimit -c unlimited
 export PATH=$PATH:/config
 export PATH=$PATH:/usr/bin:/usr/sbin:/customer/bin
 export TERMINFO=/config/terminfo
+if [ -e /customer/demo.sh ]; then
+    /customer/demo.sh
+fi;

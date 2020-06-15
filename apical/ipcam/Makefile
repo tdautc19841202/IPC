@@ -10,8 +10,8 @@ OPENSSL_TOP  = $(shell pwd)/../../openssl
 ZBAR_TOP     = $(shell pwd)/../../zbar
 LIBMAD_TOP   = $(shell pwd)/../../libmad
 LIBICONV_TOP = $(shell pwd)/../../libiconv
-LIBAVKCP_TOP  = $(shell pwd)/../libavkcp
-#TUYA_TOP     = $(shell pwd)/../tuya
+LIBAVKCP_TOP = $(shell pwd)/../libavkcp
+TUYA_TOP     = $(shell pwd)/../tuya
 MIPACKAGE_TOP= $(shell pwd)/../MI_package
 
 C_FLAGS := -Wall -Os -march=armv7-a -rdynamic -funwind-tables -ffunction-sections
@@ -28,16 +28,15 @@ LDFLAGS += -L$(ZLIB_TOP)/_install/lib -lz
 # LDFLAGS += -L$(MD_TOP)/lib -lMTE_LINUX
 LDFLAGS += -L$(LIBICONV_TOP)/_install/lib -liconv
 LDFLAGS += -L$(ZBAR_TOP)/_install/lib -lzbar
-#LDFLAGS += -L$(TUYA_TOP)/lib -ltuya_ipc -lmbedtls -lpthread -lrt -ldl -lm 
+LDFLAGS += -L$(TUYA_TOP)/lib -ltuya_ipc -lmbedtls -lpthread -lrt -ldl -lm
 LDFLAGS += -Wl,--end-group
 
-C_INCLUDES := -I$(MI_TOP)/include  \
+C_INCLUDES :=  -I$(MI_TOP)/include  \
 			-I$(MIPACKAGE_TOP)/include \
-			-I$(APKAPI_TOP) \
 			-I$(LIBAVKCP_TOP) \
-			
-			#-I$(TUYA_TOP)/include
-			 #-I$(MD_TOP)/include  \
+			-I$(APKAPI_TOP) \
+			-I$(TUYA_TOP)/include
+			# -I$(MD_TOP)/include  \
 
 PROGS = ipcam
 

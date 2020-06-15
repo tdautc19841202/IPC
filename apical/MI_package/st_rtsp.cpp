@@ -848,6 +848,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
     MI_VENC_ChnAttr_t stChnAttr;
     MI_RGN_Attr_t stRgnAttr;
     MI_RGN_ChnPort_t stChnPort;
+    MI_VENC_RcParam_t stRcParam;
     MI_RGN_ChnPortParam_t stChnPortParam;
     ST_Config_S *pstConfig = &g_stConfig;
     ST_VDF_OSD_Info_T *pstVDFOsdInfo = g_stVDFOsdInfo;
@@ -895,7 +896,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
         stChnAttr.stVeAttr.stAttrH264e.u32MaxPicHeight = u32Height;
         stChnAttr.stVeAttr.stAttrH264e.u32BFrameNum = 2;
         stChnAttr.stVeAttr.stAttrH264e.bByFrame = TRUE;
-
+#if 0
         //stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_H264FIXQP;
         //stChnAttr.stRcAttr.stAttrH264FixQp.u32SrcFrmRateNum = 30;
         //stChnAttr.stRcAttr.stAttrH264FixQp.u32SrcFrmRateDen = 1;
@@ -909,6 +910,21 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
         stChnAttr.stRcAttr.stAttrH264Cbr.u32SrcFrmRateNum = 30;
         stChnAttr.stRcAttr.stAttrH264Cbr.u32SrcFrmRateDen = 1;
         stChnAttr.stRcAttr.stAttrH264Cbr.u32StatTime = 0;
+#endif
+        stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_H264VBR;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxBitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 44;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32MinQp = 24;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = 30;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 0;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = 30;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateDen = 1;
+
+        stRcParam.stParamH264VBR.s32IPQPDelta = 3;
+        stRcParam.stParamH264VBR.u32MaxIQp = 44;
+        stRcParam.stParamH264VBR.u32MinIQp = 24;
+        stRcParam.stParamH264VBR.u32MaxIPProp = 44;
+        stRcParam.stParamH264VBR.s32ChangePos = 100;
 
     }
     else if(pstStreamAttr[i].eType == E_MI_VENC_MODTYPE_H265E)
@@ -961,6 +977,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
         stVenInSrc.eInputSrcBufferMode = E_MI_VENC_INPUT_MODE_NORMAL_FRMBASE;
         MI_VENC_SetInputSourceConfig(VencChn, &stVenInSrc);
     }
+    if(pstStreamAttr[i].eType == E_MI_VENC_MODTYPE_H264E)STCHECKRESULT(MI_VENC_SetRcParam(VencChn, &stRcParam));
     STCHECKRESULT(ST_Venc_StartChannel(VencChn));
 
     // attach
@@ -978,7 +995,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
     stChnPortParam.unPara.stCoverChnPort.stSize.u32Height = 0;
     stChnPortParam.unPara.stCoverChnPort.u32Color = 0;
     ExecFunc(MI_RGN_AttachToChn(RGN_OSD_HANDLE, &stChnPort, &stChnPortParam), MI_RGN_OK);
-
+#if 0
     // create cover1
     memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
     stRgnAttr.eType = E_MI_RGN_TYPE_COVER;
@@ -1013,7 +1030,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
     stChnPortParam.unPara.stCoverChnPort.stSize.u32Height = 800;
     stChnPortParam.unPara.stCoverChnPort.u32Color = RGB_TO_CRYCB(0, 0, 255);
     ExecFunc(MI_RGN_AttachToChn(pstStreamAttr[i].u32Cover2Handle, &stChnPort, &stChnPortParam), MI_RGN_OK);
-
+#endif
     if (pstConfig->s32UseVdf)
     {
         if (i < MAX_FULL_RGN_NULL)
@@ -1196,7 +1213,7 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stVenInSrc.eInputSrcBufferMode = E_MI_VENC_INPUT_MODE_NORMAL_FRMBASE;
     MI_VENC_SetInputSourceConfig(VencChn, &stVenInSrc);
     STCHECKRESULT(ST_Venc_StartChannel(VencChn));
-
+#if 0
     // attach
     memset(&stChnPort, 0, sizeof(MI_RGN_ChnPort_t));
     stChnPort.eModId = E_MI_RGN_MODID_DIVP;
@@ -1246,7 +1263,7 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stChnPortParam.unPara.stCoverChnPort.stSize.u32Height = 800;
     stChnPortParam.unPara.stCoverChnPort.u32Color = RGB_TO_CRYCB(0, 0, 255);
     ExecFunc(MI_RGN_AttachToChn(pstStreamAttr[i].u32Cover2Handle, &stChnPort, &stChnPortParam), MI_RGN_OK);
-
+#endif
     if (pstConfig->s32UseVdf)
     {
         if (i < MAX_FULL_RGN_NULL)

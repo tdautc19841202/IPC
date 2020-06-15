@@ -34,13 +34,12 @@
 #include "settings.h"
 #include "updateuid.h"
 #include "mp3dec.h"
+#include "tuya_ipc_main.h"
 #include "st_uvc_datatype.h"
 #include "motor.h"
 #include "fft.h"
-//#include "tuya_ipc_main.h"
 #include <errno.h>
 #include "motiondet.h"
-//#include "tuya_ipc_main.h"
 #include "st_rtsp.h"
 extern int pthread_setname_np(pthread_t __target_thread, const char *__name);
 
@@ -526,7 +525,7 @@ static void * main_stream(void *argv)
                     if (!ftest)
                     {
                         main_video_rawrec(context, &vstream);
-                        //tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
+                        tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
                     }
                 }
                 else{
@@ -628,7 +627,8 @@ static void * sub_stream(void *argv)
             s32Ret = MI_VENC_GetStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream, -1);
             if(MI_SUCCESS == s32Ret)
             {
-                if (!ftest); //tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 1);
+                if (!ftest); 
+                tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 1);
             }
             else{
                 printf("MI_VENC_GetStream failed\n");
@@ -1633,7 +1633,7 @@ static void* audio_capture_proc(void *argv)
                 avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
-                if(!ftest)//tuya_audio(frame.apVirAddr[0], frame.u32Len);
+                if(!ftest) tuya_audio(frame.apVirAddr[0], frame.u32Len);
                 MI_AI_ReleaseFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL);
             } else {
                 printf("MI_AI_GetFrame failed !\n");
@@ -1677,7 +1677,7 @@ static void* network_monitor_proc(void *argv)
             get_dev_mac("wlan0", wlan0_mac, sizeof(wlan0_mac));  //获取当前wlan0的mac地址
             set_dev_ids(NULL, wlan0_mac, NULL, NULL);  //保存mac地址，以保证下次用同样的mac启动wlan0
             context->status |= FLAG_WIFI_CONNECTED;
-            if (!ftest && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
+            if (!ftest && get_mqtt_status() == 0 && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
             {
                 system("kill `ps | awk '$5==\"udhcpc\" && $7==\"wlan0\" {printf $1}'`");
                 system("udhcpc -i wlan0 &");
@@ -1736,7 +1736,7 @@ int main(int argc, char *argv[])
     set_led(GPIO_LED_R, 1);
     set_led(GPIO_LED_G, 0);
     system("ifconfig lo up");
-    system("/customer/bin/wifi_on.sh &");
+    system("wifi_on.sh &");
     system("echo 1 > /proc/sys/vm/overcommit_memory");
     //system("/customer/bin/wifi_connect.sh \"hp\" \"zyh1567890\"");
 
@@ -1788,7 +1788,7 @@ int main(int argc, char *argv[])
     //pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
     pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
-    //if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
+    if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
     if (context->pthread_led ) pthread_join(context->pthread_led , NULL);
     if (context->pthread_dmon) pthread_join(context->pthread_dmon, NULL);
     if (context->pthread_nmon) pthread_join(context->pthread_nmon, NULL);
@@ -1797,7 +1797,7 @@ int main(int argc, char *argv[])
     if (context->pthread_main) pthread_join(context->pthread_main, NULL);
     if (context->pthread_jpeg) pthread_join(context->pthread_jpeg, NULL);
     if (context->pthread_test) pthread_join(context->pthread_test, NULL);
-    //if (context->pthread_rgn)  pthread_join(context->pthread_rgn , NULL);
+    if (context->pthread_rgn)  pthread_join(context->pthread_rgn , NULL);
     if (context->pthread_audc) pthread_join(context->pthread_audc, NULL);
     if (context->pthread_ptzm) pthread_join(context->pthread_ptzm, NULL);
     
