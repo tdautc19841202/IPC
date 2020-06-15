@@ -16,7 +16,7 @@ rootfs:
 	mkdir -p $(OUTPUTDIR)/customer/data/ipcam
 	mkdir -p $(OUTPUTDIR)/customer/data/property
 	
-	cp -rf $(PROJ_ROOT)/board/ini/* $(OUTPUTDIR)/customer
+	#cp -rf $(PROJ_ROOT)/board/ini/* $(OUTPUTDIR)/customer
 	cp -rf $(OUTPUTDIR)/../../../apical/release/bin               $(OUTPUTDIR)/customer
 	cp -rf $(OUTPUTDIR)/../../../apical/release/res               $(OUTPUTDIR)/customer
 	cp -rf $(PROJ_ROOT)/board/$(CHIP)/$(BOARD_NAME)/config/* $(miservice$(RESOUCE))
@@ -27,6 +27,15 @@ rootfs:
 	ln -s /bin/fw_printenv                                        $(OUTPUTDIR)/rootfs/bin/fw_setenv
 	cp -f $(OUTPUTDIR)/../../package/ext/bin/*                    $(OUTPUTDIR)/rootfs/bin
 	cp -d $(OUTPUTDIR)/../../package/ext/lib/*                    $(OUTPUTDIR)/rootfs/lib
+	
+	rm -f $(OUTPUTDIR)/rootfs/lib/libMD_LINUX.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libOD_LINUX.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libVG_LINUX.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_ive.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_shadow.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_vdf.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libg726.so
+	
 	cp -vf $(PROJ_ROOT)/board/$(CHIP)/mmap/$(MMAP) $(miservice$(RESOUCE))/mmap.ini
 	cp -rvf $(LIB_DIR_PATH)/bin/config_tool/* $(miservice$(RESOUCE))
 	cd $(miservice$(RESOUCE)); chmod +x config_tool; ln -sf config_tool dump_config; ln -sf config_tool dump_mmap
@@ -63,9 +72,9 @@ rootfs:
 		cp $(LIB_DIR_PATH)/bin/sata_phy/* $(miservice$(RESOUCE))/sata_phy ; \
 	fi;
 
-	cp -rf $(LIB_DIR_PATH)/bin/mixer/* $(OUTPUTDIR)/customer/ ; \
-	ln -sf ./mixer/font $(OUTPUTDIR)/customer/font ; \
-	cp -rf $(LIB_DIR_PATH)/bin/mi_demo/ $(OUTPUTDIR)/customer/ ; \
+	#cp -rf $(LIB_DIR_PATH)/bin/mixer/* $(OUTPUTDIR)/customer/ ; \
+	#ln -sf ./mixer/font $(OUTPUTDIR)/customer/font ; \
+	#cp -rf $(LIB_DIR_PATH)/bin/mi_demo/ $(OUTPUTDIR)/customer/ ; \
 
 	mkdir -p $(OUTPUTDIR)/rootfs/lib/modules/
 	mkdir -p $(miservice$(RESOUCE))/modules/$(KERNEL_VERSION)
@@ -101,7 +110,7 @@ rootfs:
 	echo -e $(foreach block, $(USR_MOUNT_BLOCKS), "mount -t $($(block)$(FSTYPE)) $($(block)$(MOUNTPT)) $($(block)$(MOUNTTG))\n") >> $(OUTPUTDIR)/rootfs/etc/init.d/rcS
 
 	-chmod 755 $(LIB_DIR_PATH)/bin/debug/*
-	cp -rf $(LIB_DIR_PATH)/bin/debug/* $(OUTPUTDIR)/customer/
+	#cp -rf $(LIB_DIR_PATH)/bin/debug/* $(OUTPUTDIR)/customer/
 	#add:  remove sshd in nor flash default
 	if [[ "$(FLASH_TYPE)"x = "nor"x ]] && [[ -d "$(OUTPUTDIR)/customer/ssh" ]]; then \
 		rm -rf $(OUTPUTDIR)/customer/ssh; \
@@ -120,6 +129,35 @@ rootfs:
 		cat $(PROJ_ROOT)/kbuild/$(KERNEL_VERSION)/$(CHIP)/configs/$(PRODUCT)/$(BOARD)/$(TOOLCHAIN)/$(TOOLCHAIN_VERSION)/$(FLASH_TYPE)/modules/kernel_mod_list | sed 's#\(.*\).ko#insmod /config/modules/$(KERNEL_VERSION)/\1.ko#' > $(OUTPUTDIR)/customer/demo.sh; \
 		cat $(PROJ_ROOT)/kbuild/$(KERNEL_VERSION)/$(CHIP)/configs/$(PRODUCT)/$(BOARD)/$(TOOLCHAIN)/$(TOOLCHAIN_VERSION)/$(FLASH_TYPE)/modules/kernel_mod_list | sed 's#\(.*\).ko\(.*\)#$(PROJ_ROOT)/kbuild/$(KERNEL_VERSION)/$(CHIP)/configs/$(PRODUCT)/$(BOARD)/$(TOOLCHAIN)/$(TOOLCHAIN_VERSION)/$(FLASH_TYPE)/modules/\1.ko#' | xargs -i cp -rvf {} $(miservice$(RESOUCE))/modules/$(KERNEL_VERSION); \
 		echo "#kernel_mod_list" >> $(OUTPUTDIR)/customer/demo.sh; \
+		rm  $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/sunrpc.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/lockd.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/nfs.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/nfsv2.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/ntfs.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/cifs.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/grace.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/sd_mod.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/usb-storage.ko; \
+		rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/ms_notify.ko; \
+		sed -i '/mmc_core.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/mmc_block.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/kdrv_sdmmc.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/fat.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/msdos.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/vfat.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/usb-common.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/usbcore.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/usb-storage.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/ehci-hcd.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/sunrpc.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/lockd.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/nfs.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/nfsv2.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/ntfs.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/cifs.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/grace.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/sd_mod.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/ms_notify.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 	fi;
 
 	if [ "$(DUAL_OS)" != "on" ]; then \
@@ -132,6 +170,12 @@ rootfs:
 			cat $(LIB_DIR_PATH)/modules/$(KERNEL_VERSION)/.mods_depend | sed '2,20s#\(.*\)#insmod /config/modules/$(KERNEL_VERSION)/\1.ko#' >> $(OUTPUTDIR)/customer/demo.sh; \
 			cat $(LIB_DIR_PATH)/modules/$(KERNEL_VERSION)/.mods_depend | sed 's#\(.*\)#$(LIB_DIR_PATH)/modules/$(KERNEL_VERSION)/\1.ko#' | xargs -i cp -rvf {} $(miservice$(RESOUCE))/modules/$(KERNEL_VERSION); \
 			echo "#mi module" >> $(OUTPUTDIR)/customer/demo.sh; \
+			rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/mi_shadow.ko; \
+			rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/mi_ipu.ko; \
+			rm -f $(OUTPUTDIR)/miservice/config/modules/$(KERNEL_VERSION)/mi_gyro.ko; \
+			sed -i '/mi_shadow.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+			sed -i '/mi_ipu.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+			sed -i '/mi_gyro.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 		fi; \
 		if [ -f "$(LIB_DIR_PATH)//modules/$(KERNEL_VERSION)/misc_mod_list_late" ]; then \
 			cat $(LIB_DIR_PATH)/modules/$(KERNEL_VERSION)/misc_mod_list_late | sed 's#\(.*\).ko#insmod /config/modules/$(KERNEL_VERSION)/\1.ko#' >> $(OUTPUTDIR)/customer/demo.sh; \

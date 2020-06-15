@@ -1432,11 +1432,11 @@ static void* device_monitor_proc(void *argv)
     // }
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (thread_counter % 10 == 0) { // 1s
-            //soft_light_sensor(context);
+            soft_light_sensor(context);
             run_sdcard_check (context);
-            //run_aging_test   (context, thread_counter);
-            //run_motor_test   (context, thread_counter, context->settings.ft_mode);
-           // handle_spk_pwroff(context);
+            run_aging_test   (context, thread_counter);
+            run_motor_test   (context, thread_counter, context->settings.ft_mode);
+            handle_spk_pwroff(context);
         }
         if(thread_counter % 60 == 0){
             ipcam_settings_save(&context->settings, 1);
@@ -1769,12 +1769,11 @@ int main(int argc, char *argv[])
     signal(SIGTERM, sig_handler);
     context->motor = motor_init();
     context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 15, request_idr);
-    //get_dev_uid(context->devuid, sizeof(context->devuid));
-    //get_dev_sid(context->devsid, sizeof(context->devsid));
+    get_dev_uid(context->devuid, sizeof(context->devuid));
+    get_dev_sid(context->devsid, sizeof(context->devsid));
    
     
     // init pthread attr
-    
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);
     // apply settings
@@ -1782,35 +1781,28 @@ int main(int argc, char *argv[])
     context->settings.paired  = context->settings.hflip_en = context->settings.md_en = context->settings.light_mode = -1;
     ipcam_apply_settings(context, &settings);
 
-    //pthread_create(&context->pthread_dmon, &context->pthread_attr, device_monitor_proc   , context);
+    pthread_create(&context->pthread_dmon, &context->pthread_attr, device_monitor_proc   , context);
     pthread_create(&context->pthread_led , &context->pthread_attr, run_led_proc          , context);
     pthread_create(&context->pthread_nmon, &context->pthread_attr, network_monitor_proc  , context);
-    //pthread_create(&context->pthread_avkcp , &context->pthread_attr, init_avkcp_thread          , context);
-    //pthread_create(&context->pthread_test, &context->pthread_attr, ftest_and_rpc_proc    , context);
+    pthread_create(&context->pthread_test, &context->pthread_attr, ftest_and_rpc_proc    , context);
     //pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
-    //pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
-
-   
+    pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
     //if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
     if (context->pthread_led ) pthread_join(context->pthread_led , NULL);
     if (context->pthread_dmon) pthread_join(context->pthread_dmon, NULL);
     if (context->pthread_nmon) pthread_join(context->pthread_nmon, NULL);
-    //if (context->pthread_scan) pthread_join(context->pthread_scan, NULL);
-    //if (context->pthread_sub ) pthread_join(context->pthread_sub , NULL);
+    if (context->pthread_scan) pthread_join(context->pthread_scan, NULL);
+    if (context->pthread_sub ) pthread_join(context->pthread_sub , NULL);
     if (context->pthread_main) pthread_join(context->pthread_main, NULL);
-    //if (context->pthread_jpeg) pthread_join(context->pthread_jpeg, NULL);
-    //if (context->pthread_test) pthread_join(context->pthread_test, NULL);
+    if (context->pthread_jpeg) pthread_join(context->pthread_jpeg, NULL);
+    if (context->pthread_test) pthread_join(context->pthread_test, NULL);
     //if (context->pthread_rgn)  pthread_join(context->pthread_rgn , NULL);
     if (context->pthread_audc) pthread_join(context->pthread_audc, NULL);
-    //if (context->pthread_ptzm) pthread_join(context->pthread_ptzm, NULL);
-    //if (context->pthread_avkcp) pthread_join(context->pthread_avkcp, NULL);
+    if (context->pthread_ptzm) pthread_join(context->pthread_ptzm, NULL);
     
     while (context->pthread_mp3) usleep(200*1000); // wait mp3 thread exit
-    //if (context->inited_avkcp == 1)
-    //{
-    //    avkcps_exit(context->avkcps);
-    //}
+    avkcps_exit(context->avkcps);
     waveout_exit();
     wavein_exit();
     /*mp3 decode exit*/

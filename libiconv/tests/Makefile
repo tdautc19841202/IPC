@@ -8,7 +8,7 @@ srcdir = .
 # Programs used by "make":
 CC = arm-buildroot-linux-uclibcgnueabihf-gcc
 CFLAGS = -g -O2
-CPPFLAGS = -I//home/zhaoyh/ext/msc333/libiconv/_install/include
+CPPFLAGS = 
 LDFLAGS = 
 INCLUDES = -I. -I$(srcdir) -I../include -I$(srcdir)/../include -I../srclib -I$(srcdir)/../srclib -I../lib
 LIBTOOL = /bin/sh $(top_builddir)/libtool

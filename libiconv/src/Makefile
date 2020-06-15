@@ -7,7 +7,7 @@ srcdir = .
 top_srcdir = ..
 
 # Directories used by "make install":
-prefix = //home/zhaoyh/ext/msc333/libiconv/_install
+prefix = /home/zhaoyh/ext/msc333/libiconv/_install
 local_prefix = /usr/local
 exec_prefix = ${prefix}
 bindir = ${exec_prefix}/bin
@@ -19,7 +19,7 @@ localedir = ${datarootdir}/locale
 # Programs used by "make":
 CC = arm-buildroot-linux-uclibcgnueabihf-gcc
 CFLAGS = -g -O2
-CPPFLAGS = -I//home/zhaoyh/ext/msc333/libiconv/_install/include
+CPPFLAGS = 
 LDFLAGS = 
 INCLUDES = -I. -I$(srcdir) -I.. -I../include -I$(srcdir)/../include -I../srclib -I$(srcdir)/../srclib
 LIBTOOL = /bin/sh $(top_builddir)/libtool
@@ -40,7 +40,7 @@ mkinstalldirs = $(SHELL) ../build-aux/mkinstalldirs
 # Programs used by "make install-strip":
 STRIP = arm-buildroot-linux-uclibcgnueabihf-strip
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-install_sh = ${SHELL} //home/zhaoyh/ext/msc333/libiconv/build-aux/install-sh
+install_sh = ${SHELL} /home/zhaoyh/ext/msc333/libiconv/build-aux/install-sh
 
 #### End of system configuration section. ####
 

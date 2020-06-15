@@ -11,7 +11,8 @@ configs/current.configs
 !/kbuild/4.9.84/usr/
 !/kbuild/4.9.84/release.sh
 /release/usbcam/*
-/release/ipc/i6/009A/uclibc/4.9.4/bin/kernel/nor/*
+/release/ipc/i6b0/009A/uclibc/4.9.4/bin/kernel/nor/*
 /board/i6b0/boot/nor/uboot
 /package/*
 one.bin
+/image/busybox/busybox-1.20.2-arm-buildroot-linux-uclibcgnueabihif-static.tar.gz
