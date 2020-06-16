@@ -25,6 +25,11 @@ rootfs:
 	cp -f $(OUTPUTDIR)/../../../apical/tools/fw_setenv/fw_printenv_dev \
 	                                                              $(OUTPUTDIR)/rootfs/bin/fw_printenv
 	ln -s /bin/fw_printenv                                        $(OUTPUTDIR)/rootfs/bin/fw_setenv
+	
+	cp -f $(OUTPUTDIR)/../../../MI/data/ascii_8x16                $(OUTPUTDIR)/customer/font/ascii_8x16
+	cp -f $(OUTPUTDIR)/../../../MI/data/ascii_16x32               $(OUTPUTDIR)/customer/font/ascii_16x32
+	cp -f $(OUTPUTDIR)/../../../MI/data/ascii_24x48               $(OUTPUTDIR)/customer/font/ascii_24x48
+	cp -f $(OUTPUTDIR)/../../../MI/data/ascii_32x64               $(OUTPUTDIR)/customer/font/ascii_32x64
 	cp -f $(OUTPUTDIR)/../../package/ext/bin/*                    $(OUTPUTDIR)/rootfs/bin
 	cp -d $(OUTPUTDIR)/../../package/ext/lib/*                    $(OUTPUTDIR)/rootfs/lib
 	

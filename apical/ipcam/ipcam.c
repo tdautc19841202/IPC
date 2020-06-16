@@ -365,17 +365,17 @@ void *UpdateRgnOsdTimeProc(void *argv)
 
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE, NULL);
-                (void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_RED, DMF_Font_Size_48x48);
+                (void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_WHITE, DMF_Font_Size_48x48);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE);
 
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE1, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE1, NULL);
-                (void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
+                (void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE1);
 
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE2, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE2, NULL);
-                (void)ST_OSD_DrawText(RGN_OSD_HANDLE2, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
+                (void)ST_OSD_DrawText(RGN_OSD_HANDLE2, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE2);
                 canvas_unlock();
             }
@@ -446,7 +446,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
         }
         else
         {
-            usleep(100*1000);continue;
+            usleep(200*1000);continue;
         }
     }
     return NULL;
@@ -521,7 +521,7 @@ static void * main_stream(void *argv)
                 if(MI_SUCCESS == s32Ret)
                 {
                     //printf("MI_VENC_GetStream succeed!!!\n\n\n");
-                    avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
+                    //avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     if (!ftest)
                     {
                         main_video_rawrec(context, &vstream);
@@ -1630,7 +1630,7 @@ static void* audio_capture_proc(void *argv)
         {   
             if (context->settings.standby) { usleep(100*1000); continue; }
             if (MI_SUCCESS == MI_AI_GetFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL, -1)) {
-                avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
+                //avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
                 if(!ftest) tuya_audio(frame.apVirAddr[0], frame.u32Len);
@@ -1785,7 +1785,7 @@ int main(int argc, char *argv[])
     pthread_create(&context->pthread_led , &context->pthread_attr, run_led_proc          , context);
     pthread_create(&context->pthread_nmon, &context->pthread_attr, network_monitor_proc  , context);
     pthread_create(&context->pthread_test, &context->pthread_attr, ftest_and_rpc_proc    , context);
-    //pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
+    pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
     pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
     if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));

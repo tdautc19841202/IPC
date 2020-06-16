@@ -45,7 +45,7 @@
 #define ALIGN_MULTI(x, align)       (((x) % (align)) ? ((x) / (align) + 1) : ((x) / (align)))
 
 #define DMF_FONT_PREFIX             "./"
-#define DMF_FONT_PREFIX_ABSOLUTE    "/customer/mi_demo/"
+#define DMF_FONT_PREFIX_ABSOLUTE    "/customer/font/"
 #define DMF_FONT_ASCII_8x16         "ascii_8x16"
 #define DMF_FONT_ASCII_16x32        "ascii_16x32"
 #define DMF_FONT_ASCII_24x48        "ascii_24x48"
@@ -92,16 +92,16 @@ typedef struct
 
 typedef struct
 {
-    int         charNumPerLine; // ??DD/¡§¡éD??¡§o?|¨¬??¨¢??¡è?¡§oy, ?D??¡§¡ã2¡§¡ã????¨¢??¡è?
-    int         bgColor;        // ?¨¤3???¡§|?
-    int         fgColor;        // ??????¡§|?
-    int         leftMargin;     // margin ¡§o?D?
+    int         charNumPerLine; // ??DD/ï¿½ï¿½ï¿½ï¿½D??ï¿½ï¿½o?|ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½?ï¿½ï¿½oy, ?D??ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½????ï¿½ï¿½??ï¿½ï¿½?
+    int         bgColor;        // ?ï¿½ï¿½3???ï¿½ï¿½|?
+    int         fgColor;        // ??????ï¿½ï¿½|?
+    int         leftMargin;     // margin ï¿½ï¿½o?D?
     int         rightMargin;
     int         upMargin;
     int         downMargin;
-    int         verticalFlag;   // ¡§o¡§2?????
-    int         charSpace;      // ?¨¢??¡è????¡§¡è
-    int         lineSpace;      // DD???¡§¡è
+    int         verticalFlag;   // ï¿½ï¿½oï¿½ï¿½2?????
+    int         charSpace;      // ?ï¿½ï¿½??ï¿½ï¿½????ï¿½ï¿½ï¿½ï¿½
+    int         lineSpace;      // DD???ï¿½ï¿½ï¿½ï¿½
 } DMF_BitMapAttr_S;
 
 static DMF_BitMapFile_S g_dmf_bitmapfile[DMF_Font_Type_BUTT][DMF_Font_Size_BUTT] =
@@ -430,7 +430,7 @@ extern int _dmf_GetUtf8Length(const uint8_t *src);
 int _OSD_Utf8ToUnicode(const uint8_t *src, uint8_t *dst)
 {
     int length;
-	uint8_t unicode[2] = {0}; // D???D¡§¡ã
+	uint8_t unicode[2] = {0}; // D???Dï¿½ï¿½ï¿½ï¿½
 
     length = _dmf_GetUtf8Length(src);
     if (length < 0)
@@ -658,7 +658,7 @@ void _OSD_CalcBMPWH(int charTotalNum, int *bmpWidth, int *bmpHeight, uint8_t *pG
 
     if (pstDMFBitMapAttr->verticalFlag == 0)
     {
-        // o¡§¡é??
+        // oï¿½ï¿½ï¿½ï¿½??
         width += pstDMFBitMapAttr->leftMargin +
                 pstDMFBitMapAttr->charSpace * (charTotalNum - 1) +
                 pstDMFBitMapAttr->rightMargin;
@@ -669,7 +669,7 @@ void _OSD_CalcBMPWH(int charTotalNum, int *bmpWidth, int *bmpHeight, uint8_t *pG
     }
     else if (pstDMFBitMapAttr->verticalFlag == 1)
     {
-        // ¡§o¡§2??
+        // ï¿½ï¿½oï¿½ï¿½2??
         width += pstDMFBitMapAttr->leftMargin +
                 pstDMFBitMapAttr->lineSpace * (lines - 1) +
                 pstDMFBitMapAttr->rightMargin;
@@ -699,9 +699,9 @@ void _OSD_FontDataToCanvas(const uint8_t *pFontdata, int x, int y, int width,
     }
 
 #if 0
-    for (i = 0; i < height; i ++) // |¨¬1¡§¡é?¨¦|¨¬???¡§a?
+    for (i = 0; i < height; i ++) // |ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½|ï¿½ï¿½???ï¿½ï¿½a?
 #else
-    for (i = height - 1; i >= 0; i--) // ?y¡§¡é?¨¦|¨¬???¡§a?
+    for (i = height - 1; i >= 0; i--) // ?yï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½|ï¿½ï¿½???ï¿½ï¿½a?
     {
         pFontdataTemp = (uint8_t *)pFontdata + (width + 7) / 8 * i;
 
@@ -845,7 +845,7 @@ void _OSD_DrawTextToCanvas(MI_RGN_HANDLE hHandle, ST_Point_T stPoint, const char
 
             if (pstDMFBitMapAttr->verticalFlag == 0)
             {
-                // o¡§¡é??
+                // oï¿½ï¿½ï¿½ï¿½??
                 xpos = pstDMFBitMapAttr->leftMargin + fontTotalWidth +
                         j * pstDMFBitMapAttr->lineSpace;
                 ypos = pstDMFBitMapAttr->upMargin + i * pstDMFBitMapFile->height +
@@ -855,7 +855,7 @@ void _OSD_DrawTextToCanvas(MI_RGN_HANDLE hHandle, ST_Point_T stPoint, const char
             }
             else if (pstDMFBitMapAttr->verticalFlag == 1)
             {
-                // ¡§o¡§2??
+                // ï¿½ï¿½oï¿½ï¿½2??
                 xpos = pstDMFBitMapAttr->leftMargin + i * pstDMFBitMapFile->width +
                         i * pstDMFBitMapAttr->lineSpace;
                 ypos = pstDMFBitMapAttr->upMargin + fontTotalHeight +

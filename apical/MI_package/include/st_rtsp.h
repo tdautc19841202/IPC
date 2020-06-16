@@ -39,8 +39,9 @@
 
 #define RGN_OSD_TIME_START        8
 #define RGN_OSD_MAX_NUM         4
-#define RGN_OSD_TIME_WIDTH        180
-#define RGN_OSD_TIME_HEIGHT        32
+
+#define RGN_OSD_TIME_WIDTH        180 * 10
+#define RGN_OSD_TIME_HEIGHT        32 * 2
 
 #define DOT_FONT_FILE            "/customer/mi_demo/gb2312.hzk"
 

@@ -988,7 +988,8 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
     stChnPort.s32OutputPortId = pstStreamAttr[i].u32InputPort;
     memset(&stChnPortParam, 0, sizeof(MI_RGN_ChnPortParam_t));
     stChnPortParam.bShow = TRUE;
-    stChnPortParam.stPoint.u32X = u32Width - RGN_OSD_TIME_WIDTH - 10;
+    //stPoint of time_osd   zyh_add
+    stChnPortParam.stPoint.u32X = 10;
     stChnPortParam.stPoint.u32Y = 10;
     stChnPortParam.unPara.stCoverChnPort.u32Layer = 100;
     stChnPortParam.unPara.stCoverChnPort.stSize.u32Width = 0;
@@ -1213,7 +1214,7 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stVenInSrc.eInputSrcBufferMode = E_MI_VENC_INPUT_MODE_NORMAL_FRMBASE;
     MI_VENC_SetInputSourceConfig(VencChn, &stVenInSrc);
     STCHECKRESULT(ST_Venc_StartChannel(VencChn));
-#if 0
+
     // attach
     memset(&stChnPort, 0, sizeof(MI_RGN_ChnPort_t));
     stChnPort.eModId = E_MI_RGN_MODID_DIVP;
@@ -1222,13 +1223,13 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stChnPort.s32OutputPortId = 0;
     memset(&stChnPortParam, 0, sizeof(MI_RGN_ChnPortParam_t));
     stChnPortParam.bShow = TRUE;
-    stChnPortParam.stPoint.u32X = u32Width - RGN_OSD_TIME_WIDTH - 10;
-    stChnPortParam.stPoint.u32Y = 10;
-    stChnPortParam.unPara.stOsdChnPort.u32Layer = 100;
+    stChnPortParam.stPoint.u32X = 2;
+    stChnPortParam.stPoint.u32Y = 2;
     stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.eAlphaMode = E_MI_RGN_PIXEL_ALPHA;
     stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
     stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
-    ExecFunc(MI_RGN_AttachToChn(RGN_OSD_HANDLE, &stChnPort, &stChnPortParam), MI_RGN_OK);
+    ExecFunc(MI_RGN_AttachToChn(RGN_OSD_HANDLE1, &stChnPort, &stChnPortParam), MI_RGN_OK);
+#if 0
     // create cover1
     memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
     stRgnAttr.eType = E_MI_RGN_TYPE_COVER;
@@ -1648,18 +1649,49 @@ MI_S32 ST_BaseModuleInit(ST_Config_S* pstConfig)
     stBindInfo.u32DstFrmrate = 30;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
     STCHECKRESULT(ST_OSD_Init());
+    ST_DoCaptureJPGProc(704, 396, E_MI_SYS_ROTATE_NONE);
     //MI_IQSERVER_Open(u32CapWidth, u32CapHeight, 0);
+#if 0
     memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
     stRgnAttr.eType = E_MI_RGN_TYPE_OSD;
     stRgnAttr.stOsdInitParam.ePixelFmt = E_MI_RGN_PIXEL_FORMAT_I4;
     stRgnAttr.stOsdInitParam.stSize.u32Width = RGN_OSD_TIME_WIDTH;
     stRgnAttr.stOsdInitParam.stSize.u32Height = RGN_OSD_TIME_HEIGHT;
     ExecFunc(ST_OSD_Create(RGN_OSD_HANDLE, &stRgnAttr), MI_RGN_OK);
+#endif
 #if (ENABLE_BUF_POOL == 1)
     ST_InitBufPoolEnv();
 #endif
     return MI_SUCCESS;
 }
+
+MI_S32 InitRGN(void)
+{
+    printf("[ZYH_DEBUG]--->   InitRGN start!!!\n\n\n");
+    MI_RGN_Attr_t stRgnAttr;
+    memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
+    stRgnAttr.eType = E_MI_RGN_TYPE_OSD;
+    stRgnAttr.stOsdInitParam.ePixelFmt = E_MI_RGN_PIXEL_FORMAT_I4;
+    stRgnAttr.stOsdInitParam.stSize.u32Width = RGN_OSD_TIME_WIDTH;
+    stRgnAttr.stOsdInitParam.stSize.u32Height = RGN_OSD_TIME_HEIGHT;
+    ExecFunc(ST_OSD_Create(RGN_OSD_HANDLE, &stRgnAttr), MI_RGN_OK);
+    memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
+    stRgnAttr.eType = E_MI_RGN_TYPE_OSD;
+    stRgnAttr.stOsdInitParam.ePixelFmt = E_MI_RGN_PIXEL_FORMAT_I4;
+    stRgnAttr.stOsdInitParam.stSize.u32Width = RGN_OSD_TIME_WIDTH;
+    stRgnAttr.stOsdInitParam.stSize.u32Height = RGN_OSD_TIME_HEIGHT;
+    ExecFunc(ST_OSD_Create(RGN_OSD_HANDLE1, &stRgnAttr), MI_RGN_OK);
+#if 1    
+    memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
+    stRgnAttr.eType = E_MI_RGN_TYPE_OSD;
+    stRgnAttr.stOsdInitParam.ePixelFmt = E_MI_RGN_PIXEL_FORMAT_I4;
+    stRgnAttr.stOsdInitParam.stSize.u32Width = RGN_OSD_TIME_WIDTH;
+    stRgnAttr.stOsdInitParam.stSize.u32Height = RGN_OSD_TIME_HEIGHT;
+    ExecFunc(ST_OSD_Create(RGN_OSD_HANDLE2, &stRgnAttr), MI_RGN_OK);
+#endif    
+    return MI_SUCCESS;
+}
+
 void *ST_UpdateRgnOsdProcExt(void *args)
 {
     time_t now = 0;
@@ -3728,6 +3760,7 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     MI_RGN_ChnPort_t stRgnChnPort;
     MI_RGN_HANDLE hRgnHandle;
     ST_Stream_Attr_T *pstStreamAttr = g_stStreamAttr;
+    MI_SYS_WindowRect_t stRect;
     MI_RGN_Attr_t stRgnAttr;
     MI_RGN_ChnPortParam_t stChnPortParam;
 
@@ -3737,12 +3770,87 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     // port 0 can not scale, set cap width/height
     CanvasScopeLock ScopeLock;
 
-    u32Width = u16Width;
-    u32Height = u16Height;
+    if (enRotation == E_MI_SYS_ROTATE_90 || enRotation == E_MI_SYS_ROTATE_270)
+    {
+        u32Width = ALIGN_DOWN(u16Height, 16);
+        u32Height = u16Width;
+
+        stRect.u16Width = ALIGN_DOWN(g_u32CapHeight, 16);
+        stRect.u16Height = g_u32CapWidth;
+        stRect.u16X = 0;
+        stRect.u16Y = 0;
+        ExecFunc(MI_VPE_SetPortCrop(0, 0, &stRect), MI_SUCCESS);
+        memset(&stVpePortInfo, 0, sizeof(ST_VPE_PortInfo_T));
+        stVpePortInfo.DepVpeChannel = 0;
+        stVpePortInfo.u16OutputWidth = ALIGN_DOWN(g_u32CapHeight, 16);
+        stVpePortInfo.u16OutputHeight = g_u32CapWidth;
+        stVpePortInfo.ePixelFormat = E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_420;
+        stVpePortInfo.eCompressMode = E_MI_SYS_COMPRESS_MODE_NONE;
+    }
+    else
+    {
+        u32Width = u16Width;
+        u32Height = u16Height;
+
+        memset(&stVpePortInfo, 0, sizeof(ST_VPE_PortInfo_T));
+        stVpePortInfo.DepVpeChannel = 0;
+        stVpePortInfo.u16OutputWidth = g_u32CapWidth;
+        stVpePortInfo.u16OutputHeight = g_u32CapHeight;
+        stVpePortInfo.ePixelFormat = E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_420;
+        stVpePortInfo.eCompressMode = E_MI_SYS_COMPRESS_MODE_NONE;
+    }
+
+    if (pstStreamAttr[0].bEnable == FALSE)
+    {
+        STCHECKRESULT(ST_Vpe_StartPort(0, &stVpePortInfo));
+    }
+
+    memset(&stDivpChnAttr, 0, sizeof(MI_DIVP_ChnAttr_t));
+    stDivpChnAttr.bHorMirror            = FALSE;
+    stDivpChnAttr.bVerMirror            = FALSE;
+    stDivpChnAttr.eDiType               = E_MI_DIVP_DI_TYPE_OFF;
+    stDivpChnAttr.eRotateType           = E_MI_SYS_ROTATE_NONE;
+    stDivpChnAttr.eTnrLevel             = E_MI_DIVP_TNR_LEVEL_OFF;
+    stDivpChnAttr.stCropRect.u16X       = 0;
+    stDivpChnAttr.stCropRect.u16Y       = 0;
+    stDivpChnAttr.stCropRect.u16Width   = 0;
+    stDivpChnAttr.stCropRect.u16Height  = 0;
+    stDivpChnAttr.u32MaxWidth           = u32Width;
+    stDivpChnAttr.u32MaxHeight          = u32Height;
+
+    ExecFunc(MI_DIVP_CreateChn(DIVP_CHN_FOR_OSD, &stDivpChnAttr), MI_SUCCESS);
+    ExecFunc(MI_DIVP_StartChn(DIVP_CHN_FOR_OSD), MI_SUCCESS);
+
+    memset(&stOutputPortAttr, 0, sizeof(stOutputPortAttr));
+    stOutputPortAttr.eCompMode          = E_MI_SYS_COMPRESS_MODE_NONE;
+    stOutputPortAttr.ePixelFormat       = E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_420;
+    stOutputPortAttr.u32Width           = u32Width;
+    stOutputPortAttr.u32Height          = u32Height;
+
+    ST_DBG("u32Width:%d,u32Height:%d\n", u32Width, u32Height);
+    STCHECKRESULT(MI_DIVP_SetOutputPortAttr(DIVP_CHN_FOR_OSD, &stOutputPortAttr));
+    // bind VPE to divp
+    memset(&stBindInfo, 0x0, sizeof(ST_Sys_BindInfo_T));
+    stBindInfo.stSrcChnPort.eModId = E_MI_MODULE_ID_VPE;
+    stBindInfo.stSrcChnPort.u32DevId = 0;
+    stBindInfo.stSrcChnPort.u32ChnId = 0;
+    stBindInfo.stSrcChnPort.u32PortId = 0;
+
+    stBindInfo.stDstChnPort.eModId = E_MI_MODULE_ID_DIVP;
+    stBindInfo.stDstChnPort.u32DevId = 0;
+    stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_OSD;
+    stBindInfo.stDstChnPort.u32PortId = 0;
+
+    // stBindInfo.u32SrcFrmrate = pstStreamAttr[0].u32FrameRate;
+    // stBindInfo.u32DstFrmrate = pstStreamAttr[0].u32FrameRate;
+    stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
+    STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
     memset(&stChnPortParam, 0, sizeof(MI_RGN_ChnPortParam_t));
-    hRgnHandle = RGN_OSD_HANDLE;
-    stChnPortParam.stPoint.u32X = ALIGN_DOWN(u32Width, 16) - RGN_OSD_TIME_WIDTH - 10;
-    stChnPortParam.stPoint.u32Y = 10;
+    InitRGN();
+
+    hRgnHandle = RGN_OSD_HANDLE2;
+    stChnPortParam.stPoint.u32X = 0;
+    stChnPortParam.stPoint.u32Y = 0;
     stChnPortParam.bShow = TRUE;
     memset(&stRgnChnPort, 0, sizeof(MI_RGN_ChnPort_t));
     stRgnChnPort.eModId = E_MI_RGN_MODID_DIVP;
@@ -3753,7 +3861,7 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
     stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
     ExecFunc(MI_RGN_AttachToChn(hRgnHandle, &stRgnChnPort, &stChnPortParam), MI_RGN_OK);
-
+#if 0
     memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
     stRgnAttr.eType = E_MI_RGN_TYPE_COVER;
     ExecFunc(MI_RGN_Create(pstStreamAttr[0].u32Cover1Handle, &stRgnAttr), MI_RGN_OK);
@@ -3789,68 +3897,7 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     stChnPortParam.unPara.stCoverChnPort.stSize.u32Height = 800;
     stChnPortParam.unPara.stCoverChnPort.u32Color = RGB_TO_CRYCB(0, 0, 255);
     ExecFunc(MI_RGN_AttachToChn(pstStreamAttr[0].u32Cover2Handle, &stRgnChnPort, &stChnPortParam), MI_RGN_OK);
-
-    if (pstStreamAttr[0].bEnable == FALSE)
-    {
-        memset(&stVpePortInfo, 0, sizeof(ST_VPE_PortInfo_T));
-        stVpePortInfo.DepVpeChannel = 0;
-        if (enRotation == E_MI_SYS_ROTATE_90 || enRotation == E_MI_SYS_ROTATE_270)
-        {
-            stVpePortInfo.u16OutputWidth = g_u32CapHeight;
-            stVpePortInfo.u16OutputHeight = g_u32CapWidth;
-        }
-        else
-        {
-            stVpePortInfo.u16OutputWidth = g_u32CapWidth;
-            stVpePortInfo.u16OutputHeight = g_u32CapHeight;
-        }
-        stVpePortInfo.ePixelFormat = E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_420;
-        stVpePortInfo.eCompressMode = E_MI_SYS_COMPRESS_MODE_NONE;
-        STCHECKRESULT(ST_Vpe_StartPort(0, &stVpePortInfo));
-    }
-
-    memset(&stDivpChnAttr, 0, sizeof(MI_DIVP_ChnAttr_t));
-    stDivpChnAttr.bHorMirror            = FALSE;
-    stDivpChnAttr.bVerMirror            = FALSE;
-    stDivpChnAttr.eDiType               = E_MI_DIVP_DI_TYPE_OFF;
-    stDivpChnAttr.eRotateType           = E_MI_SYS_ROTATE_NONE;
-    stDivpChnAttr.eTnrLevel             = E_MI_DIVP_TNR_LEVEL_OFF;
-    stDivpChnAttr.stCropRect.u16X       = 0;
-    stDivpChnAttr.stCropRect.u16Y       = 0;
-    stDivpChnAttr.stCropRect.u16Width   = 0;
-    stDivpChnAttr.stCropRect.u16Height  = 0;
-    stDivpChnAttr.u32MaxWidth           = ALIGN_DOWN(u32Width, 16);
-    stDivpChnAttr.u32MaxHeight          = u32Height;
-
-    ExecFunc(MI_DIVP_CreateChn(DIVP_CHN_FOR_OSD, &stDivpChnAttr), MI_SUCCESS);
-    ExecFunc(MI_DIVP_StartChn(DIVP_CHN_FOR_OSD), MI_SUCCESS);
-
-    memset(&stOutputPortAttr, 0, sizeof(stOutputPortAttr));
-    stOutputPortAttr.eCompMode          = E_MI_SYS_COMPRESS_MODE_NONE;
-    stOutputPortAttr.ePixelFormat       = E_MI_SYS_PIXEL_FRAME_YUV_SEMIPLANAR_420;
-    stOutputPortAttr.u32Width           = ALIGN_DOWN(u32Width, 16);
-    stOutputPortAttr.u32Height          = u32Height;
-
-    ST_DBG("u32Width:%d,u32Height:%d\n", u32Width, u32Height);
-    STCHECKRESULT(MI_DIVP_SetOutputPortAttr(DIVP_CHN_FOR_OSD, &stOutputPortAttr));
-
-    // bind VPE to divp
-    memset(&stBindInfo, 0x0, sizeof(ST_Sys_BindInfo_T));
-    stBindInfo.stSrcChnPort.eModId = E_MI_MODULE_ID_VPE;
-    stBindInfo.stSrcChnPort.u32DevId = 0;
-    stBindInfo.stSrcChnPort.u32ChnId = 0;
-    stBindInfo.stSrcChnPort.u32PortId = 0;
-
-    stBindInfo.stDstChnPort.eModId = E_MI_MODULE_ID_DIVP;
-    stBindInfo.stDstChnPort.u32DevId = 0;
-    stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_OSD;
-    stBindInfo.stDstChnPort.u32PortId = 0;
-
-    stBindInfo.u32SrcFrmrate = 30;
-    stBindInfo.u32DstFrmrate = 30;
-    stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
-    STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
-
+#endif
     memset(&stChnAttr, 0, sizeof(MI_VENC_ChnAttr_t));
     stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_MJPEGFIXQP;
     stChnAttr.stVeAttr.stAttrJpeg.u32PicWidth = u32Width;
@@ -3859,8 +3906,6 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     stChnAttr.stVeAttr.stAttrJpeg.u32MaxPicHeight = u32Height;
     stChnAttr.stVeAttr.stAttrJpeg.bByFrame = TRUE;
     stChnAttr.stVeAttr.eType = E_MI_VENC_MODTYPE_JPEGE;
-    stChnAttr.stRcAttr.stAttrMjpegFixQp.u32SrcFrmRateNum = 30;
-    stChnAttr.stRcAttr.stAttrMjpegFixQp.u32SrcFrmRateDen = 1;
     STCHECKRESULT(ST_Venc_CreateChannel(VENC_CHN_FOR_CAPTURE, &stChnAttr));
     memset(&stBindInfo, 0x0, sizeof(ST_Sys_BindInfo_T));
     stBindInfo.stSrcChnPort.eModId = E_MI_MODULE_ID_DIVP;
@@ -3871,35 +3916,18 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     stBindInfo.stDstChnPort.eModId = E_MI_MODULE_ID_VENC;
     stBindInfo.stDstChnPort.u32ChnId = VENC_CHN_FOR_CAPTURE;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 30;
-    stBindInfo.u32DstFrmrate = 30;
+    // stBindInfo.u32SrcFrmrate = pstStreamAttr[0].u32FrameRate;
+    // stBindInfo.u32DstFrmrate = pstStreamAttr[0].u32FrameRate;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
-
+#if 0    
     ST_CaptureJPGProc(VENC_CHN_FOR_CAPTURE);
+
     // system("echo dumpFrontBuf 1 0 0 /mnt/i6 > /proc/mi_modules/mi_rgn/mi_rgn0");
     // sleep(60);
 
     STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
     STCHECKRESULT(ST_Venc_DestoryChannel(VENC_CHN_FOR_CAPTURE));
-    ExecFunc(MI_DIVP_StopChn(DIVP_CHN_FOR_OSD), MI_SUCCESS);
-    memset(&stBindInfo, 0x0, sizeof(ST_Sys_BindInfo_T));
-    stBindInfo.stSrcChnPort.eModId = E_MI_MODULE_ID_VPE;
-    stBindInfo.stSrcChnPort.u32DevId = 0;
-    stBindInfo.stSrcChnPort.u32ChnId = 0;
-    stBindInfo.stSrcChnPort.u32PortId = 0;
-    stBindInfo.stDstChnPort.eModId = E_MI_MODULE_ID_DIVP;
-    stBindInfo.stDstChnPort.u32DevId = 0;
-    stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_OSD;
-    stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 30;
-    stBindInfo.u32DstFrmrate = 30;
-    STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
-    ExecFunc(MI_DIVP_DestroyChn(DIVP_CHN_FOR_OSD), MI_SUCCESS);
-    if (pstStreamAttr[0].bEnable == FALSE)
-    {
-        STCHECKRESULT(ST_Vpe_StopPort(0, 0));
-    }
     ExecFunc(MI_RGN_Destroy(pstStreamAttr[0].u32Cover2Handle), MI_RGN_OK);
     ExecFunc(MI_RGN_Destroy(pstStreamAttr[0].u32Cover1Handle), MI_RGN_OK);
     memset(&stRgnChnPort, 0, sizeof(MI_RGN_ChnPort_t));
@@ -3911,6 +3939,27 @@ MI_BOOL ST_DoCaptureJPGProc(MI_U16 u16Width, MI_U16 u16Height, MI_SYS_Rotate_e e
     stRgnChnPort.s32OutputPortId = 0;
     ExecFunc(MI_RGN_DetachFromChn(hRgnHandle, &stRgnChnPort), MI_RGN_OK);
 
+    ExecFunc(MI_DIVP_StopChn(DIVP_CHN_FOR_OSD), MI_SUCCESS);
+    memset(&stBindInfo, 0x0, sizeof(ST_Sys_BindInfo_T));
+    stBindInfo.stSrcChnPort.eModId = E_MI_MODULE_ID_VPE;
+    stBindInfo.stSrcChnPort.u32DevId = 0;
+    stBindInfo.stSrcChnPort.u32ChnId = 0;
+    stBindInfo.stSrcChnPort.u32PortId = 0;
+    stBindInfo.stDstChnPort.eModId = E_MI_MODULE_ID_DIVP;
+    stBindInfo.stDstChnPort.u32DevId = 0;
+    stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_OSD;
+    stBindInfo.stDstChnPort.u32PortId = 0;
+
+    // stBindInfo.u32SrcFrmrate = pstStreamAttr[0].u32FrameRate;
+    // stBindInfo.u32DstFrmrate = pstStreamAttr[0].u32FrameRate;
+    STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
+    
+    ExecFunc(MI_DIVP_DestroyChn(DIVP_CHN_FOR_OSD), MI_SUCCESS);
+    if (pstStreamAttr[0].bEnable == FALSE)
+    {
+        STCHECKRESULT(ST_Vpe_StopPort(0, 0));
+    }
+#endif
     return 0;
 }
 

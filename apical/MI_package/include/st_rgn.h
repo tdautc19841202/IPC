@@ -32,6 +32,7 @@ extern "C"{
 #define I4_RED      (1)
 #define I4_GREEN    (2)
 #define I4_BLUE     (3)
+#define I4_WHITE    (7)
 #define I4_BLACK    (12)
 
 typedef enum
