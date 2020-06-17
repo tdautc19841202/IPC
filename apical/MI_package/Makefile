@@ -54,24 +54,23 @@ $(OBJPROG): $(addprefix $(OBJDIR)/, $(OBJECTS)) $(addprefix $(OBJDIR)/, $(CXXOBJ
 	$(AR) x $(MI_TOP)/lib/static/libmi_common.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_vpe.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_isp.a
-	$(AR) x $(MI_TOP)/lib/static/libmi_common.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_sensor.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_venc.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_vif.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_rgn.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_divp.a
-	$(AR) x $(MI_TOP)/lib/static/libmi_iqserver.a
-	$(AR) x $(MI_TOP)/lib/static/libmi_vdf.a
-	$(AR) x $(MI_TOP)/lib/static/libmi_shadow.a
-	$(AR) x $(MI_TOP)/lib/static/libOD_LINUX.a
-	$(AR) x $(MI_TOP)/lib/static/libMD_LINUX.a
-	$(AR) x $(MI_TOP)/lib/static/libVG_LINUX.a
-	$(AR) x $(MI_TOP)/lib/static/libmi_ive.a
+	#$(AR) x $(MI_TOP)/lib/static/libmi_iqserver.a
+	#$(AR) x $(MI_TOP)/lib/static/libmi_vdf.a
+	#$(AR) x $(MI_TOP)/lib/static/libmi_shadow.a
+	#$(AR) x $(MI_TOP)/lib/static/libOD_LINUX.a
+	#$(AR) x $(MI_TOP)/lib/static/libMD_LINUX.a
+	#$(AR) x $(MI_TOP)/lib/static/libVG_LINUX.a
+	#$(AR) x $(MI_TOP)/lib/static/libmi_ive.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_ai.a
 	$(AR) x $(MI_TOP)/lib/static/libmi_ao.a
 	$(AR) x $(MI_TOP)/lib/static/libcus3a.a
 	$(AR) x $(MI_TOP)/lib/static/libispalgo.a
-	$(AR) x $(LIVE555_TOP)/_install/usr/local/lib/libliveMedia.a
+	#$(AR) x $(LIVE555_TOP)/_install/usr/local/lib/libliveMedia.a
 	mv -f *.o $(OBJDIR)
 	@$(AR) rcs $@ $(OBJDIR)/*.o
 	@echo ""

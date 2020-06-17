@@ -65,11 +65,7 @@ extern int pthread_setname_np(pthread_t __target_thread, const char *__name);
 
 #define OUTPUTFILENAME        "/tmp/test.wav" 
 
-#define TCP_AUDIO_PORT        7001
 #define FACTORY_TEST_PORT     8313
-#define RECORD_RESERVED_DISK (500*1024*1024) // 500MB
-#define RECORD_SEGMENT_TIME   60000 // 60s
-#define RECORD_MOTION_TIME    20000 // 20s
 #define VENC_CHN_FOR_CAPTURE    12
 //#define TEST_BY_ZYH     1
 char g_zbar_scan_str[64] = "";
@@ -513,7 +509,8 @@ static void * main_stream(void *argv)
                 //printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
                 if(s32Ret != MI_SUCCESS || stStat.u32CurPacks == 0)
                 {
-                    usleep(100*1000); continue;
+                    //usleep(100*1000); 
+                    continue;
                 }
                 vstream.u32PackCount = stStat.u32CurPacks;
 
@@ -625,7 +622,8 @@ static void * sub_stream(void *argv)
             // printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
             if(s32Ret != MI_SUCCESS || stStat.u32CurPacks == 0)
             {
-                usleep(100*1000); continue;
+                //usleep(100*1000);
+                continue;
             }
             vstream.u32PackCount = stStat.u32CurPacks;
             s32Ret = MI_VENC_GetStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream, -1);

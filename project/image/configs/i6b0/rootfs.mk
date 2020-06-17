@@ -40,6 +40,26 @@ rootfs:
 	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_shadow.so
 	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_vdf.so
 	rm -f $(OUTPUTDIR)/rootfs/lib/libg726.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_sed.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_ipu.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_gyro.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_ai.so 
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_common.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_sys.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_vpe.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_isp.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_sensor.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_venc.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_vif.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_rgn.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_divp.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_ao.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libcus3a.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libispalgo.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_iqserver.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_iqserver_pretzel.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_ldc.so
+	rm -f $(OUTPUTDIR)/rootfs/lib/libmi_isp_pretzel.so
 	
 	cp -vf $(PROJ_ROOT)/board/$(CHIP)/mmap/$(MMAP) $(miservice$(RESOUCE))/mmap.ini
 	cp -rvf $(LIB_DIR_PATH)/bin/config_tool/* $(miservice$(RESOUCE))
@@ -62,7 +82,6 @@ rootfs:
 		cp -rf $(PROJ_ROOT)/board/$(CHIP)/iqfile/$(IQ3) $(miservice$(RESOUCE))/iqfile/ -vf; \
 		cd $(miservice$(RESOUCE))/iqfile; chmod +x $(shell echo $(IQ3) | awk -F'/' '{print $$NF}'); ln -sf $(shell echo $(IQ3) | awk -F'/' '{print $$NF}') iqfile3.bin; cd -; \
 	fi;
-
 	if [ -d $(PROJ_ROOT)/board/$(CHIP)/venc_fw ]; then \
 		cp -rf $(PROJ_ROOT)/board/$(CHIP)/venc_fw $(miservice$(RESOUCE)); \
 	fi;

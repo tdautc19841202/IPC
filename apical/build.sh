@@ -70,7 +70,6 @@ case "$1" in
 clean)
 	make -C $PWD/apkapi		clean
 	make -C $PWD/MI_package clean
-	make -C $PWD/librtsp	clean
 	make -C $PWD/libuvc		clean
 	make -C $PWD/ipcam		clean
 	make -C $PWD/rtwpriv	clean
@@ -78,7 +77,6 @@ clean)
 distclean)
 	make -C $PWD/apkapi		clean
 	make -C $PWD/MI_package clean
-	make -C $PWD/librtsp	clean
 	make -C $PWD/libuvc		clean
 	make -C $PWD/ipcam		clean
 	make -C $PWD/rtwpriv	clean

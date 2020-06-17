@@ -17,7 +17,7 @@ TOPDIR=$PWD
 	cd $TOPDIR/rtlwifitool    && ./build.sh $1
 	cd $TOPDIR/libiconv       && ./build.sh $1
 	cd $TOPDIR/zbar           && ./build.sh $1
-	cd $TOPDIR/live555        && ./build.sh $1
+#	cd $TOPDIR/live555        && ./build.sh $1
 	cd $TOPDIR/iperf3         && ./build.sh $1
 	cd $TOPDIR/libmad         && ./build.sh $1
 	cd $TOPDIR/apical         && ./build.sh $1

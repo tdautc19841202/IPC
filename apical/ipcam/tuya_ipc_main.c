@@ -19,7 +19,7 @@ extern int ipcam_take_snapshot(void **buf, int *size);
 #define IPC_APP_STORAGE_PATH    "/customer/data/ipcam/"   //Path to save tuya sdk DB files, should be readable, writeable and storable
 #define IPC_APP_UPGRADE_FILE    "/tmp/update.tar.gz" //File with path to download file during OTA
 #define IPC_APP_SD_BASE_PATH    "/tmp/sdcard/"      //SD card mount directory
-#define IPC_APP_PID             "wz27y3xbjkrsvc7u"  //Product ID of TUYA device, this is for demo only.
+#define IPC_APP_PID             "szfhc68ijsgr1pul"  //Product ID of TUYA device, this is for demo only.
                                                      //Contact tuya PM/BD for official pid.
                                                      // nq67xb4kn4ywqzdm for kapianji
                                                      // wz27y3xbjkrsvc7u for yaotouji  u0tnubut7jbtrooq for 323
