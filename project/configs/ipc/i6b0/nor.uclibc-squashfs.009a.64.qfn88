@@ -21,4 +21,4 @@ TOOLCHAIN_REL = arm-buildroot-linux-uclibcgnueabihf-
 SENSOR_LIST = gc2053_MIPI.ko
 SENSOR0 = gc2053_MIPI.ko
 SENSOR0_OPT = chmap=1 lane_num=2 hdr_lane_num=2
-FLASH_SIZE = 16M
+FLASH_SIZE = 8M

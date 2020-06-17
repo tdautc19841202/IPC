@@ -54,7 +54,7 @@ int do_auto_upgrade_by_SD(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
                 "fatsize mmc 0 one.bin",
                 "fatload mmc 0 0x21000000 one.bin",
                 "crc32 0x21000000 $(filesize)",
-                "sf erase 0x0 0x1000000",
+                "sf erase 0x0 0x800000",
                 "sf write 0x21000000 0x000000 $(filesize)",
     };
 

@@ -67,8 +67,10 @@ endif
 	$(MAKE) boot_images
 	$(MAKE) scripts
 ifeq ($(FLASH_SIZE), 8M)
+	chmod 775 $(PROJ_ROOT)/board/$(CHIP)/boot/$(FLASH_TYPE)/partition/MXP_SF_8M.bin
 	cp -rf $(PROJ_ROOT)/board/$(CHIP)/boot/$(FLASH_TYPE)/partition/MXP_SF_8M.bin $(IMAGEDIR)/boot/MXP_SF.bin
 else
+	chmod 775 $(PROJ_ROOT)/board/$(CHIP)/boot/$(FLASH_TYPE)/partition/MXP_SF.bin
 	cp -rf $(PROJ_ROOT)/board/$(CHIP)/boot/$(FLASH_TYPE)/partition/MXP_SF.bin $(IMAGEDIR)/boot/MXP_SF.bin
 endif
 
