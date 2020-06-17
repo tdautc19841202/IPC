@@ -524,8 +524,12 @@ static void * main_stream(void *argv)
                     //avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     if (!ftest)
                     {
-                        main_video_rawrec(context, &vstream);
+                        //main_video_rawrec(context, &vstream);
                         tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
+                    }
+                    else
+                    {
+                        avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     }
                 }
                 else{
@@ -656,7 +660,7 @@ static void handle_motion_det(CONTEXT *context, uint8_t *data, int diff)
     int        hmax  = (context->settings.md_timeperiod >> 0) & 0xff;
     if (tmnow->tm_hour >= hmin && tmnow->tm_hour <= hmax) {
         int motion = motion_detect_run(context->motion, (char*)data, diff);
-        //tuya_motion_event(motion, get_tick_count());
+        tuya_motion_event(motion, get_tick_count());
     }
 }
 
@@ -1626,11 +1630,11 @@ static void* audio_capture_proc(void *argv)
     }
 #endif
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
-        if(1)
+        if(context->status & FLAG_WIFI_CONNECTED)
         {   
             if (context->settings.standby) { usleep(100*1000); continue; }
             if (MI_SUCCESS == MI_AI_GetFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL, -1)) {
-                //avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);// send rtsp audio data using pcm alaw
+                if (ftest) avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
                 if(!ftest) tuya_audio(frame.apVirAddr[0], frame.u32Len);
@@ -1765,10 +1769,13 @@ int main(int argc, char *argv[])
         play_mp3_file(context, WELCOME_AUDIO_FILE, 0); // pid -1 mean \safely start, -2 mean ipcam crashed then restart
     }
  
+    if (ftest) {
+        context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 15, request_idr);
+    }
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);
     context->motor = motor_init();
-    context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 15, request_idr);
+   
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
    
