@@ -47,8 +47,8 @@ VOID IPC_APP_Set_Media_Info(VOID)
     s_media_info.video_fps[E_CHANNEL_VIDEO_SUB] = 15;  /* FPS */
     s_media_info.video_gop[E_CHANNEL_VIDEO_SUB] = 30;  /* GOP */
     s_media_info.video_bitrate[E_CHANNEL_VIDEO_SUB] = TUYA_VIDEO_BITRATE_512K; /* Rate limit */
-    s_media_info.video_width[E_CHANNEL_VIDEO_SUB] = 720; /* Single frame resolution of width */
-    s_media_info.video_height[E_CHANNEL_VIDEO_SUB] = 576;/* Single frame resolution of height */
+    s_media_info.video_width[E_CHANNEL_VIDEO_SUB] = 704; /* Single frame resolution of width */
+    s_media_info.video_height[E_CHANNEL_VIDEO_SUB] = 396;/* Single frame resolution of height */
     s_media_info.video_freq[E_CHANNEL_VIDEO_SUB] = 90000; /* Clock frequency */
     s_media_info.video_codec[E_CHANNEL_VIDEO_SUB] = TUYA_CODEC_VIDEO_H264; /* Encoding format */
 

@@ -219,9 +219,9 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxBitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 44;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MinQp = 24;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = 30;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 1;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = 15;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = pstStreamAttr[i].u32FrameRate;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateDen = 1;
 
         stRcParam.stParamH264VBR.s32IPQPDelta = 3;
@@ -241,9 +241,9 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
 
         stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_H265CBR;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32BitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
-        stChnAttr.stRcAttr.stAttrH265Cbr.u32SrcFrmRateNum = 30;
+        stChnAttr.stRcAttr.stAttrH265Cbr.u32SrcFrmRateNum = pstStreamAttr[i].u32FrameRate;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32SrcFrmRateDen = 1;
-        stChnAttr.stRcAttr.stAttrH265Cbr.u32Gop = 30;
+        stChnAttr.stRcAttr.stAttrH265Cbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32FluctuateLevel = 0;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32StatTime = 0;
     }
@@ -378,8 +378,8 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
     stBindInfo.stDstChnPort.u32DevId = u32DevId;
     stBindInfo.stDstChnPort.u32ChnId = VencChn;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 15;
-    stBindInfo.u32DstFrmrate = 15;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     stBindInfo.eBindType = pstStreamAttr[i].eBindType;
     if (stBindInfo.eBindType == E_MI_SYS_BIND_TYPE_HW_RING)
     {
@@ -487,9 +487,9 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxBitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 48;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MinQp = 28;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = 30;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 1;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = 15;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 0;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = pstStreamAttr[i].u32FrameRate;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateDen = 1;
 
         stRcParam.stParamH264VBR.s32IPQPDelta = 0;
@@ -509,9 +509,9 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
 
         stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_H265CBR;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32BitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
-        stChnAttr.stRcAttr.stAttrH265Cbr.u32SrcFrmRateNum = 30;
+        stChnAttr.stRcAttr.stAttrH265Cbr.u32SrcFrmRateNum = pstStreamAttr[i].u32FrameRate;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32SrcFrmRateDen = 1;
-        stChnAttr.stRcAttr.stAttrH265Cbr.u32Gop = 30;
+        stChnAttr.stRcAttr.stAttrH265Cbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32FluctuateLevel = 0;
         stChnAttr.stRcAttr.stAttrH265Cbr.u32StatTime = 0;
     }
@@ -629,8 +629,8 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stBindInfo.stDstChnPort.u32DevId = 0;
     stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_SCALE + i;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 15;
-    stBindInfo.u32DstFrmrate = 15;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
 
@@ -644,8 +644,8 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stBindInfo.stDstChnPort.u32DevId = u32DevId;
     stBindInfo.stDstChnPort.u32ChnId = VencChn;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 15;
-    stBindInfo.u32DstFrmrate = 15;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
 
@@ -714,8 +714,8 @@ MI_S32 ST_StopPipeLine(MI_U8 i)
     stBindInfo.stDstChnPort.u32DevId = u32DevId;
     stBindInfo.stDstChnPort.u32ChnId = VencChn;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 15;
-    stBindInfo.u32DstFrmrate = 15;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
     STCHECKRESULT(ST_Venc_StopChannel(VencChn));
     STCHECKRESULT(ST_Venc_DestoryChannel(VencChn));
@@ -783,8 +783,8 @@ MI_S32 ST_StopPipeLineWithDip(MI_U8 i)
     stBindInfo.stDstChnPort.u32DevId = u32DevId;
     stBindInfo.stDstChnPort.u32ChnId = VencChn;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 30;
-    stBindInfo.u32DstFrmrate = 30;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
     STCHECKRESULT(ST_Venc_StopChannel(VencChn));
     STCHECKRESULT(ST_Venc_DestoryChannel(VencChn));
@@ -800,8 +800,8 @@ MI_S32 ST_StopPipeLineWithDip(MI_U8 i)
     stBindInfo.stDstChnPort.u32DevId = 0;
     stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_SCALE + i;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 30;
-    stBindInfo.u32DstFrmrate = 30;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
     ExecFunc(MI_DIVP_DestroyChn(DIVP_CHN_FOR_SCALE + i), MI_SUCCESS);
     STCHECKRESULT(ST_Vpe_StopPort(pstStreamAttr[i].u32InputChn, pstStreamAttr[i].u32InputPort));
@@ -955,8 +955,8 @@ MI_S32 ST_BaseModuleInit(ST_Config_S* pstConfig)
     stBindInfo.stDstChnPort.u32ChnId = 0;
     stBindInfo.stDstChnPort.u32PortId = 0;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_REALTIME;
-    //stBindInfo.u32SrcFrmrate = 30;
-    //stBindInfo.u32DstFrmrate = 30;
+    //stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    //stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
     STCHECKRESULT(ST_OSD_Init());
     ST_DoCaptureJPGProc(704, 396, E_MI_SYS_ROTATE_NONE);
@@ -1015,8 +1015,8 @@ MI_S32 ST_BaseModuleUnInit(void)
     stBindInfo.stDstChnPort.u32ChnId = 0;
     stBindInfo.stDstChnPort.u32PortId = 0;
 
-    stBindInfo.u32SrcFrmrate = 15;
-    stBindInfo.u32DstFrmrate = 15;
+    //stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    //stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     STCHECKRESULT(ST_Sys_UnBind(&stBindInfo));
 
     /************************************************
@@ -1080,12 +1080,12 @@ void ST_DefaultArgs(ST_Config_S *pstConfig)
     pstStreamAttr[1].u32Width = 1920;
     pstStreamAttr[1].u32Height = 1080;
     pstStreamAttr[1].eBindType = E_MI_SYS_BIND_TYPE_HW_RING;
-    pstStreamAttr[1].u32BindPara = pstStreamAttr[1].u32Height;
+    pstStreamAttr[1].u32BindPara = 1080;
 
     pstStreamAttr[2].bEnable = TRUE;
     pstStreamAttr[2].eType = E_MI_VENC_MODTYPE_H264E;
-    pstStreamAttr[2].u32Width = 720;
-    pstStreamAttr[2].u32Height = 576;
+    pstStreamAttr[2].u32Width = 704;
+    pstStreamAttr[2].u32Height = 396;
     pstStreamAttr[2].eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     pstStreamAttr[2].u32BindPara = 0;
     pstStreamAttr[2].enInput = ST_Sys_Input_DIVP;
@@ -1216,8 +1216,8 @@ MI_BOOL ST_DoCaptureJPGProcExt(MI_U16 u16Width, MI_U16 u16Hight, MI_SYS_Rotate_e
     stBindInfo.stDstChnPort.eModId = E_MI_MODULE_ID_VENC;
     stBindInfo.stDstChnPort.u32ChnId = VENC_CHN_FOR_CAPTURE;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = 30;
-    stBindInfo.u32DstFrmrate = 30;
+    stBindInfo.u32SrcFrmrate = pstStreamAttr[0].u32FrameRate;
+    stBindInfo.u32DstFrmrate = pstStreamAttr[0].u32FrameRate;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_REALTIME;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
 

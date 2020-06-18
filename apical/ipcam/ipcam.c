@@ -509,7 +509,7 @@ static void * main_stream(void *argv)
                 //printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
                 if(s32Ret != MI_SUCCESS || stStat.u32CurPacks == 0)
                 {
-                    //usleep(100*1000); 
+                    usleep(100*1000); 
                     continue;
                 }
                 vstream.u32PackCount = stStat.u32CurPacks;
@@ -622,7 +622,7 @@ static void * sub_stream(void *argv)
             // printf("MI_VENC_Query finish,s32Ret = %d,stStat.u32CurPacks = %d\n\n",s32Ret,stStat.u32CurPacks);
             if(s32Ret != MI_SUCCESS || stStat.u32CurPacks == 0)
             {
-                //usleep(100*1000);
+                usleep(100*1000);
                 continue;
             }
             vstream.u32PackCount = stStat.u32CurPacks;

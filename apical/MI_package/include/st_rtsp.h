@@ -93,6 +93,7 @@ struct ST_Stream_Attr_T
     MI_VENC_CHN vencChn;
     MI_VENC_ModType_e eType;
     float     f32Mbps;
+    MI_U32    u32FrameRate;
     MI_U32    u32Width;
     MI_U32     u32Height;
     MI_U32    u32CropX;
@@ -146,13 +147,14 @@ typedef struct
 static struct ST_Stream_Attr_T g_stStreamAttr[] =
 {
     {
-        .bEnable = TRUE,
+        .bEnable = FALSE,
         .enInput = ST_Sys_Input_VPE,
         .u32InputChn = 0,
         .u32InputPort = 0,
         .vencChn = 0,
         .eType = E_MI_VENC_MODTYPE_JPEGE,
         .f32Mbps = 0.5,
+        .u32FrameRate = 15,
         .u32Width = 1920,
         .u32Height = 1080,
         .u32CropX = 0,
@@ -173,7 +175,8 @@ static struct ST_Stream_Attr_T g_stStreamAttr[] =
         .u32InputPort = 1,
         .vencChn = 1,
         .eType = E_MI_VENC_MODTYPE_H264E,
-        .f32Mbps = 1.0,
+        .f32Mbps = 2.0,
+        .u32FrameRate = 15,
         .u32Width = 1920,
         .u32Height = 1080,
         .u32CropX = 0,
@@ -194,7 +197,8 @@ static struct ST_Stream_Attr_T g_stStreamAttr[] =
         .u32InputPort = 2,
         .vencChn = 2,
         .eType = E_MI_VENC_MODTYPE_H264E,
-        .f32Mbps = 0.5,
+        .f32Mbps = 1.0,
+        .u32FrameRate = 15,
         .u32Width = 720,
         .u32Height = 576,
         .u32CropX = 0,
@@ -216,6 +220,7 @@ static struct ST_Stream_Attr_T g_stStreamAttr[] =
         .vencChn = 3,
         .eType = E_MI_VENC_MODTYPE_H264E,
         .f32Mbps = 1.0,
+        .u32FrameRate = 15,
         .u32Width = 384,
         .u32Height = 288,
         .u32CropX = 0,
