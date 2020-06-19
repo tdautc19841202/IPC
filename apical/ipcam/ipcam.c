@@ -1074,8 +1074,8 @@ int soft_light_sensor(CONTEXT *context)
            printf("MI_ISP_AE_QueryExposureInfo failed!\n");
        }
     }
-    if(!(context->status & FLAG_VMAIN_INITED))return 0;
-    if (context->settings.standby || (context->status & FLAG_ENABLE_ZSCANNER)|| context->settings.ir_en == 1) {
+    if(!(context->status & FLAG_VMAIN_INITED)) return 0;
+    if (context->settings.standby || (context->status & FLAG_ENABLE_ZSCANNER) || context->settings.ir_en == 1) {
         cur_irmode = 1;  //day mode
     }
     else if(context->settings.ir_en == 2){
@@ -1114,7 +1114,7 @@ int soft_light_sensor(CONTEXT *context)
         }
         else
         {
-            if(context->last_irmode == 0)
+            if(context->last_irmode == 0 || context->last_irmode == -1)
             {  //红外灯开启,BV普遍增大
                 if(pExpInfo.s32BV > -30000)
                 usleep(2*1000*1000);
@@ -1698,26 +1698,6 @@ void request_idr()
     MI_VENC_RequestIdr(1, 1);
 }
 
-static void * init_avkcp_thread(void *argv)
-{
-    CONTEXT *context = (CONTEXT*)argv;
-    context->inited_avkcp = 0;
-    while(1)
-    {
-         if((context->status & FLAG_WIFI_CONNECTED) && (context->inited_avkcp == 0))
-         {
-             printf("avkcps init now !!!\n\n\n");
-             context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 25, request_idr);
-             context->inited_avkcp = 1;
-         }
-         else
-         {
-             usleep(200*1000);
-         }
-    }
-}   
-
-
 int main(int argc, char *argv[])
 {
     CONTEXT      *context  = &g_app_ctx;
@@ -1737,6 +1717,7 @@ int main(int argc, char *argv[])
     apkapi_init();
     set_led(GPIO_LED_R, 1);
     set_led(GPIO_LED_G, 0);
+    
     system("ifconfig lo up");
     system("wifi_on.sh &");
     system("echo 1 > /proc/sys/vm/overcommit_memory");
@@ -1768,7 +1749,7 @@ int main(int argc, char *argv[])
     }
  
     if (ftest) {
-        context->avkcps = avkcps_init (8000, "alaw", 1, 0, "h264", 1920, 1080, 15, request_idr);
+        context->avkcps = avkcps_init (8000, "alaw", 1, 8000, "h264", 1280, 720, 30, request_idr);
     }
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);
@@ -1776,7 +1757,6 @@ int main(int argc, char *argv[])
    
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
-   
     
     // init pthread attr
     pthread_attr_init(&context->pthread_attr);
@@ -1793,7 +1773,7 @@ int main(int argc, char *argv[])
     pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
     pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
-    if(!ftest)tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
+    if(!ftest) tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
     if (context->pthread_led ) pthread_join(context->pthread_led , NULL);
     if (context->pthread_dmon) pthread_join(context->pthread_dmon, NULL);
     if (context->pthread_nmon) pthread_join(context->pthread_nmon, NULL);

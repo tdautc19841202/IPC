@@ -143,7 +143,7 @@ CFLAGS = -g -O2
 CFLAG_VISIBILITY = -fvisibility=hidden
 CP = cp -p
 CPP = arm-buildroot-linux-uclibcgnueabihf-gcc -E
-CPPFLAGS = -I/home/zhaoyh/ext/msc333/libiconv/_install/include
+CPPFLAGS = 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H -DEXEEXT=\"\"
 DEPDIR = .deps
@@ -398,7 +398,7 @@ INTLLIBS =
 INTL_MACOSX_LIBS = 
 LD = /home/zhaoyh/ext/msc333/toolchain/arm-buildroot-linux-uclibcgnueabihf-4.9.4/arm-buildroot-linux-uclibcgnueabihf/bin/ld
 LDFLAGS = 
-LIBICONV = /home/zhaoyh/ext/msc333/libiconv/_install/lib/libiconv.so -Wl,-rpath -Wl,/home/zhaoyh/ext/msc333/libiconv/_install/lib
+LIBICONV = 
 LIBICRT_LIBDEPS = 
 LIBICRT_LTLIBDEPS = 
 LIBINTL = 
@@ -408,7 +408,7 @@ LIBTOOL = /bin/sh $(top_builddir)/libtool
 LIPO = 
 LN = ln
 LN_S = ln -s
-LTLIBICONV = -L/home/zhaoyh/ext/msc333/libiconv/_install/lib -liconv -R/home/zhaoyh/ext/msc333/libiconv/_install/lib
+LTLIBICONV = 
 LTLIBINTL = 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/zhaoyh/ext/msc333/libiconv/build-aux/missing --run makeinfo

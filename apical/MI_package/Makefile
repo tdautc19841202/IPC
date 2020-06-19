@@ -4,7 +4,6 @@ GXX ?= $(CROSS_COMPILE)g++
 
 DRIVER_HEADER= $(shell pwd)/../../kernel/drivers/sstar/include
 MI_TOP       = $(shell pwd)/../../MI
-LIVE555_TOP  = $(shell pwd)/../../live555
 APKAPI_TOP   = $(shell pwd)/../apkapi
 
 C_FLAGS := -Wall -Os -march=armv7-a
@@ -14,13 +13,8 @@ C_INCLUDES := \
 	-I$(DRIVER_HEADER) \
 	-I$(MI_TOP)/include \
 	-I$(shell pwd)/include \
-	-I$(APKAPI_TOP) \
-	-I$(LIVE555_TOP)/BasicUsageEnvironment/include \
-	-I$(LIVE555_TOP)/liveMedia/include \
-	-I$(LIVE555_TOP)/mediaServer/include \
-	-I$(LIVE555_TOP)/UsageEnvironment/include \
-	-I$(LIVE555_TOP)/groupsock/include
-
+	-I$(APKAPI_TOP) 
+	
 PROGS = libmi_package.a
 
 OMX_COMP_C_SRCS=$(wildcard ./*.c)

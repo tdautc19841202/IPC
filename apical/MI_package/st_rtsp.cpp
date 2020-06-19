@@ -220,7 +220,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 44;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MinQp = 24;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 1;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 0;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = pstStreamAttr[i].u32FrameRate;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateDen = 1;
 

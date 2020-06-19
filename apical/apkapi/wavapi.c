@@ -8,6 +8,7 @@
 #include "mi_aio_datatype.h"
 #include "apkapi.h"
 #include "wavapi.h" 
+#include "mi_common_datatype.h"
 
 MI_AUDIO_AnrConfig_t stAnrCfg = {
     .eMode = E_MI_AUDIO_ALGORITHM_MODE_MUSIC,

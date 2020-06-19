@@ -603,3 +603,35 @@ int send_msg_to_ipcam(char *msg, char *params)
     close(sock);
     return ret > 0 && strstr(rxbuf, "rpc. ") == rxbuf && atoi(rxbuf + 5) == id ? 0 : -1;
 }
+
+
+int set_wlan_mac(char *wlan_mac)
+{
+    char cmd[256];
+    snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_set mac,\"%s\"",wlan_mac);
+    system(cmd);
+}
+
+int set_wlan_map()
+{
+    system("ifconfig wlan0 up");
+    sleep(1);
+    system("rtwpriv wlan0 mp_start");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x00,298100CC0B000000000C044C100C0000");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x010,2929282828282929291B1B02FFFFFFFF ");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x0B0,FFFFFFFFFFFFFFFF20202500000000FF ");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x0C0,FF11001000FF00FF0000FFFFFFFFFFFF");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x0D0,DA0B79F142664000E04CF17900090352");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x0E0,65616C74656B09033830322E31316E00");
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x130,C1AEFFFFFFFFFFFFFFFF0011FFFFFFFF");
+    sleep(1);  
+    system("rtwpriv wlan0 efuse_set wlfk2map");
+    sleep(1);  
+}
