@@ -1085,8 +1085,8 @@ void ST_DefaultArgs(ST_Config_S *pstConfig)
 
     pstStreamAttr[2].bEnable = TRUE;
     pstStreamAttr[2].eType = E_MI_VENC_MODTYPE_H264E;
-    pstStreamAttr[2].u32Width = 704;
-    pstStreamAttr[2].u32Height = 396;
+    pstStreamAttr[2].u32Width = 1280;
+    pstStreamAttr[2].u32Height = 720;
     pstStreamAttr[2].eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     pstStreamAttr[2].u32BindPara = 0;
     pstStreamAttr[2].enInput = ST_Sys_Input_DIVP;
