@@ -955,11 +955,12 @@ MI_S32 ST_BaseModuleInit(ST_Config_S* pstConfig)
     stBindInfo.stDstChnPort.u32ChnId = 0;
     stBindInfo.stDstChnPort.u32PortId = 0;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_REALTIME;
-    //stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
-    //stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
+    //stBindInfo.u32SrcFrmrate = 15;
+    //stBindInfo.u32DstFrmrate = 15;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
     STCHECKRESULT(ST_OSD_Init());
-    ST_DoCaptureJPGProc(704, 396, E_MI_SYS_ROTATE_NONE);
+    InitRGN();
+    //ST_DoCaptureJPGProc(704, 396, E_MI_SYS_ROTATE_NONE);
     //MI_IQSERVER_Open(u32CapWidth, u32CapHeight, 0);
 #if 0
     memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
@@ -988,7 +989,7 @@ MI_S32 InitRGN(void)
     stRgnAttr.stOsdInitParam.stSize.u32Width = RGN_OSD_TIME_WIDTH;
     stRgnAttr.stOsdInitParam.stSize.u32Height = RGN_OSD_TIME_HEIGHT;
     ExecFunc(ST_OSD_Create(RGN_OSD_HANDLE1, &stRgnAttr), MI_RGN_OK);
-#if 1    
+#if 0    
     memset(&stRgnAttr, 0, sizeof(MI_RGN_Attr_t));
     stRgnAttr.eType = E_MI_RGN_TYPE_OSD;
     stRgnAttr.stOsdInitParam.ePixelFmt = E_MI_RGN_PIXEL_FORMAT_I4;
@@ -1077,10 +1078,10 @@ void ST_DefaultArgs(ST_Config_S *pstConfig)
 
     pstStreamAttr[1].bEnable = TRUE;
     pstStreamAttr[1].eType = E_MI_VENC_MODTYPE_H264E;
-    pstStreamAttr[1].u32Width = 1920;
-    pstStreamAttr[1].u32Height = 1080;
+    pstStreamAttr[1].u32Width = 1280;
+    pstStreamAttr[1].u32Height = 720;
     pstStreamAttr[1].eBindType = E_MI_SYS_BIND_TYPE_HW_RING;
-    pstStreamAttr[1].u32BindPara = 1080;
+    pstStreamAttr[1].u32BindPara = 720;
 
     pstStreamAttr[2].bEnable = TRUE;
     pstStreamAttr[2].eType = E_MI_VENC_MODTYPE_H264E;

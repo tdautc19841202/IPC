@@ -605,11 +605,22 @@ int send_msg_to_ipcam(char *msg, char *params)
 }
 
 
-int set_wlan_mac(char *wlan_mac)
+int set_wlan_mac(char *mac)
 {
+    int i = 4;
+    int j = 0;
+    char buf[16];
     char cmd[256];
-    snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_set mac,\"%s\"",wlan_mac);
+    char *wlan_mac = mac;
+    while (wlan_mac[i] != '\0')
+    {
+        buf[j++] = wlan_mac[i++];
+    }
+   
+    snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_set mac,\"%s\"",buf);
     system(cmd);
+    sleep(1);
+    set_wlan_map();
 }
 
 int set_wlan_map()

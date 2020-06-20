@@ -344,7 +344,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE1, &stChnPort, &stChnPortParam);
-
+#if 0
                 memset(&stChnPort, 0, sizeof(MI_RGN_ChnPort_t));
                 stChnPort.eModId = E_MI_RGN_MODID_DIVP;
                 stChnPort.s32DevId = 0;
@@ -358,7 +358,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE2, &stChnPort, &stChnPortParam);
-
+#endif
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE, NULL);
                 (void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_WHITE, DMF_Font_Size_48x48);
@@ -368,11 +368,12 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE1, NULL);
                 (void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE1);
-
+#if 0
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE2, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE2, NULL);
                 (void)ST_OSD_DrawText(RGN_OSD_HANDLE2, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE2);
+#endif            
                 canvas_unlock();
             }
             if( context->settings.watermark_visible == 0 && CLOSE_OSD_FLAG == 0)
@@ -407,7 +408,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE1, &stChnPort, &stChnPortParam);
-
+#if 0
                 memset(&stChnPort, 0, sizeof(MI_RGN_ChnPort_t));
                 stChnPort.eModId = E_MI_RGN_MODID_DIVP;
                 stChnPort.s32DevId = 0;
@@ -421,7 +422,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE2, &stChnPort, &stChnPortParam);
-
+#endif
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE, NULL);
                 //(void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_RED, DMF_Font_Size_48x48);
@@ -431,11 +432,12 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE1, NULL);
                 //(void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE1);
-
+#if 0
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE2, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE2, NULL);
                 //(void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE2);
+#endif            
                 CLOSE_OSD_FLAG = 1;
                 canvas_unlock();
             }
@@ -1037,6 +1039,8 @@ static void* ftest_and_rpc_proc(void *argv)
                 set_iperf3_start(context, atoi(msg + 7));
                 len = strlen(msg) + 1;
                 snprintf(msg, sizeof(msg), "iperf3.");
+            } else if (strstr(msg, "mac=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                set_wlan_mac(msg);
             } else if (strstr(msg, "wifi_signal?") == msg) {
                 snprintf(msg, sizeof(msg), "wifi_signal:%d", get_wifi_signal());
                 len = strlen(msg) + 1;
@@ -1695,7 +1699,7 @@ static void* network_monitor_proc(void *argv)
 
 void request_idr()
 {
-    MI_VENC_RequestIdr(1, 1);
+    MI_VENC_RequestIdr(1, 0);
 }
 
 int main(int argc, char *argv[])
@@ -1757,7 +1761,6 @@ int main(int argc, char *argv[])
    
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
-    
     // init pthread attr
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);
