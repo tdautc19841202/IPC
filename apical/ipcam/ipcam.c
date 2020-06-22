@@ -515,20 +515,27 @@ static void * main_stream(void *argv)
                     continue;
                 }
                 vstream.u32PackCount = stStat.u32CurPacks;
-
+                if (context->status & FLAG_REQUEST_IDR_MAIN)
+                {
+                    MI_VENC_RequestIdr((MI_VENC_CHN)pstChnPort->u32ChnId, 1);
+                }
                 s32Ret = MI_VENC_GetStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream, -1);
                 if(MI_SUCCESS == s32Ret)
                 {
-                    //printf("MI_VENC_GetStream succeed!!!\n\n\n");
-                    //avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     if (!ftest)
                     {
-                        //main_video_rawrec(context, &vstream);
                         tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
                     }
                     else
                     {
-                        avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
+                        if (context->status & FLAG_REQUEST_IDR_MAIN)
+                        {
+                            avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 1);
+                        }
+                        else
+                        {
+                            avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 0);
+                        }    
                     }
                 }
                 else{
@@ -537,6 +544,7 @@ static void * main_stream(void *argv)
                 }
                 MI_VENC_ReleaseStream((MI_VENC_CHN)pstChnPort->u32ChnId, &vstream);
                 context->g_stRgnOsd.bRun = TRUE;
+                context->status &= ~FLAG_REQUEST_IDR_MAIN;
            }
             else
             {
@@ -868,16 +876,10 @@ static void run_sdcard_check(CONTEXT *context)
     }
 }
 
-void ipcam_request_idr(int main)
+void ipcam_request_idr(void)
 {
     CONTEXT *context = (CONTEXT*)&g_app_ctx;
-    if (main) {
-        context->main_idr_counter = 2;
-        context->status |= FLAG_REQUEST_IDR_MAIN;
-    } else {
-        context->sub0_idr_counter = 1;
-        context->status |= FLAG_REQUEST_IDR_SUB;
-    }
+    context->status |= FLAG_REQUEST_IDR_MAIN;
 }
 
 static void sig_handler(int sig)
@@ -1637,7 +1639,7 @@ static void* audio_capture_proc(void *argv)
         {   
             if (context->settings.standby) { usleep(100*1000); continue; }
             if (MI_SUCCESS == MI_AI_GetFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL, -1)) {
-                if (ftest) avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len);
+                if (ftest) avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len, 1);
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
                 if(!ftest) tuya_audio(frame.apVirAddr[0], frame.u32Len);
@@ -1696,11 +1698,6 @@ static void* network_monitor_proc(void *argv)
     return NULL;    
 }
 
-void request_idr()
-{
-    MI_VENC_RequestIdr(1, 0);
-}
-
 int main(int argc, char *argv[])
 {
     CONTEXT      *context  = &g_app_ctx;
@@ -1752,8 +1749,9 @@ int main(int argc, char *argv[])
     }
  
     if (ftest) {
-        context->avkcps = avkcps_init(8000, "alaw", 1, 8000, "h264", 1920, 1080, 15, request_idr);
+        context->avkcps = avkcps_init(8000, "alaw", 1, 8000, "h264", 1920, 1080, 15, 256, ipcam_request_idr);
     }
+
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);
     context->motor = motor_init();
