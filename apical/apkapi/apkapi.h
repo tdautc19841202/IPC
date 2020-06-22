@@ -42,7 +42,7 @@ int  get_cpu_uid(char *uid, int size);
 int  get_dev_sid(char *sid, int size);
 int  get_dev_uid(char *uid, int size);
 int  set_dev_ids(char *mac_eth, char *mac_wlan, char *dev_sid, char *dev_uid);
-int  get_dev_mac(char *dev, char *str, int len);
+int  get_dev_mac(char *wlan_mac);
 int  get_dev_ip (char *dev, char *str, int len);
 void get_dev_gateway_mask(char *dev, char *gw, char *mask);
 int  get_wifi_signal  (void);

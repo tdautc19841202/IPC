@@ -1022,7 +1022,7 @@ static void* ftest_and_rpc_proc(void *argv)
                 len = strlen(msg) + 1;
             } else if (strcmp(msg, "mac?") == 0) {
                 char mac[18];
-                get_dev_mac("wlan0", mac, sizeof(mac));
+                get_dev_mac(mac);
                 snprintf(msg, sizeof(msg), "mac:%s", mac);
                 len = strlen(msg) + 1;
             } else if (strcmp(msg, "ft_uid?") == 0) {
@@ -1683,8 +1683,6 @@ static void* network_monitor_proc(void *argv)
         }
         if (get_dev_ip("wlan0", wlanip, sizeof(wlanip)) == 0){
             GET_IP_FLAG = 1;
-            get_dev_mac("wlan0", wlan0_mac, sizeof(wlan0_mac));  //获取当前wlan0的mac地址
-            set_dev_ids(NULL, wlan0_mac, NULL, NULL);  //保存mac地址，以保证下次用同样的mac启动wlan0
             context->status |= FLAG_WIFI_CONNECTED;
             if (!ftest && get_mqtt_status() == 0 && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
             {

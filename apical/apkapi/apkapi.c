@@ -338,8 +338,9 @@ int set_dev_ids(char *mac_eth, char *mac_wlan, char *dev_sid, char *dev_uid)
     return 0;
 }
 
-int get_dev_mac(char *dev, char *str, int len)
+int get_dev_mac(char *wlan_mac)
 {
+#if 0
     int    sock;
     struct ifreq ifr = {};
 
@@ -367,6 +368,25 @@ int get_dev_mac(char *dev, char *str, int len)
         (unsigned char)ifr.ifr_hwaddr.sa_data[3],
         (unsigned char)ifr.ifr_hwaddr.sa_data[4],
         (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
+    return 0;
+#endif
+    char str[18];
+    char buf[128];
+    int i = 19;
+    int j = 0;
+    system("rtwpriv wlan0 efuse_get mac > /tmp/wlan_mac");
+    memset(buf, 0, sizeof(buf));
+    file_read("/tmp/wlan_mac", buf, sizeof(buf)); 
+    while(buf[i] != '\0')
+    {
+        str[j++] = buf[i++];
+    }
+    str[j] = '\0';
+    if (file_exist("/tmp/wlan_mac"))
+    {
+        system("rm /tmp/wlan_mac");
+    }
+
     return 0;
 }
 
