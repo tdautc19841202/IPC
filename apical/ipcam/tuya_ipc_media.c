@@ -33,11 +33,11 @@ VOID IPC_APP_Set_Media_Info(VOID)
     SECOND:E_CHANNEL_VIDEO_MAIN must exist.It is the data source of SDK.
     please close the E_CHANNEL_VIDEO_SUB for only one stream*/
     s_media_info.channel_enable[E_CHANNEL_VIDEO_MAIN] = TRUE;    /* Whether to enable local HD video streaming */
-    s_media_info.video_fps[E_CHANNEL_VIDEO_MAIN] = 30;  /* FPS */
-    s_media_info.video_gop[E_CHANNEL_VIDEO_MAIN] = 60;  /* GOP */
+    s_media_info.video_fps[E_CHANNEL_VIDEO_MAIN] = 15;  /* FPS */
+    s_media_info.video_gop[E_CHANNEL_VIDEO_MAIN] = 20;  /* GOP */
     s_media_info.video_bitrate[E_CHANNEL_VIDEO_MAIN] = TUYA_VIDEO_BITRATE_1M; /* Rate limit */
-    s_media_info.video_width[E_CHANNEL_VIDEO_MAIN] = 1280; /* Single frame resolution of width*/
-    s_media_info.video_height[E_CHANNEL_VIDEO_MAIN] = 720;/* Single frame resolution of height */
+    s_media_info.video_width[E_CHANNEL_VIDEO_MAIN] = 1920; /* Single frame resolution of width*/
+    s_media_info.video_height[E_CHANNEL_VIDEO_MAIN] = 1080;/* Single frame resolution of height */
     s_media_info.video_freq[E_CHANNEL_VIDEO_MAIN] = 90000; /* Clock frequency */
     s_media_info.video_codec[E_CHANNEL_VIDEO_MAIN] = TUYA_CODEC_VIDEO_H264; /* Encoding format */
 

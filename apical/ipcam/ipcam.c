@@ -528,7 +528,7 @@ static void * main_stream(void *argv)
                     }
                     else
                     {
-                        //avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
+                        avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
                     }
                 }
                 else{
@@ -592,7 +592,7 @@ static void * sub_stream(void *argv)
         return NULL;
     }
     if(!(context->status&FLAG_VSUB_INITED)){
-        s32Ret = ST_StartPipeLineWithDip(i, 1280, 720, pstStreamAttr[i].u32CropWidth, pstStreamAttr[i].u32CropHeight, pstStreamAttr[i].u32CropX, pstStreamAttr[i].u32CropY);
+        s32Ret = ST_StartPipeLineWithDip(i, ZBAR_VIDEO_WIDTH, ZBAR_VIDEO_HEIGHT, pstStreamAttr[i].u32CropWidth, pstStreamAttr[i].u32CropHeight, pstStreamAttr[i].u32CropX, pstStreamAttr[i].u32CropY);
         if(s32Ret == MI_SUCCESS)context->status |= FLAG_VSUB_INITED;
     }
     MI_VENC_CHN stVencChn = pstStreamAttr[i].vencChn;
@@ -633,9 +633,7 @@ static void * sub_stream(void *argv)
             {
                 if (!ftest) {
                     tuya_video(vstream.pstPack->pu8Addr, vstream.pstPack->u32Len, 1);
-                } else {
-                    avkcps_video(context->avkcps, vstream.pstPack->pu8Addr, vstream.pstPack->u32Len);
-                }     
+                }
             }
             else{
                 printf("MI_VENC_GetStream failed\n");
@@ -1490,7 +1488,7 @@ static void mic_auto_test_run(CONTEXT *context, int16_t *buf, int len)
             }
         }
         printf("freqidx = %d, maxamp = %.2f\n", freqidx, maxamp);
-        if ((freqidx == 64 || freqidx == 192) && maxamp > 500000) {
+        if (freqidx > 1 && maxamp > 500000) {
             play_mp3_file(context, MICOK_AUDIO_FILE, 0);
             context->hwstate |= HW_MIC_TEST_OK;
             testdone = 1;
@@ -1700,7 +1698,7 @@ static void* network_monitor_proc(void *argv)
 
 void request_idr()
 {
-    MI_VENC_RequestIdr(2, 0);
+    MI_VENC_RequestIdr(1, 0);
 }
 
 int main(int argc, char *argv[])
@@ -1754,7 +1752,7 @@ int main(int argc, char *argv[])
     }
  
     if (ftest) {
-        context->avkcps = avkcps_init (8000, "alaw", 1, 8000, "h264", 1280, 720, 15, request_idr);
+        context->avkcps = avkcps_init(8000, "alaw", 1, 8000, "h264", 1920, 1080, 15, request_idr);
     }
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);

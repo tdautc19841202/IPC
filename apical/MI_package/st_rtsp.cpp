@@ -866,6 +866,7 @@ MI_S32 ST_BaseModuleInit(ST_Config_S* pstConfig)
     printf("You select %d res\n", u32ChocieRes);
 
     MI_SNR_SetRes(E_MI_SNR_PAD_ID_0,u32ChocieRes);
+    MI_SNR_SetFps(E_MI_SNR_PAD_ID_0, 15);
     MI_SNR_Enable(E_MI_SNR_PAD_ID_0);
 
     MI_SNR_GetPadInfo(E_MI_SNR_PAD_ID_0, &stPad0Info);
@@ -1078,15 +1079,15 @@ void ST_DefaultArgs(ST_Config_S *pstConfig)
 
     pstStreamAttr[1].bEnable = TRUE;
     pstStreamAttr[1].eType = E_MI_VENC_MODTYPE_H264E;
-    pstStreamAttr[1].u32Width = 1280;
-    pstStreamAttr[1].u32Height = 720;
+    pstStreamAttr[1].u32Width = 1920;
+    pstStreamAttr[1].u32Height = 1080;
     pstStreamAttr[1].eBindType = E_MI_SYS_BIND_TYPE_HW_RING;
-    pstStreamAttr[1].u32BindPara = 720;
+    pstStreamAttr[1].u32BindPara = 1080;
 
     pstStreamAttr[2].bEnable = TRUE;
     pstStreamAttr[2].eType = E_MI_VENC_MODTYPE_H264E;
-    pstStreamAttr[2].u32Width = 1280;
-    pstStreamAttr[2].u32Height = 720;
+    pstStreamAttr[2].u32Width = 704;
+    pstStreamAttr[2].u32Height = 396;
     pstStreamAttr[2].eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     pstStreamAttr[2].u32BindPara = 0;
     pstStreamAttr[2].enInput = ST_Sys_Input_DIVP;
