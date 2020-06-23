@@ -2,13 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include "mi_ao.h"
-#include "mi_ai.h"
+#include "mi_common_datatype.h"
 #include "mi_sys.h"
-#include "mi_aio_datatype.h"
+#include "mi_ai.h"
+#include "mi_ao.h"
 #include "apkapi.h"
 #include "wavapi.h" 
-#include "mi_common_datatype.h"
 
 MI_AUDIO_AnrConfig_t stAnrCfg = {
     .eMode = E_MI_AUDIO_ALGORITHM_MODE_MUSIC,
@@ -53,88 +52,78 @@ MI_AUDIO_HpfConfig_t stHpfCfg = {
 
 int wavein_init(int ftest)
 {
-    MI_BOOL  bAiEnableVqe = 0;  //语音质量增强
-    MI_BOOL  bAiEnableAenc = 1;  //音频编码功能
-    MI_BOOL  bAiEnableHpf = FALSE;  //高通滤波功能
-    MI_BOOL  bAiEnableAgc = FALSE;  //自动增益控制
-    MI_BOOL  bAiEnableNr = FALSE;  //语音降噪功能
-    MI_BOOL  bAiEnableAec = 1;  //回声抵消功能
-    MI_BOOL  bAiEnableEq = FALSE;  //均衡器功能
-    MI_AUDIO_SampleRate_e eAiOutputResampleRate = 8000;
+    MI_BOOL  bAiEnableVqe  = 1;         //语音质量增强
+    MI_BOOL  bAiEnableAenc = 1;         //音频编码功能
+    MI_BOOL  bAiEnableHpf  = FALSE;     //高通滤波功能
+    MI_BOOL  bAiEnableAgc  = 1;         //自动增益控制
+    MI_BOOL  bAiEnableNr   = FALSE;     //语音降噪功能
+    MI_BOOL  bAiEnableAec  = 0;         //回声抵消功能
+    MI_BOOL  bAiEnableEq   = FALSE;     //均衡器功能
+    MI_BOOL  bAiSetVolume  = TRUE;      //设置音频增益
+    MI_S32   s32AiVolume   = 14;        //音频增益电压
+    MI_AUDIO_Attr_t     stAiSetAttr;
+    MI_AI_AencConfig_t  stAiSetAencConfig;
+    MI_AI_VqeConfig_t   stAiSetVqeConfig;
+    MI_U32              u32ChnIdx;
+    MI_U32              u32ChnCnt;
+    MI_S32              s32Ret;
+    MI_SYS_ChnPort_t    stAiChnOutputPort0[MI_AUDIO_MAX_CHN_NUM];
+    MI_U32              u32VqeWorkingSampleRate = 8000;
+    MI_AUDIO_SampleRate_e eAiSampleRate = 8000;  //音频采样率
+    MI_AUDIO_AencType_e eAiAencType = E_MI_AUDIO_AENC_TYPE_G711A;
+    AiSoundMode_e eAiSoundMode = E_AI_SOUND_MODE_MONO;  //单声道
     MI_U32   u32AiChnCnt = 1;  //音频通道数量
     MI_BOOL  bAiEnableHwAec = FALSE;
-    MI_S32   s32AiVolume = 14;  //音频增益电压
     MI_AUDIO_DEV AiDevId = 0;  //音频设备号
-    MI_AUDIO_AencType_e eAiAencType = E_MI_AUDIO_AENC_TYPE_G711A;
     MI_AUDIO_SampleRate_e eAiWavSampleRate = 8000;
-    MI_AUDIO_SampleRate_e eAiSampleRate = 8000;  //音频采样率
-    AiSoundMode_e eAiSoundMode = E_AI_SOUND_MODE_MONO;  //单声道
-    MI_U32  u32VqeWorkingSampleRate = 8000;
-    MI_AUDIO_Attr_t     AiSetAttr;
-    MI_AI_AencConfig_t  stAiSetAencConfig;
-    MI_AI_VqeConfig_t   AiSetVqeConfig;
-    MI_U32              u32ChnIdx;
-    MI_SYS_ChnPort_t    stAiChnOutputPort0[MI_AUDIO_MAX_CHN_NUM];
 
-    if(ftest){
-        bAiEnableAec = FALSE; //工厂测试模式下关闭回声抵消功能
-    }
-    memset(&AiSetAttr, 0x0, sizeof(MI_AUDIO_Attr_t));
-    AiSetAttr.eBitwidth = E_MI_AUDIO_BIT_WIDTH_16;
-    AiSetAttr.eSamplerate = eAiSampleRate;
-    AiSetAttr.eSoundmode = eAiSoundMode;
-    AiSetAttr.eWorkmode = E_MI_AUDIO_MODE_I2S_MASTER;
-    AiSetAttr.u32ChnCnt = u32AiChnCnt;
-    AiSetAttr.u32CodecChnCnt = 0; // useless
-    AiSetAttr.u32FrmNum = 6;  // useless
-    AiSetAttr.u32PtNumPerFrm = AiSetAttr.eSamplerate / 16; // for aec
-    AiSetAttr.WorkModeSetting.stI2sConfig.bSyncClock = FALSE; // useless
-    AiSetAttr.WorkModeSetting.stI2sConfig.eFmt = E_MI_AUDIO_I2S_FMT_I2S_MSB;
-    AiSetAttr.WorkModeSetting.stI2sConfig.eMclk = E_MI_AUDIO_I2S_MCLK_0;
+    memset(&stAiSetAttr, 0x0, sizeof(MI_AUDIO_Attr_t));
 
-    memset(&AiSetVqeConfig, 0x0, sizeof(MI_AI_VqeConfig_t));
+    stAiSetAttr.eBitwidth = E_MI_AUDIO_BIT_WIDTH_16;
+    stAiSetAttr.eSamplerate = 8000;
+    stAiSetAttr.eSoundmode = eAiSoundMode;
+    stAiSetAttr.eWorkmode = E_MI_AUDIO_MODE_I2S_MASTER;
+    stAiSetAttr.u32ChnCnt = 1;
+    stAiSetAttr.u32CodecChnCnt = 0; // useless
+    stAiSetAttr.u32FrmNum = 6;  // useless
+    stAiSetAttr.u32PtNumPerFrm = stAiSetAttr.eSamplerate / 16; // for aec
+    stAiSetAttr.WorkModeSetting.stI2sConfig.bSyncClock = FALSE; // useless
+    stAiSetAttr.WorkModeSetting.stI2sConfig.eFmt = E_MI_AUDIO_I2S_FMT_I2S_MSB;
+    stAiSetAttr.WorkModeSetting.stI2sConfig.eMclk = E_MI_AUDIO_I2S_MCLK_0;
+
+    memset(&stAiSetVqeConfig, 0x0, sizeof(MI_AI_VqeConfig_t));
     if (bAiEnableVqe)
     {
-        AiSetVqeConfig.bAecOpen = bAiEnableAec;
-        AiSetVqeConfig.bAgcOpen = bAiEnableAgc;
-        AiSetVqeConfig.bAnrOpen = bAiEnableNr;
-        AiSetVqeConfig.bEqOpen = bAiEnableEq;
-        AiSetVqeConfig.bHpfOpen = bAiEnableHpf;
-        AiSetVqeConfig.s32FrameSample = 128;
-        if ((bAiEnableAec) && (E_MI_AUDIO_SAMPLE_RATE_INVALID != u32VqeWorkingSampleRate))
+		stAiSetVqeConfig.u32ChnNum = u32AiChnCnt;
+        stAiSetVqeConfig.bAecOpen  = bAiEnableAec;
+        stAiSetVqeConfig.bAgcOpen  = bAiEnableAgc;
+        stAiSetVqeConfig.bAnrOpen  = bAiEnableNr;
+        stAiSetVqeConfig.bEqOpen   = bAiEnableEq;
+        stAiSetVqeConfig.bHpfOpen  = bAiEnableHpf;
+        stAiSetVqeConfig.s32FrameSample = 128;
+        if ((E_MI_AUDIO_SAMPLE_RATE_INVALID != u32VqeWorkingSampleRate))
         {
-            AiSetVqeConfig.s32WorkSampleRate = u32VqeWorkingSampleRate;
+        	stAiSetVqeConfig.s32WorkSampleRate = u32VqeWorkingSampleRate;
         }
         else
         {
-            AiSetVqeConfig.s32WorkSampleRate = eAiSampleRate;
+			stAiSetVqeConfig.s32WorkSampleRate = eAiSampleRate;
         }
+
         // AEC
-        memcpy(&AiSetVqeConfig.stAecCfg, &stAecCfg, sizeof(MI_AI_AecConfig_t));
+        memcpy(&stAiSetVqeConfig.stAecCfg, &stAecCfg, sizeof(MI_AI_AecConfig_t));
 
         // AGC
-        memcpy(&AiSetVqeConfig.stAgcCfg, &stAgcCfg, sizeof(MI_AUDIO_AgcConfig_t));
+        memcpy(&stAiSetVqeConfig.stAgcCfg, &stAgcCfg, sizeof(MI_AUDIO_AgcConfig_t));
 
         // ANR
-        memcpy(&AiSetVqeConfig.stAnrCfg, &stAnrCfg, sizeof(MI_AUDIO_AnrConfig_t));
+        memcpy(&stAiSetVqeConfig.stAnrCfg, &stAnrCfg, sizeof(MI_AUDIO_AnrConfig_t));
 
         // EQ
-        memcpy(&AiSetVqeConfig.stEqCfg, &stEqCfg, sizeof(MI_AUDIO_EqConfig_t));
+        memcpy(&stAiSetVqeConfig.stEqCfg, &stEqCfg, sizeof(MI_AUDIO_EqConfig_t));
 
         // HPF
-        memcpy(&AiSetVqeConfig.stHpfCfg, &stHpfCfg, sizeof(MI_AUDIO_HpfConfig_t));
-    }
-    ExecFunc(MI_AI_SetPubAttr(AiDevId, &AiSetAttr), MI_SUCCESS);
-    ExecFunc(MI_AI_Enable(AiDevId), MI_SUCCESS);
-
-    for (u32ChnIdx = 0; u32ChnIdx < u32AiChnCnt; u32ChnIdx++)
-    {
-        ExecFunc(MI_AI_SetVqeVolume(AiDevId, u32ChnIdx, s32AiVolume), MI_SUCCESS);
-    }
-
-    if (bAiEnableHwAec)
-    {
-        ExecFunc(MI_AI_SetVqeVolume(AiDevId, 1, 1), MI_SUCCESS);
+        memcpy(&stAiSetVqeConfig.stHpfCfg, &stHpfCfg, sizeof(MI_AUDIO_HpfConfig_t));
     }
 
     memset(&stAiSetAencConfig, 0x0, sizeof(MI_AI_AencConfig_t));
@@ -150,10 +139,52 @@ int wavein_init(int ftest)
             stAiSetAencConfig.stAencG711Cfg.eSoundmode = eAiSoundMode;
         }
     }
-    
+
+    if (bAiEnableHwAec)
+    {
+        u32ChnCnt = 1;
+    }
+    else
+    {
+        u32ChnCnt = u32AiChnCnt;
+    }
+    ExecFuncNoExit(MI_AI_SetPubAttr(AiDevId, &stAiSetAttr), MI_SUCCESS, s32Ret);
+    if (MI_SUCCESS != s32Ret)
+    {
+		goto ERROR_RETURN;
+    }
+
+    ExecFuncNoExit(MI_AI_Enable(AiDevId), MI_SUCCESS, s32Ret);
+    if (MI_SUCCESS != s32Ret)
+    {
+		goto ERROR_RETURN;
+    }
+
+    if (bAiSetVolume)
+    {
+        for (u32ChnIdx = 0; u32ChnIdx < u32ChnCnt; u32ChnIdx++)
+        {
+            ExecFunc(MI_AI_SetVqeVolume(AiDevId, u32ChnIdx, s32AiVolume), MI_SUCCESS);
+        }
+    }
+
+    if (bAiEnableHwAec)
+    {
+        ExecFunc(MI_AI_SetVqeVolume(AiDevId, 1, 1), MI_SUCCESS);
+    }
+
     memset(&stAiChnOutputPort0, 0x0, sizeof(stAiChnOutputPort0));
 
-    for (u32ChnIdx = 0; u32ChnIdx < u32AiChnCnt; u32ChnIdx++)
+    if ((E_AI_SOUND_MODE_QUEUE == eAiSoundMode) || bAiEnableHwAec)
+    {
+        u32ChnCnt = 1;
+    }
+    else
+    {
+        u32ChnCnt = u32AiChnCnt;
+    }
+
+    for (u32ChnIdx = 0; u32ChnIdx < u32ChnCnt; u32ChnIdx++)
     {
         stAiChnOutputPort0[u32ChnIdx].eModId = E_MI_MODULE_ID_AI;
         stAiChnOutputPort0[u32ChnIdx].u32DevId = AiDevId;
@@ -162,33 +193,51 @@ int wavein_init(int ftest)
         ExecFunc(MI_SYS_SetChnOutputPortDepth(&stAiChnOutputPort0[u32ChnIdx], 1, TOTAL_BUF_DEPTH), MI_SUCCESS);
     }
 
-    for (u32ChnIdx = 0; u32ChnIdx < u32AiChnCnt; u32ChnIdx++)
+    for (u32ChnIdx = 0; u32ChnIdx < u32ChnCnt; u32ChnIdx++)
     {
         if (bAiEnableHwAec)
         {
             ExecFunc(MI_AI_SetExtAecChn(AiDevId, u32ChnIdx, 1), MI_SUCCESS);
         }
-        ExecFunc(MI_AI_EnableChn(AiDevId, u32ChnIdx), MI_SUCCESS);
+        ExecFuncNoExit(MI_AI_EnableChn(AiDevId, u32ChnIdx), MI_SUCCESS, s32Ret);
+        if (MI_SUCCESS != s32Ret)
+        {
+			goto DISABLE_DEVICE;
+        }
     }
-
-    for (u32ChnIdx = 0; u32ChnIdx < u32AiChnCnt; u32ChnIdx++)
+    for (u32ChnIdx = 0; u32ChnIdx < u32ChnCnt; u32ChnIdx++)
     {
+        // VQE
         if(bAiEnableVqe)
         {
-            ExecFunc(MI_AI_SetVqeAttr(AiDevId, u32ChnIdx, 0, 0, &AiSetVqeConfig), MI_SUCCESS);
+            ExecFunc(MI_AI_SetVqeAttr(AiDevId, u32ChnIdx, 0, 0, &stAiSetVqeConfig), MI_SUCCESS);
             ExecFunc(MI_AI_EnableVqe(AiDevId, u32ChnIdx), MI_SUCCESS);
-            if ((TRUE == AiSetVqeConfig.bAecOpen)&& (E_MI_AUDIO_SAMPLE_RATE_INVALID != u32VqeWorkingSampleRate))
+            if ((E_MI_AUDIO_SAMPLE_RATE_INVALID != u32VqeWorkingSampleRate))
             {
-                eAiWavSampleRate = u32VqeWorkingSampleRate;
+            	eAiWavSampleRate = u32VqeWorkingSampleRate;
             }
         }
+
+        // AENC
         if (bAiEnableAenc)
         {
             ExecFunc(MI_AI_SetAencAttr(AiDevId, u32ChnIdx, &stAiSetAencConfig), MI_SUCCESS);
             ExecFunc(MI_AI_EnableAenc(AiDevId, u32ChnIdx), MI_SUCCESS);
         }
     }
+    printf("init ai succeed!!!\n");
     return 0;
+
+DISABLE_CHANNEL:
+	for (u32ChnIdx = 0; u32ChnIdx < u32ChnCnt; u32ChnIdx++)
+	{
+		ExecFunc(MI_AI_DisableChn(AiDevId, u32ChnIdx), MI_SUCCESS);
+	}
+DISABLE_DEVICE:
+	ExecFunc(MI_AI_Disable(AiDevId), MI_SUCCESS);
+
+ERROR_RETURN:
+	return s32Ret;
 }
 
 void wavein_exit(void)

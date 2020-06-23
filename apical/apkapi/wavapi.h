@@ -17,7 +17,6 @@
 #define DEF_AI_BUFSIZE (534 * (AI_SAMPRATE / 8000) * sizeof(int16_t) * 1)
 #define DEF_AO_BUFSIZE (534 * (AI_SAMPRATE / 8000) * sizeof(int16_t) * 2)
 
-#ifndef ExecFunc
 #define ExecFunc(_func_, _ret_) \
     do{ \
         MI_S32 s32Ret = MI_SUCCESS; \
@@ -32,7 +31,23 @@
             printf("[%s %d]exec function pass\n", __func__, __LINE__); \
         } \
     } while(0)
-#endif
+
+#define ExecFuncNoExit(func, _ret_, __ret) \
+do{	\
+	MI_S32 s32TmpRet;	\
+    printf("%d Start test: %s\n", __LINE__, #func);\
+    s32TmpRet = func;	\
+    __ret = s32TmpRet;	\
+    if (s32TmpRet != _ret_)\
+    {\
+        printf("AUDIO_TEST [%d] %s exec function failed, result:0x%x\n",__LINE__, #func, s32TmpRet);\
+    }\
+    else\
+    {\
+        printf("AUDIO_TEST [%d] %s  exec function pass\n", __LINE__, #func);\
+        printf("%d End test: %s\n", __LINE__, #func);	\
+    }\
+}while(0);
 
 typedef enum
 {

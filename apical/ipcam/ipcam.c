@@ -1189,7 +1189,7 @@ static void handle_button(CONTEXT *context, int *button_counter)
     if (*button_counter == 5) {
         if (factorytest == 1) {
             context->hwstate &= ~HW_MIC_TEST_OK;
-            play_mp3_file(context, BEEP_AUDIO_FILE, 0);
+            play_mp3_file(context, BEEP_AUDIO_FILE,0);
             context->spkmic_test_tick = get_tick_count();
         }
     } else if (*button_counter == 15&& strcmp(context->settings.ft_mode, "smt") != 0) {
@@ -1490,7 +1490,7 @@ static void mic_auto_test_run(CONTEXT *context, int16_t *buf, int len)
             }
         }
         printf("freqidx = %d, maxamp = %.2f\n", freqidx, maxamp);
-        if (freqidx > 1 && maxamp > 500000) {
+         if ((freqidx == 64 || freqidx == 192) && maxamp > 500000) {
             play_mp3_file(context, MICOK_AUDIO_FILE, 0);
             context->hwstate |= HW_MIC_TEST_OK;
             testdone = 1;
@@ -1640,7 +1640,7 @@ static void* audio_capture_proc(void *argv)
             if (context->settings.standby) { usleep(100*1000); continue; }
             if (MI_SUCCESS == MI_AI_GetFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL, -1)) {
                 if (ftest) avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len, 1);
-                for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);
+                for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);   
                 mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
                 if(!ftest) tuya_audio(frame.apVirAddr[0], frame.u32Len);
                 MI_AI_ReleaseFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL);
