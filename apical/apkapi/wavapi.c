@@ -57,7 +57,7 @@ int wavein_init(int ftest)
     MI_BOOL  bAiEnableHpf  = FALSE;     //高通滤波功能
     MI_BOOL  bAiEnableAgc  = 1;         //自动增益控制
     MI_BOOL  bAiEnableNr   = FALSE;     //语音降噪功能
-    MI_BOOL  bAiEnableAec  = 0;         //回声抵消功能
+    MI_BOOL  bAiEnableAec  = 1;         //回声抵消功能
     MI_BOOL  bAiEnableEq   = FALSE;     //均衡器功能
     MI_BOOL  bAiSetVolume  = TRUE;      //设置音频增益
     MI_S32   s32AiVolume   = 14;        //音频增益电压
@@ -77,6 +77,9 @@ int wavein_init(int ftest)
     MI_AUDIO_DEV AiDevId = 0;  //音频设备号
     MI_AUDIO_SampleRate_e eAiWavSampleRate = 8000;
 
+    if(ftest){
+        bAiEnableAec = FALSE; //工厂测试模式下关闭回声抵消功能
+    }
     memset(&stAiSetAttr, 0x0, sizeof(MI_AUDIO_Attr_t));
 
     stAiSetAttr.eBitwidth = E_MI_AUDIO_BIT_WIDTH_16;
