@@ -1231,27 +1231,27 @@ static void* ptz_move_control(void *argv){
         if (context->ptz_move == -1) {
             motor_speed(context->motor, 10, 10);
             switch (ptz_move) {
-            case 0: motor_action(context->motor, MOTOR_TYPE_MOTOR2, 500); break;
-            case 4: motor_action(context->motor, MOTOR_TYPE_MOTOR2,-500); break;
-            case 2: motor_action(context->motor, MOTOR_TYPE_MOTOR1, 500); break;
-            case 6: motor_action(context->motor, MOTOR_TYPE_MOTOR1,-500); break;
+            case 1: motor_action(context->motor, MOTOR_TYPE_MOTOR2, 500); break;
+            case 5: motor_action(context->motor, MOTOR_TYPE_MOTOR2,-500); break;
+            case 3: motor_action(context->motor, MOTOR_TYPE_MOTOR1, 500); break;
+            case 7: motor_action(context->motor, MOTOR_TYPE_MOTOR1,-500); break;
             }
             context->ptz_move = -2;
         } else if (30 <= thread_counter && thread_counter < 60 && 0 <= context->ptz_move) {
             motor_speed(context->motor, 10, 10);
             switch (ptz_move) {
-            case 0: motor_action(context->motor, MOTOR_TYPE_MOTOR2, 500); break;
-            case 4: motor_action(context->motor, MOTOR_TYPE_MOTOR2,-500); break;
-            case 2: motor_action(context->motor, MOTOR_TYPE_MOTOR1, 500); break;
-            case 6: motor_action(context->motor, MOTOR_TYPE_MOTOR1,-500); break;
+            case 1: motor_action(context->motor, MOTOR_TYPE_MOTOR2, 500); break;
+            case 5: motor_action(context->motor, MOTOR_TYPE_MOTOR2,-500); break;
+            case 3: motor_action(context->motor, MOTOR_TYPE_MOTOR1, 500); break;
+            case 7: motor_action(context->motor, MOTOR_TYPE_MOTOR1,-500); break;
             }
         } else if (60 <= thread_counter && 0 <= context->ptz_move) {
             motor_speed(context->motor, 5, 10);
             switch (ptz_move) {
-            case 0: motor_action(context->motor, MOTOR_TYPE_MOTOR2, 1000); break;
-            case 4: motor_action(context->motor, MOTOR_TYPE_MOTOR2,-1000); break;
-            case 2: motor_action(context->motor, MOTOR_TYPE_MOTOR1, 1000); break;
-            case 6: motor_action(context->motor, MOTOR_TYPE_MOTOR1,-1000); break;
+            case 1: motor_action(context->motor, MOTOR_TYPE_MOTOR2, 1000); break;
+            case 5: motor_action(context->motor, MOTOR_TYPE_MOTOR2,-1000); break;
+            case 3: motor_action(context->motor, MOTOR_TYPE_MOTOR1, 1000); break;
+            case 7: motor_action(context->motor, MOTOR_TYPE_MOTOR1,-1000); break;
             }
         }
         if (context->ptz_move == -1) {
