@@ -159,6 +159,7 @@ typedef struct {
     char            user_account[33];
     char            devuid    [33];
     char            devsid    [33];
+    char            devsn     [11];
     char            mp3file   [64];
     char            ispbinday [32];
     char            ispbinight[32];
@@ -1005,6 +1006,9 @@ static void* ftest_and_rpc_proc(void *argv)
             } else if (strcmp(msg, "sid?") == 0) {
                 snprintf(msg, sizeof(msg), "sid:%s", context->devsid);
                 len = strlen(msg) + 1;
+            }else if (strcmp(msg, "sn?") == 0) {
+                snprintf(msg, sizeof(msg), "sn:%s", context->devsn);
+                len = strlen(msg) + 1;
             } else if (strcmp(msg, "micspktest!") == 0) {
                 play_mp3_file(context, BEEP_AUDIO_FILE, 1);
                 context->spkmic_test_tick = get_tick_count();
@@ -1029,21 +1033,26 @@ static void* ftest_and_rpc_proc(void *argv)
                 snprintf(msg, sizeof(msg), "ft_uid:%s", context->settings.ft_uid);
                 len = strlen(msg) + 1;
             } else if (strstr(msg, "uid=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
-                set_dev_ids(NULL, NULL, NULL, msg + 4);
+                set_dev_ids(NULL, NULL, NULL, msg + 4, NULL);
                 strncpy(context->devuid, msg + 4, sizeof(context->devuid));
                 snprintf(msg, sizeof(msg), "uid.");
                 len = strlen(msg) + 1;
             } else if (strstr(msg, "sid=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
-                set_dev_ids(NULL, NULL, msg + 4, NULL);
+                set_dev_ids(NULL, NULL, msg + 4, NULL, NULL);
                 strncpy(context->devsid, msg + 4, sizeof(context->devsid));
                 snprintf(msg, sizeof(msg), "sid.");
+                len = strlen(msg) + 1;
+            } else if (strstr(msg, "sn=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                set_dev_ids(NULL, NULL, NULL, NULL, msg + 3);
+                strncpy(context->devsn, msg + 3, sizeof(context->devsn));
+                snprintf(msg, sizeof(msg), "sn.");
                 len = strlen(msg) + 1;
             } else if (strstr(msg, "iperf3=") == msg) {
                 set_iperf3_start(context, atoi(msg + 7));
                 len = strlen(msg) + 1;
                 snprintf(msg, sizeof(msg), "iperf3.");
             } else if (strstr(msg, "mac=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
-                set_wlan_mac(msg);
+                set_wlan_mac(msg + 4);
             } else if (strstr(msg, "wifi_signal?") == msg) {
                 snprintf(msg, sizeof(msg), "wifi_signal:%d", get_wifi_signal());
                 len = strlen(msg) + 1;
@@ -1758,6 +1767,8 @@ int main(int argc, char *argv[])
    
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
+    get_dev_sid(context->devsn , sizeof(context->devsn ));
+    printf("\n\nsw_ver = %d\n\n",get_build_num());
     // init pthread attr
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);

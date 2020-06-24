@@ -227,6 +227,7 @@ typedef struct {
     char mac_wlan[18];
     char dev_sid [33];
     char dev_uid [33];
+    char dev_sn  [11];
 } DEVIDDATA;
 
 static int mtd_read_ids_data(DEVIDDATA *data)
@@ -322,7 +323,28 @@ int get_dev_uid(char *uid, int size)
     return 0;
 }
 
-int set_dev_ids(char *mac_eth, char *mac_wlan, char *dev_sid, char *dev_uid)
+//zyh add 
+int get_dev_sn (char *sn, int size)
+{
+    DEVIDDATA data;
+    int       i;
+    if (mtd_read_ids_data(&data) < 0) return -1;
+    if (memcmp(data.signature, "APKIPCAM", 8) == 0) {
+        memcpy(sn, data.dev_sn, size < sizeof(data.dev_sn) ? size : sizeof(data.dev_sn));
+        sn[size < sizeof(data.dev_sn) ? size-1 : sizeof(data.dev_sn)] = '\0';
+    } else {
+        sn[0] = '\0';
+    }
+    for (i=0; i<size; i++) {
+        if (sn[i] == 0xff) {
+            sn[i] = 0;
+            break;
+        }
+    }
+    return 0;
+}
+
+int set_dev_ids(char *mac_eth, char *mac_wlan, char *dev_sid, char *dev_uid, char *dev_sn)
 {
     DEVIDDATA newdata = {};
     DEVIDDATA olddata;
@@ -332,45 +354,16 @@ int set_dev_ids(char *mac_eth, char *mac_wlan, char *dev_sid, char *dev_uid)
     strncpy(newdata.mac_wlan, mac_wlan? mac_wlan: olddata.mac_wlan, sizeof(newdata.mac_wlan));
     strncpy(newdata.dev_sid , dev_sid ? dev_sid : olddata.dev_sid , sizeof(newdata.dev_sid ));
     strncpy(newdata.dev_uid , dev_uid ? dev_uid : olddata.dev_uid , sizeof(newdata.dev_uid ));
+    strncpy(newdata.dev_sn  , dev_sn  ? dev_sn  : olddata.dev_sn  , sizeof(newdata.dev_sn  ));
     if (memcmp(&olddata, &newdata, sizeof(DEVIDDATA)) != 0) {
         return mtd_write_ids_data(&newdata);
     }
     return 0;
 }
 
-int get_dev_mac(char *wlan_mac)
+//zyh add
+int get_dev_mac(char *str)
 {
-#if 0
-    int    sock;
-    struct ifreq ifr = {};
-
-    if (strcmp(dev, "eth0") == 0) {
-        DEVIDDATA data;
-        if (mtd_read_ids_data(&data) == 0) {
-            if (memcmp(data.signature, "APKIPCAM", 8) == 0) {
-                memcpy(str, data.mac_eth, len < sizeof(data.mac_eth) ? len : sizeof(data.mac_eth));
-                str[len < sizeof(data.mac_eth) ? len : sizeof(data.mac_eth)] = '\0';
-                if (strlen(str) > 0) return 0;
-            }
-        }
-    }
-
-    strncpy(ifr.ifr_name, dev, sizeof(ifr.ifr_name));
-    sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) return -1;
-    ioctl(sock, SIOCGIFHWADDR, &ifr);
-    close(sock);
-
-    snprintf(str, len, "%02x:%02x:%02x:%02x:%02x:%02x",
-        (unsigned char)ifr.ifr_hwaddr.sa_data[0],
-        (unsigned char)ifr.ifr_hwaddr.sa_data[1],
-        (unsigned char)ifr.ifr_hwaddr.sa_data[2],
-        (unsigned char)ifr.ifr_hwaddr.sa_data[3],
-        (unsigned char)ifr.ifr_hwaddr.sa_data[4],
-        (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
-    return 0;
-#endif
-    char str[18];
     char buf[128];
     int i = 19;
     int j = 0;
@@ -381,13 +374,18 @@ int get_dev_mac(char *wlan_mac)
     {
         str[j++] = buf[i++];
     }
-    str[j] = '\0';
-    if (file_exist("/tmp/wlan_mac"))
+    printf("j = %d\n",j);
+	for(i=j=0;str[i]!='\0';i++)
     {
-        system("rm /tmp/wlan_mac");
-    }
-
-    return 0;
+		if(str[i] != ':')
+        {
+			str[j++]=str[i];
+		}
+	}
+	str[j]='\0';
+    printf("j = %d\n",j);
+    printf("wlan_mac = %s\n",str);
+    return 0; 
 }
 
 int get_dev_ip(char *dev, char *str, int len)
@@ -627,42 +625,35 @@ int send_msg_to_ipcam(char *msg, char *params)
 
 int set_wlan_mac(char *mac)
 {
-    int i = 4;
-    int j = 0;
-    char buf[16];
     char cmd[256];
-    char *wlan_mac = mac;
-    while (wlan_mac[i] != '\0')
-    {
-        buf[j++] = wlan_mac[i++];
-    }
-   
-    snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_set mac,\"%s\"",buf);
+    printf("mac = %s\n\n",mac);
+    snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_set mac,%s",mac);
+    printf("cmd = %s\n",cmd);
     system(cmd);
-    sleep(1);
-    set_wlan_map();
+    sleep(2);
+    //set_wlan_map();
 }
 
 int set_wlan_map()
 {
     system("ifconfig wlan0 up");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 mp_start");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x00,298100CC0B000000000C044C100C0000");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x010,2929282828282929291B1B02FFFFFFFF ");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0B0,FFFFFFFFFFFFFFFF20202500000000FF ");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0C0,FF11001000FF00FF0000FFFFFFFFFFFF");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0D0,DA0B79F142664000E04CF17900090352");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0E0,65616C74656B09033830322E31316E00");
-    sleep(1);
+    sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x130,C1AEFFFFFFFFFFFFFFFF0011FFFFFFFF");
-    sleep(1);  
+    sleep(2);  
     system("rtwpriv wlan0 efuse_set wlfk2map");
-    sleep(1);  
+    sleep(2);  
 }

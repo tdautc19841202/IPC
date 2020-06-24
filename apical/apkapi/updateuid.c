@@ -133,7 +133,7 @@ int sdcard_update_uid(char *path)
     fprintf(record_file,"%d\n",atoi(line_num)+1);
     fclose(record_file);
     
-    if (set_dev_ids(NULL,NULL,sid_cur,uuid_cur) != -1) {
+    if (set_dev_ids(NULL,NULL,sid_cur,uuid_cur,NULL) != -1) {
         if((burned_file = fopen(burned_log,"a+")) != NULL) {
             fwrite(devid, DEVID_LEN, 1, burned_file);
             fwrite("\r\n", 2, 1, burned_file);
