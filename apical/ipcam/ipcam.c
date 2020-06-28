@@ -92,6 +92,7 @@ typedef struct {
     #define FLAG_VOICE_ISPLAYING     (1 << 14)
     #define FLAG_SD_FIRST_INSERT     (1 << 15)
     #define FLAG_HAVE_PAIRED         (1 << 16)
+    #define FLAG_WRITE_WLAN_MAP      (1 << 17)
     uint32_t        status;
     uint32_t        ledtype;
 
@@ -1683,14 +1684,25 @@ static void* network_monitor_proc(void *argv)
     CONTEXT *context = (CONTEXT*)argv;
     char wlanip[16]  = "";
     static int network_sec_count;
-    char wlan0_mac[18];
+    int write_wlan_map = 0;
     int ftest = strcmp(context->settings.ft_mode, "") != 0;
     pthread_setname_np(pthread_self(),"nmon");
+    context->status |= FLAG_WRITE_WLAN_MAP;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (context->settings.paired) { // 判断设备是否成功配对过
             context->status |= FLAG_HAVE_PAIRED;
         }
         if (get_dev_ip("wlan0", wlanip, sizeof(wlanip)) == 0){
+            if (context->status & FLAG_WRITE_WLAN_MAP)
+            {
+                write_wlan_map = get_wlan_map_and_compare();
+                if (write_wlan_map != 0)
+                {
+                    set_wlan_map();
+                    printf("set wlan map over!!!\n\n\n");
+                }
+                context->status &=~ FLAG_WRITE_WLAN_MAP;
+            }
             GET_IP_FLAG = 1;
             context->status |= FLAG_WIFI_CONNECTED;
             if (!ftest && get_mqtt_status() == 0 && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）

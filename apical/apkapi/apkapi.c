@@ -622,7 +622,7 @@ int send_msg_to_ipcam(char *msg, char *params)
     return ret > 0 && strstr(rxbuf, "rpc. ") == rxbuf && atoi(rxbuf + 5) == id ? 0 : -1;
 }
 
-
+//zyh add
 int set_wlan_mac(char *mac)
 {
     char cmd[256];
@@ -636,15 +636,13 @@ int set_wlan_mac(char *mac)
 
 int set_wlan_map()
 {
-    system("ifconfig wlan0 up");
-    sleep(2);
     system("rtwpriv wlan0 mp_start");
     sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x00,298100CC0B000000000C044C100C0000");
     sleep(2);
-    system("rtwpriv wlan0 efuse_set wlwfake,0x010,2929282828282929291B1B02FFFFFFFF ");
+    system("rtwpriv wlan0 efuse_set wlwfake,0x010,2929282828282929291B1B02FFFFFFFF");
     sleep(2);
-    system("rtwpriv wlan0 efuse_set wlwfake,0x0B0,FFFFFFFFFFFFFFFF20202500000000FF ");
+    system("rtwpriv wlan0 efuse_set wlwfake,0x0B0,FFFFFFFFFFFFFFFF20202500000000FF");
     sleep(2);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0C0,FF11001000FF00FF0000FFFFFFFFFFFF");
     sleep(2);
@@ -656,4 +654,32 @@ int set_wlan_map()
     sleep(2);  
     system("rtwpriv wlan0 efuse_set wlfk2map");
     sleep(2);  
+}
+
+int get_wlan_map_and_compare(void)
+{
+    char buf[128];
+    char cmd[128];
+    int  val = 0;
+    int    i = 0;
+    int    j = 0;
+    int  line[7] = {0x00, 0x10, 0xB0, 0xC0, 0xD0, 0xE0, 0x130};
+    char *str[7] = {"wlan0    efuse_get:0x29 0x81 0x00 0xCC 0x0B 0x00 0x00 0x00 0x00 0x0C 0x04 0x4C 0x10 0x0C 0x00 0x00",
+                    "wlan0    efuse_get:0x29 0x29 0x28 0x28 0x28 0x28 0x29 0x29 0x29 0x1B 0x1B 0x02 0xFF 0xFF 0xFF 0xFF",
+                    "wlan0    efuse_get:0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0x20 0x20 0x25 0x00 0x00 0x00 0x00 0xFF",
+                    "wlan0    efuse_get:0xFF 0x11 0x00 0x10 0x00 0xFF 0x00 0xFF 0x00 0x00 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF",
+                    "wlan0    efuse_get:0xDA 0x0B 0x79 0xF1 0x42 0x66 0x40 0x00 0xE0 0x4C 0x87 0x12 0x34 0x09 0x03 0x52",
+                    "wlan0    efuse_get:0x65 0x61 0x6C 0x74 0x65 0x6B 0x09 0x03 0x38 0x30 0x32 0x2E 0x31 0x31 0x6E 0x00",
+                    "wlan0    efuse_get:0xC1 0xAE 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0x00 0x11 0xFF 0xFF 0xFF 0xFF"};
+    for (i = 0; i < 7; i++)
+    {
+        memset(buf, 0, sizeof(buf));
+        snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_get rmap,%#X,16 > tmp/wlan_map", line[i]);
+        system(cmd);
+        file_read("/tmp/wlan_map", buf, sizeof(buf));
+        system("rm tmp/wlan_map");
+        int result = strncmp(buf, str[i], 98);
+        if (result != 0) j++;
+    }
+    return j;
 }
