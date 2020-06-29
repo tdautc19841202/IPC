@@ -109,7 +109,7 @@ VOID tuya_ipc_sd_get_capacity(UINT_T *p_total, UINT_T *p_used, UINT_T *p_free)
     *p_total = t / 1024;
     *p_used  = (t - f) / 1024;
     *p_free  = f / 1024;
-    printf("curr sd total:%u used:%u p_free:%u\r\n", *p_total, *p_used, *p_free);
+    //printf("curr sd total:%u used:%u p_free:%u\r\n", *p_total, *p_used, *p_free);
 }
 
 //get the path of mounting sdcard

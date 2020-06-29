@@ -756,6 +756,28 @@ static void * scan_thread(void *argv)
     motion_detect_exit(context->motion);
     return NULL;
 }
+static void run_wlan_map_check(CONTEXT *context)
+{
+    int write_wlan_map = 0;
+    int i;
+    if (context->status & FLAG_WRITE_WLAN_MAP)
+    {
+        write_wlan_map = get_wlan_map_and_compare();
+        if (write_wlan_map != 0)
+        {
+            for (i = 0; i < 3; i++)
+            {
+                play_mp3_file(context, BEEP_AUDIO_FILE, 0);
+                usleep(1000*1000);
+            }
+            set_wlan_map();
+            printf("set wlan map over!!!\n\n\n");
+            system("reboot -f");
+        }
+        context->status &=~ FLAG_WRITE_WLAN_MAP;
+    }
+    printf("run_wlan_map_check over!!!\n\n\n");
+}
 
 static void run_sdcard_check(CONTEXT *context)
 {
@@ -1442,13 +1464,7 @@ static void* device_monitor_proc(void *argv)
     snprintf(context->ispbinday , sizeof(context->ispbinday ), "/customer/res/gc2053_day.bin");
     snprintf(context->ispbinight, sizeof(context->ispbinight), "/customer/res/gc2053_night.bin");
     pthread_setname_np(pthread_self(), "dmon"); 
-    // if (CAM_IQ_FILE != -1) {
-        // char file[256];
-        // snprintf(file, sizeof(file), "/customer/res/camiq%d_day.bin"  , CAM_IQ_FILE);
-        // if (file_exist(file)) strncpy(context->ispbinday , file, sizeof(context->ispbinday ));
-        // snprintf(file, sizeof(file), "/customer/res/camiq%d_night.bin", CAM_IQ_FILE);
-        // if (file_exist(file)) strncpy(context->ispbinight, file, sizeof(context->ispbinight));
-    // }
+    context->status |= FLAG_WRITE_WLAN_MAP;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (thread_counter % 10 == 0) { // 1s
             soft_light_sensor(context);
@@ -1456,6 +1472,10 @@ static void* device_monitor_proc(void *argv)
             run_aging_test   (context, thread_counter);
             run_motor_test   (context, thread_counter, context->settings.ft_mode);
             handle_spk_pwroff(context);
+            if (context->status & FLAG_WRITE_WLAN_MAP)
+            {
+                run_wlan_map_check(context);
+            }   
         }
         if(thread_counter % 60 == 0){
             ipcam_settings_save(&context->settings, 1);
@@ -1684,25 +1704,13 @@ static void* network_monitor_proc(void *argv)
     CONTEXT *context = (CONTEXT*)argv;
     char wlanip[16]  = "";
     static int network_sec_count;
-    int write_wlan_map = 0;
     int ftest = strcmp(context->settings.ft_mode, "") != 0;
     pthread_setname_np(pthread_self(),"nmon");
-    context->status |= FLAG_WRITE_WLAN_MAP;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (context->settings.paired) { // 判断设备是否成功配对过
             context->status |= FLAG_HAVE_PAIRED;
         }
         if (get_dev_ip("wlan0", wlanip, sizeof(wlanip)) == 0){
-            if (context->status & FLAG_WRITE_WLAN_MAP)
-            {
-                write_wlan_map = get_wlan_map_and_compare();
-                if (write_wlan_map != 0)
-                {
-                    set_wlan_map();
-                    printf("set wlan map over!!!\n\n\n");
-                }
-                context->status &=~ FLAG_WRITE_WLAN_MAP;
-            }
             GET_IP_FLAG = 1;
             context->status |= FLAG_WIFI_CONNECTED;
             if (!ftest && get_mqtt_status() == 0 && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
