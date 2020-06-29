@@ -19,7 +19,7 @@ localedir = ${datarootdir}/locale
 # Programs used by "make":
 CC = arm-buildroot-linux-uclibcgnueabihf-gcc
 CFLAGS = -g -O2
-CPPFLAGS = 
+CPPFLAGS = -I/home/zhaoyh/ext/msc333/libiconv/_install/include
 LDFLAGS = 
 INCLUDES = -I. -I$(srcdir) -I.. -I../include -I$(srcdir)/../include -I../srclib -I$(srcdir)/../srclib
 LIBTOOL = /bin/sh $(top_builddir)/libtool

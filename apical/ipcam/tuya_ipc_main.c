@@ -67,7 +67,7 @@ OPERATE_RET IPC_APP_Init_SDK(WIFI_INIT_MODE_E init_mode, CHAR_T *uuid, CHAR_T *k
     strcpy(s_mgr_info.uuid, uuid);
     strcpy(s_mgr_info.auth_key, key);
     strcpy(s_mgr_info.dev_sw_version, IPC_APP_VERSION);
-    s_mgr_info.max_p2p_user = 2; // TUYA P2P supports 2 users at the same time, including live preview and playback
+    s_mgr_info.max_p2p_user = 5; //TUYA P2P supports 5 users at the same time, including live preview and playback
 
     PR_DEBUG("Init Value.storage_path %s", s_mgr_info.storage_path);
     PR_DEBUG("Init Value.upgrade_file_path %s", s_mgr_info.upgrade_file_path);

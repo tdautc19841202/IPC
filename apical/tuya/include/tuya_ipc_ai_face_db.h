@@ -8,7 +8,7 @@ extern "C" {
 #include "tuya_ipc_cloud_storage.h"
 
 #define DB_FILE_PATH 128
-#define DB_FILE_NAME 6
+#define DB_FILE_NAME 16
 
 typedef struct
 {

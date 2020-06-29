@@ -159,6 +159,15 @@ OPERATE_RET tuya_ipc_cloud_storage_event_delete(EVENT_ID event_id);
 OPERATE_RET tuya_ipc_cloud_storage_event_notify(EVENT_ID event_id, ClOUD_STORAGE_EVENT_TYPE_E type);
 
 /**
+ * \fn OPERATE_RET tuya_ipc_cloud_storage_set_event_type  
+ * \brief if event type changed, set to new type.
+ * \param[in] EVENT_ID event id 
+ * \param[in] type type to set
+ * \return OPERATE_RET
+ */
+OPERATE_RET tuya_ipc_cloud_storage_set_event_type(EVENT_ID event_id, ClOUD_STORAGE_EVENT_TYPE_E type);
+
+/**
  * \fn OPERATE_RET tuya_ipc_cloud_storage_set_pre_record_time  
  * \brief set cloud storage pre record time duration
  * \return OPERATE_RET

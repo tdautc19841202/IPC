@@ -57,14 +57,6 @@ OPERATE_RET tuya_ipc_ring_buffer_destory(CHANNEL_E channel);
 */
 OPERATE_RET tuya_ipc_ring_buffer_append_data(CHANNEL_E channel, UCHAR_T *addr, UINT_T size, MEDIA_FRAME_TYPE_E type, UINT64_T pts);
 
-/* append extra data to current head node of ring buffer
-this API is for the situation:
-different format of the same stream frame needed to be buffered, both PCM&AAC for the same audio frame e.g.
-data will be stored in extraData/extraSize field.
-NOTE:  MUST be called after tuya_ipc_ring_buffer_append_data
-*/
-OPERATE_RET tuya_ipc_ring_buffer_append_extra_data(CHANNEL_E channel, UCHAR_T *dataAddr, UINT_T dataSize);
-
 /* get video/audio frame from ring buffer. 
 different user of the same stream channel can be independently mantain status with different userIndex,
 and automaticlly get the next frame in the buffer if it's invoked continuously.

@@ -57,9 +57,9 @@ typedef enum{
 
 typedef struct
 {
-    char *data;
-    int len;
-    char secret_key[IPC_AES_ENCRYPT_KEY_LEN + 1];
+    CHAR_T *data;
+    INT_T len;
+    CHAR_T secret_key[IPC_AES_ENCRYPT_KEY_LEN + 1];
     NOTIFICATION_CONTENT_TYPE_E type;
 }NOTIFICATION_UNIT_T;
 
@@ -264,15 +264,17 @@ OPERATE_RET tuya_ipc_get_tm_with_timezone_dls(OUT struct tm *localTime);
 /**
  * \fn OPERATE_RET tuya_ipc_dp_report_async/tuya_ipc_dp_report_sync/tuya_ipc_dp_report
  * \brief report dp to tuya cloud, in aync/sync way. 
- *        tuya_ipc_dp_report 
+ * 
  *        tuya_ipc_dp_report_async will not report for same dp_id and value
  *        tuya_ipc_dp_report_sync will try for timeout seconds to report
- *        tuya_ipc_dp_report always reports till succeed async
+ *        tuya_ipc_dp_report always reports till succeed
+ *        tuya_ipc_dp_report_raw_sync report raw data, try for <timeout> senconds
  * \return OPERATE_RET
  */
 OPERATE_RET tuya_ipc_dp_report_async(IN CONST CHAR_T *dev_id, IN BYTE_T dp_id,IN DP_PROP_TP_E type,IN VOID * pVal,IN CONST UINT_T cnt);
 OPERATE_RET tuya_ipc_dp_report_sync(IN CONST CHAR_T *dev_id, IN BYTE_T dp_id,IN DP_PROP_TP_E type,IN VOID * pVal,IN CONST UINT_T cnt, IN CONST UINT_T timeout);
 OPERATE_RET tuya_ipc_dp_report(IN CONST CHAR_T *dev_id, IN BYTE_T dp_id, IN DP_PROP_TP_E type, IN VOID * pVal, IN CONST UINT_T cnt);
+OPERATE_RET tuya_ipc_dp_report_raw_sync(IN CONST CHAR_T *dev_id, IN BYTE_T dp_id, IN VOID * pVal, IN CONST UINT_T len, IN CONST UINT_T timeout);
 
 /**
  * \fn OPERATE_RET tuya_ipc_get_wakeup_data(INOUT BYTE *wakeup_data_arr, INOUT UINT *p_len)
@@ -375,7 +377,7 @@ OPERATE_RET tuya_ipc_notify_motion_detect(IN CONST CHAR_T *snap_buffer, IN CONST
  * \return OPERATE_RET
  * \NOTE: this API will be abandoned later. Use tuya_ipc_door_bell_press instead
  */
-//OPERATE_RET tuya_ipc_notify_door_bell_press(IN CONST CHAR_T *snap_buffer, IN CONST UINT_T snap_size, IN CONST NOTIFICATION_CONTENT_TYPE_E type);
+OPERATE_RET tuya_ipc_notify_door_bell_press(IN CONST CHAR_T *snap_buffer, IN CONST UINT_T snap_size, IN CONST NOTIFICATION_CONTENT_TYPE_E type);
 
 /**
  * \fn OPERATE_RET tuya_ipc_door_bell_press
@@ -407,13 +409,6 @@ OPERATE_RET tuya_ipc_notify_with_event(IN CONST CHAR_T *snap_buffer, IN CONST UI
 VOID tuya_ipc_upload_skills(VOID);
 
 /**
- * \fn VOID tuya_ipc_fill_skills
- * \brief internal API
- */
-OPERATE_RET tuya_ipc_fill_skills(CHAR_T *skill_info);
-
-
-/**
  * \fn OPERATE_RET tuya_ipc_upgrade_progress_report
  * \brief send a upgrade progress to tuya cloude and app
  * \param[in] percent: upgrade progress percent , valid value [0,100]
@@ -421,6 +416,12 @@ OPERATE_RET tuya_ipc_fill_skills(CHAR_T *skill_info);
  */
 OPERATE_RET tuya_ipc_upgrade_progress_report(IN            UINT_T percent);
 
+/**
+ * \fn OPERATE_RET tuya_ipc_report_p2p_msg
+ * \brief send a msg to enable p2p func
+ * \return SUCCESS -- OPERATE_RET , FAIL -- COMM ERROR
+ */
+OPERATE_RET tuya_ipc_report_p2p_msg();
 
 
 #ifdef __cplusplus

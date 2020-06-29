@@ -39,8 +39,8 @@ extern "C" {
 
 
 /* custom settings */
-#define BUILD_DATE    "2020_02_29"
-#define BUILD_TIME    "21_36_28"
+#define BUILD_DATE    "2020_06_05"
+#define BUILD_TIME    "21_01_26"
 #define GIT_USER    "chenjing"
 #define IOT_SDK_VER    "4.1.1"
 #define PROJECT_NAME    "linux_wifi"
@@ -61,8 +61,8 @@ extern "C" {
 #define OPERATING_SYSTEM    SYSTEM_LINUX
 #define ENABLE_HTTP_TRUNK    1
 #define ENABLE_IPC    1
-#define IPC_SDK_VER    "4.7.6"
-#define TUYA_P2P    6
+#define IPC_SDK_VER    "4.7.10"
+#define TUYA_P2P    4
 #define WIFI_WIRED_BOTH    0
 #define ENABLE_ECHO_SHOW    1
 #define ENABLE_CHROMECAST    1

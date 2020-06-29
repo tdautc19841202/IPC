@@ -679,6 +679,7 @@ int get_wlan_map_and_compare(void)
         file_read("/tmp/wlan_map", buf, sizeof(buf));
         system("rm tmp/wlan_map");
         int result = strncmp(buf, str[i], 98);
+        printf("result = %d\n",result);
         if (result != 0) j++;
     }
     return j;
