@@ -758,10 +758,17 @@ static void * scan_thread(void *argv)
 }
 static void run_wlan_map_check(CONTEXT *context)
 {
+    int i = 0;;
+    char buf[256];
+    int wlan0_up = 0;
     int write_wlan_map = 0;
-    int i;
-    if (context->status & FLAG_WRITE_WLAN_MAP)
+    system("ifconfig | grep wlan0 > tmp/wlan0");
+    file_read("/tmp/wlan0", buf, sizeof(buf));
+    system("rm tmp/wlan0");
+    wlan0_up = strncmp(buf, "wlan0", 5);
+    if (0 == wlan0_up)
     {
+        printf("wlan0 up!!!\n");
         write_wlan_map = get_wlan_map_and_compare();
         if (write_wlan_map != 0)
         {
@@ -775,8 +782,12 @@ static void run_wlan_map_check(CONTEXT *context)
             system("reboot -f");
         }
         context->status &=~ FLAG_WRITE_WLAN_MAP;
+        printf("run_wlan_map_check over!!!\n\n\n");
     }
-    printf("run_wlan_map_check over!!!\n\n\n");
+    else
+    {
+        printf("\n\nWait wlan0 up!!!\n\n");
+    }
 }
 
 static void run_sdcard_check(CONTEXT *context)
@@ -1471,13 +1482,14 @@ static void* device_monitor_proc(void *argv)
             run_sdcard_check (context);
             run_aging_test   (context, thread_counter);
             run_motor_test   (context, thread_counter, context->settings.ft_mode);
-            handle_spk_pwroff(context);
-            if (context->status & FLAG_WRITE_WLAN_MAP)
-            {
+            handle_spk_pwroff(context);     
+        }
+        if(thread_counter % 20 == 0) { //2s
+            if (context->status & FLAG_WRITE_WLAN_MAP){
                 run_wlan_map_check(context);
             }   
         }
-        if(thread_counter % 60 == 0){
+        if(thread_counter % 60 == 0){ //6s
             ipcam_settings_save(&context->settings, 1);
         }
         if (thread_counter % 300 == 0) { // 30s
