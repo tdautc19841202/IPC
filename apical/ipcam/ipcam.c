@@ -1486,7 +1486,7 @@ static void* device_monitor_proc(void *argv)
         }
         if(thread_counter % 20 == 0) { //2s
             if (context->status & FLAG_WRITE_WLAN_MAP){
-                run_wlan_map_check(context);
+                //run_wlan_map_check(context);
             }   
         }
         if(thread_counter % 60 == 0){ //6s
