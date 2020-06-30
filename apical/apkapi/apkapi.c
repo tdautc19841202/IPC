@@ -370,10 +370,11 @@ int get_dev_mac(char *str)
     system("rtwpriv wlan0 efuse_get mac > /tmp/wlan_mac");
     memset(buf, 0, sizeof(buf));
     file_read("/tmp/wlan_mac", buf, sizeof(buf)); 
-    while(buf[i] != '\0')
+    while(i >= 19 && i <= 35)
     {
         str[j++] = buf[i++];
     }
+    str[j] = '\0';
     printf("j = %d\n",j);
 	for(i=j=0;str[i]!='\0';i++)
     {
@@ -382,7 +383,7 @@ int get_dev_mac(char *str)
 			str[j++]=str[i];
 		}
 	}
-	str[j]='\0';
+	str[j] = '\0';
     printf("j = %d\n",j);
     printf("wlan_mac = %s\n",str);
     return 0; 

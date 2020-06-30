@@ -1059,7 +1059,7 @@ static void* ftest_and_rpc_proc(void *argv)
                 snprintf(msg, sizeof(msg), "ver:%s-%d", FIRMWARE_VERSION, get_build_num());
                 len = strlen(msg) + 1;
             } else if (strcmp(msg, "mac?") == 0) {
-                char mac[18];
+                char mac[12];
                 get_dev_mac(mac);
                 snprintf(msg, sizeof(msg), "mac:%s", mac);
                 len = strlen(msg) + 1;
@@ -1800,7 +1800,7 @@ int main(int argc, char *argv[])
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
     get_dev_sn (context->devsn , sizeof(context->devsn ));
-    printf("\n\nsw_ver = %d\n\n",get_build_num());
+    printf("\n\nver:%s-%d\n\n", FIRMWARE_VERSION, get_build_num());
     // init pthread attr
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);
