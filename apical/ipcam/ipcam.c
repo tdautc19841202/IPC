@@ -1799,7 +1799,7 @@ int main(int argc, char *argv[])
    
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
-    get_dev_sid(context->devsn , sizeof(context->devsn ));
+    get_dev_sn (context->devsn , sizeof(context->devsn ));
     printf("\n\nsw_ver = %d\n\n",get_build_num());
     // init pthread attr
     pthread_attr_init(&context->pthread_attr);
