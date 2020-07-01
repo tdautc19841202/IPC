@@ -15,4 +15,5 @@ insmod /lib/modules/4.9.84/usbcore.ko
 insmod /lib/modules/4.9.84/ehci-hcd.ko force_host=1
 insmod /lib/modules/4.9.84/cfg80211.ko
 insmod /lib/modules/4.9.84/8188fu.ko
+sleep 2
 ifconfig wlan0 up

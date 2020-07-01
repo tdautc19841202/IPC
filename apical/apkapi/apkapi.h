@@ -51,9 +51,10 @@ int  get_netdev_status(char *dev);
 int  get_sdcard_status(uint32_t *status, int64_t *total, int64_t *free);
 void get_sdcard_status_from_shm(uint32_t *status, int64_t *total, int64_t *free);
 int  format_sdcard(void);
-int set_wlan_map();
-int set_wlan_mac();
-int get_wlan_map_and_compare();
+int set_wlan_map(void);
+int set_wlan_mac(char *mac);
+int get_wlan_map_and_compare(void);
+int check_wlan0_up(void);
 // get tick count
 uint32_t get_tick_count(void);
 uint64_t get_time_stamp(void);

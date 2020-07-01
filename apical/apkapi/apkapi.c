@@ -635,7 +635,7 @@ int set_wlan_mac(char *mac)
     //set_wlan_map();
 }
 
-int set_wlan_map()
+int set_wlan_map(void)
 {
     system("rtwpriv wlan0 mp_start");
     sleep(2);
@@ -684,4 +684,16 @@ int get_wlan_map_and_compare(void)
         if (result != 0) j++;
     }
     return j;
+}
+
+int check_wlan0_up(void)
+{
+    int wlan0_up = 0;
+    char buf[256];
+    system("ifconfig | grep wlan0 > tmp/wlan0");
+    file_read("/tmp/wlan0", buf, sizeof(buf));
+    system("rm tmp/wlan0");
+    wlan0_up = strncmp(buf, "wlan0", 5);
+
+    return wlan0_up;
 }

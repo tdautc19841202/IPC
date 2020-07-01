@@ -759,13 +759,9 @@ static void * scan_thread(void *argv)
 static void run_wlan_map_check(CONTEXT *context)
 {
     int i = 0;;
-    char buf[256];
     int wlan0_up = 0;
     int write_wlan_map = 0;
-    system("ifconfig | grep wlan0 > tmp/wlan0");
-    file_read("/tmp/wlan0", buf, sizeof(buf));
-    system("rm tmp/wlan0");
-    wlan0_up = strncmp(buf, "wlan0", 5);
+    wlan0_up = check_wlan0_up();
     if (0 == wlan0_up)
     {
         printf("wlan0 up!!!\n");
@@ -878,12 +874,23 @@ static void run_sdcard_check(CONTEXT *context)
                     temp = strtok(NULL, ":"); if (temp) strncpy(ftip  , temp, sizeof(ftip  ));
                     temp = strtok(NULL, ":"); if (temp) strncpy(wifiap, temp, sizeof(wifiap));
                     temp = strtok(NULL, ":"); if (temp) strncpy(passwd, temp, sizeof(passwd));
+                    if (strcmp(context->settings.ft_mode, mode) != 0) {
+                        IPCAMSETTINGS newsettings = context->settings;
+                        strncpy(newsettings.ft_mode, mode, sizeof(newsettings.ft_mode));
+                        ipcam_settings_save(&newsettings, 1);
+                        printf("ft_mode changed, reboot now\n");
+                        sleep(3);
+                        system("reboot -f");
+                    }
                     if (*passwd == '\n') *passwd = '\0';
                     if (strcmp(wifiap, "") != 0) {
-                        snprintf(buf, sizeof(buf), "wifi_disconnect.sh && wifi_off.sh");
-                        system(buf);
-                        snprintf(buf, sizeof(buf), "wifi_on.sh && wifi_connect.sh \"%s\" \"%s\" &", wifiap, passwd);
-                        system(buf);
+                        int wlan0_up = check_wlan0_up();
+                        if (0 == wlan0_up) {
+                            snprintf(buf, sizeof(buf), "wifi_connect.sh \"%s\" \"%s\" &", wifiap, passwd);
+                            system(buf);
+                        } else {
+                            printf("ftest mode wait wlan0 up!!!\n");
+                        }
                     }
                     if (strcmp(mode, "null") == 0) mode[0] = '\0';
                     if (strcmp(ftip, "null") == 0) ftip[0] = '\0';
@@ -896,11 +903,6 @@ static void run_sdcard_check(CONTEXT *context)
                     if (strcmp(mode, "wfdp") == 0) {
                         system(SDCARD_MOUNT_PATH"/factorytest/wifi_test.sh");
                         play_mp3_file(context, WIFI_TEST_FILE, 1);
-                    } else if (strcmp(context->settings.ft_mode, mode) != 0) {
-                        IPCAMSETTINGS newsettings = context->settings;
-                        strncpy(newsettings.ft_mode, mode, sizeof(newsettings.ft_mode));
-                        ipcam_settings_save(&newsettings, 1);
-                        system("reboot -f");
                     }
                 }
                 context->hwstate |= HW_SD_TEST_OK;
@@ -1495,8 +1497,7 @@ static void* device_monitor_proc(void *argv)
         if (thread_counter % 300 == 0) { // 30s
             ipcam_settings_save(NULL, 1);// flush settings to file
             if ((context->sdstatus->status & SDSTATUS_MOUNTED) && context->settings.rec_type) {
-                get_sdcard_status(NULL, &context->sdstatus->total, &context->sdstatus->available);
-               
+                get_sdcard_status(NULL, &context->sdstatus->total, &context->sdstatus->available);    
             }
         }
         run_leds(context, thread_counter, &last_leds);
@@ -1762,7 +1763,6 @@ int main(int argc, char *argv[])
     system("ifconfig lo up");
     system("wifi_on.sh &");
     system("echo 1 > /proc/sys/vm/overcommit_memory");
-    //system("/customer/bin/wifi_connect.sh \"hp\" \"zyh1567890\"");
 
     shmid = shmget((key_t)SDSTATUS_SHMID, sizeof(SDSTATUS), 0666|IPC_CREAT);
     ST_DefaultArgs(&context->pstConfig);
@@ -1917,4 +1917,3 @@ void ipcam_play_audio(void *buf, int len)
     }
 
 }
-
