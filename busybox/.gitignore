@@ -2,6 +2,7 @@
 *.o
 *.cmd
 *.in
+!/Config.in
 *.a
 Kbuild
 docs/*

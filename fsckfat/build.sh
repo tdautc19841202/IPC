@@ -10,6 +10,8 @@ case "$1" in
 "")
     make -j8
 	$STRIP $PWD/bin/fsckfat
+	mkdir -p $PROJECT_PACKAGE_DIR/ext/bin
+	mkdir -p $PROJECT_PACKAGE_DIR/ext/lib
 	cp $PWD/bin/fsckfat $PROJECT_PACKAGE_DIR/ext/bin
     ;;
 clean)

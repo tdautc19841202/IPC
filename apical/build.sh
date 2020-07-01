@@ -29,9 +29,9 @@ case "$1" in
 	cp $PWD/libavkcp/lib/libavkcps.so $APICAL_RELEASE_DIR/lib
 
 	# build rtwpriv
-	#make -C $PWD/rtwpriv
-	#$STRIP $PWD/rtwpriv/bin/rtwpriv
-	#cp $PWD/rtwpriv/bin/rtwpriv $PROJECT_PACKAGE_DIR/bin
+	make -C $PWD/rtwpriv
+	$STRIP $PWD/rtwpriv/bin/rtwpriv
+	cp $PWD/rtwpriv/bin/rtwpriv $PROJECT_PACKAGE_DIR/bin
 
 	# copy wifi driver files
 	mkdir -p $APICAL_RELEASE_DIR/lib/modules/
