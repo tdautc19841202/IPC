@@ -38,7 +38,8 @@
 
 #define RAW_W                     384
 #define RAW_H                     288
-#define SHOW_PANEL 0
+#define SHOW_PANEL                0
+#define MAX_FPS                   30
 
 #define RGB_TO_CRYCB(r, g, b)                                                            \
         (((unsigned int)(( 0.439f * (r) - 0.368f * (g) - 0.071f * (b)) + 128.0f)) << 16) |    \

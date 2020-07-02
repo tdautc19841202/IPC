@@ -378,7 +378,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
     stBindInfo.stDstChnPort.u32DevId = u32DevId;
     stBindInfo.stDstChnPort.u32ChnId = VencChn;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32SrcFrmrate = MAX_FPS;
     stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     stBindInfo.eBindType = pstStreamAttr[i].eBindType;
     if (stBindInfo.eBindType == E_MI_SYS_BIND_TYPE_HW_RING)
@@ -629,7 +629,7 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
     stBindInfo.stDstChnPort.u32DevId = 0;
     stBindInfo.stDstChnPort.u32ChnId = DIVP_CHN_FOR_SCALE + i;
     stBindInfo.stDstChnPort.u32PortId = 0;
-    stBindInfo.u32SrcFrmrate = pstStreamAttr[i].u32FrameRate;
+    stBindInfo.u32SrcFrmrate = MAX_FPS;
     stBindInfo.u32DstFrmrate = pstStreamAttr[i].u32FrameRate;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_FRAME_BASE;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
@@ -866,7 +866,7 @@ MI_S32 ST_BaseModuleInit(ST_Config_S* pstConfig)
     printf("You select %d res\n", u32ChocieRes);
 
     MI_SNR_SetRes(E_MI_SNR_PAD_ID_0,u32ChocieRes);
-    MI_SNR_SetFps(E_MI_SNR_PAD_ID_0, 15);
+    MI_SNR_SetFps(E_MI_SNR_PAD_ID_0, MAX_FPS);   //set sensor fps
     MI_SNR_Enable(E_MI_SNR_PAD_ID_0);
 
     MI_SNR_GetPadInfo(E_MI_SNR_PAD_ID_0, &stPad0Info);
@@ -956,8 +956,8 @@ MI_S32 ST_BaseModuleInit(ST_Config_S* pstConfig)
     stBindInfo.stDstChnPort.u32ChnId = 0;
     stBindInfo.stDstChnPort.u32PortId = 0;
     stBindInfo.eBindType = E_MI_SYS_BIND_TYPE_REALTIME;
-    //stBindInfo.u32SrcFrmrate = 15;
-    //stBindInfo.u32DstFrmrate = 15;
+    stBindInfo.u32SrcFrmrate = MAX_FPS;
+    stBindInfo.u32DstFrmrate = MAX_FPS;
     STCHECKRESULT(ST_Sys_Bind(&stBindInfo));
     STCHECKRESULT(ST_OSD_Init());
     InitRGN();
