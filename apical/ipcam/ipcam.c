@@ -92,7 +92,8 @@ typedef struct {
     #define FLAG_VOICE_ISPLAYING     (1 << 14)
     #define FLAG_SD_FIRST_INSERT     (1 << 15)
     #define FLAG_HAVE_PAIRED         (1 << 16)
-    #define FLAG_WRITE_WLAN_MAP      (1 << 17)
+    #define FLAG_CHECK_WLAN_MAP      (1 << 17)
+    #define FLAG_GET_WLAN_INFO       (1 << 18)
     uint32_t        status;
     uint32_t        ledtype;
 
@@ -158,18 +159,19 @@ typedef struct {
     ST_Config_S     pstConfig;
     ST_RGN_Osd_T    g_stRgnOsd;
     char            user_account[33];
-    char            devuid    [33];
-    char            devsid    [33];
-    char            devsn     [11];
-    char            mp3file   [64];
-    char            ispbinday [32];
-    char            ispbinight[32];
+    char            devuid      [33];
+    char            devsid      [33];
+    char            devsn       [11];
+    char            wifiap      [33];
+    char            passwd      [65];
+    char            mp3file     [64];
+    char            ispbinday   [32];
+    char            ispbinight  [32];
     SDSTATUS       *sdstatus;
 
     uint8_t         snapshot_buf[64 * 1024];
     int32_t         snapshot_len;
     int32_t         ptz_move;
-    int             inited_avkcp;
 } CONTEXT;
 static CONTEXT g_app_ctx = { 0, 3, 4, 0, 3 };
 
@@ -761,12 +763,13 @@ static void run_wlan_map_check(CONTEXT *context)
     int i = 0;;
     int wlan0_up = 0;
     int write_wlan_map = 0;
+    char buf[128];
     wlan0_up = check_wlan0_up();
     if (0 == wlan0_up)
     {
         printf("wlan0 up!!!\n");
         write_wlan_map = get_wlan_map_and_compare();
-        if (write_wlan_map != 0)
+        if (write_wlan_map != 0) //reset wlan0 map
         {
             for (i = 0; i < 3; i++)
             {
@@ -775,9 +778,26 @@ static void run_wlan_map_check(CONTEXT *context)
             }
             set_wlan_map();
             printf("set wlan map over!!!\n\n\n");
-            system("reboot -f");
+            if (context->status & FLAG_GET_WLAN_INFO)
+            {
+                memset(buf, 0x00, sizeof(buf));
+                snprintf(buf, sizeof(buf), "wifi_disconnect.sh && wifi_off.sh");
+                system(buf);
+                memset(buf, 0x00, sizeof(buf));
+                snprintf(buf, sizeof(buf), "wifi_on.sh && wifi_connect.sh \"%s\" \"%s\" &", context->wifiap, context->passwd);
+                system(buf);
+            }
         }
-        context->status &=~ FLAG_WRITE_WLAN_MAP;
+        else
+        {
+            if (context->status & FLAG_GET_WLAN_INFO)
+            {
+                memset(buf, 0x00, sizeof(buf));
+                snprintf(buf, sizeof(buf), "wifi_connect.sh \"%s\" \"%s\" &", context->wifiap, context->passwd);
+                system(buf);
+            }
+        }
+        context->status &=~ FLAG_CHECK_WLAN_MAP;
         printf("run_wlan_map_check over!!!\n\n\n");
     }
     else
@@ -839,14 +859,6 @@ static void run_sdcard_check(CONTEXT *context)
                     printf("mkfs.vfat ok !\n");
                 }
             }
-            // else {
-                // snprintf(buf, sizeof(buf), "/customer/bin/fsckfat -p -f -y %s", dev);
-                // if (system(buf) != 0) {
-                    // printf("fsckfat ng !\n");
-                // } else {
-                    // printf("fsckfat ok !\n");
-                // }
-            // }
             if (( mount(dev, SDCARD_MOUNT_PATH, "vfat" , MS_SYNCHRONOUS|MS_DIRSYNC, "fmask=022,dmask=022") == 0) \
                 && get_sdcard_status(&context->sdstatus->status, &context->sdstatus->total, &context->sdstatus->available) ) {
                 if (!(context->sdstatus->status & SDSTATUS_FORMATTING)) play_mp3_file(context, SDCARD_INSERT_FILE, 0);
@@ -867,13 +879,13 @@ static void run_sdcard_check(CONTEXT *context)
                     char buf[256], *temp;
                     char mode[16]   = "";
                     char ftip[16]   = "";
-                    char wifiap[33] = "";
-                    char passwd[65] = "";
+                    memset(context->wifiap, 0x00, sizeof(context->wifiap));
+                    memset(context->passwd, 0x00, sizeof(context->passwd));
                     file_read(SDCARD_MOUNT_PATH"/factorytest/factorytest.ini", buf, sizeof(buf));
                     temp = strtok(buf , ":"); if (temp) strncpy(mode  , temp, sizeof(mode  ));
                     temp = strtok(NULL, ":"); if (temp) strncpy(ftip  , temp, sizeof(ftip  ));
-                    temp = strtok(NULL, ":"); if (temp) strncpy(wifiap, temp, sizeof(wifiap));
-                    temp = strtok(NULL, ":"); if (temp) strncpy(passwd, temp, sizeof(passwd));
+                    temp = strtok(NULL, ":"); if (temp) strncpy(context->wifiap, temp, sizeof(context->wifiap));
+                    temp = strtok(NULL, ":"); if (temp) strncpy(context->passwd, temp, sizeof(context->passwd));
                     if (strcmp(context->settings.ft_mode, mode) != 0) {
                         IPCAMSETTINGS newsettings = context->settings;
                         strncpy(newsettings.ft_mode, mode, sizeof(newsettings.ft_mode));
@@ -882,15 +894,9 @@ static void run_sdcard_check(CONTEXT *context)
                         sleep(3);
                         system("reboot -f");
                     }
-                    if (*passwd == '\n') *passwd = '\0';
-                    if (strcmp(wifiap, "") != 0) {
-                        int wlan0_up = check_wlan0_up();
-                        if (0 == wlan0_up) {
-                            snprintf(buf, sizeof(buf), "wifi_connect.sh \"%s\" \"%s\" &", wifiap, passwd);
-                            system(buf);
-                        } else {
-                            printf("ftest mode wait wlan0 up!!!\n");
-                        }
+                    if (*context->passwd == '\n') *context->passwd = '\0';
+                    if (strcmp(context->wifiap, "") != 0 && strcmp(context->passwd, "") != 0) {
+                        context->status |= FLAG_GET_WLAN_INFO;
                     }
                     if (strcmp(mode, "null") == 0) mode[0] = '\0';
                     if (strcmp(ftip, "null") == 0) ftip[0] = '\0';
@@ -1477,7 +1483,8 @@ static void* device_monitor_proc(void *argv)
     snprintf(context->ispbinday , sizeof(context->ispbinday ), "/customer/res/gc2053_day.bin");
     snprintf(context->ispbinight, sizeof(context->ispbinight), "/customer/res/gc2053_night.bin");
     pthread_setname_np(pthread_self(), "dmon"); 
-    context->status |= FLAG_WRITE_WLAN_MAP;
+    context->status |= FLAG_CHECK_WLAN_MAP;
+    context->status &=~ FLAG_GET_WLAN_INFO;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (thread_counter % 10 == 0) { // 1s
             soft_light_sensor(context);
@@ -1487,7 +1494,7 @@ static void* device_monitor_proc(void *argv)
             handle_spk_pwroff(context);     
         }
         if(thread_counter % 20 == 0) { //2s
-            if (context->status & FLAG_WRITE_WLAN_MAP){
+            if (context->status & FLAG_CHECK_WLAN_MAP){
                 run_wlan_map_check(context);
             }   
         }

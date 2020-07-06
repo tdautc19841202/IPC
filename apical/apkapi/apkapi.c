@@ -631,30 +631,29 @@ int set_wlan_mac(char *mac)
     snprintf(cmd, sizeof(cmd), "rtwpriv wlan0 efuse_set mac,%s",mac);
     printf("cmd = %s\n",cmd);
     system(cmd);
-    sleep(2);
-    //set_wlan_map();
+    sleep(1);
 }
 
 int set_wlan_map(void)
 {
     system("rtwpriv wlan0 mp_start");
-    sleep(2);
-    system("rtwpriv wlan0 efuse_set wlwfake,0x00,298100CC0B000000000C044C100C0000");
-    sleep(2);
+    sleep(1);
+    system("rtwpriv wlan0 efuse_set wlwfake,0x000,298100CC0B000000000C044C100C0000");
+    sleep(1);
     system("rtwpriv wlan0 efuse_set wlwfake,0x010,2929282828282929291B1B02FFFFFFFF");
-    sleep(2);
+    sleep(1);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0B0,FFFFFFFFFFFFFFFF20202500000000FF");
-    sleep(2);
+    sleep(1);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0C0,FF11001000FF00FF0000FFFFFFFFFFFF");
-    sleep(2);
+    sleep(1);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0D0,DA0B79F142664000E04CF17900090352");
-    sleep(2);
+    sleep(1);
     system("rtwpriv wlan0 efuse_set wlwfake,0x0E0,65616C74656B09033830322E31316E00");
-    sleep(2);
+    sleep(1);
     system("rtwpriv wlan0 efuse_set wlwfake,0x130,C1AEFFFFFFFFFFFFFFFF0011FFFFFFFF");
-    sleep(2);  
+    sleep(1);  
     system("rtwpriv wlan0 efuse_set wlfk2map");
-    sleep(2);  
+    sleep(1);  
 }
 
 int get_wlan_map_and_compare(void)
