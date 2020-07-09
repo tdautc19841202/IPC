@@ -30,7 +30,7 @@
 
 #define DIVP_CHN_FOR_OSD        0
 #define DIVP_CHN_FOR_VDF        2
-#define DIVP_CHN_FOR_SCALE        3
+#define DIVP_CHN_FOR_SCALE      3
 #define VENC_CHN_FOR_CAPTURE    12
 
 
@@ -149,7 +149,7 @@ static struct ST_Stream_Attr_T g_stStreamAttr[] =
 {
     {
         .bEnable = FALSE,
-        .enInput = ST_Sys_Input_VPE,
+        .enInput = ST_Sys_Input_DIVP,
         .u32InputChn = 0,
         .u32InputPort = 0,
         .vencChn = 0,

@@ -130,7 +130,7 @@ VOID IPC_APP_Notify_LED_Sound_Status_CB(IPC_APP_NOTIFY_EVENT_E notify_event)
             settings.paired = 1;
             ipcam_settings_save(&settings, 1);
             send_msg_to_ipcam("apply_settings", NULL);
-            send_msg_to_ipcam("mp3", "/customer/res/connected.mp3");
+            //send_msg_to_ipcam("mp3", "/customer/res/connected.mp3");
             // ipcam_set_ledtype(0);
             break;
         }

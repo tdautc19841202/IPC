@@ -207,39 +207,38 @@ static void* jpeg_snapshot_proc(void *argv)
     memset(&stPack, 0, sizeof(MI_VENC_Pack_t));
     stStream.pstPack = &stPack;
     stStream.u32PackCount = 1;
-
+    ST_DoCaptureJPGProc(704, 396, E_MI_SYS_ROTATE_NONE);
+    s32Ret = MI_VENC_StartRecvPic(VENC_CHN_FOR_CAPTURE);
+    if(MI_SUCCESS != s32Ret)
+    {
+        ST_ERR("MI_VENC_StartRecvPic fail, 0x%x\n", s32Ret);
+    }
     while(!(context->status & FLAG_EXIT_VSUB_THEADS))
     {
         if(context->status & FLAG_WIFI_CONNECTED)
-        {
-            if (context->status & FLAG_JPEG_SNAPSHOT)
+        {   
+            s32Ret = MI_VENC_GetStream(VENC_CHN_FOR_CAPTURE, &stStream, 40);
+            if (context->status & FLAG_JPEG_SNAPSHOT && MI_SUCCESS == s32Ret)
             {
                 context->status &= ~FLAG_JPEG_SNAPSHOT;
-                s32Ret = MI_VENC_StartRecvPic(VENC_CHN_FOR_CAPTURE);
-                if(MI_SUCCESS != s32Ret)
-                {
-                    ST_ERR("MI_VENC_StartRecvPic fail, 0x%x\n", s32Ret);
-                    return;
-                }
-                s32Ret = MI_VENC_GetStream(VENC_CHN_FOR_CAPTURE, &stStream, 40);
-                if(MI_SUCCESS == s32Ret)
-                {
-                    context->snapshot_len = stStream.pstPack->u32Len;
-                    memcpy(context->snapshot_buf, stStream.pstPack->pu8Addr, MIN(sizeof(context->snapshot_buf), stStream.pstPack->u32Len));
-                }
-                MI_VENC_ReleaseStream(VENC_CHN_FOR_CAPTURE, &stStream);
-                MI_VENC_StopRecvPic(VENC_CHN_FOR_CAPTURE);
-                MI_VENC_ResetChn(VENC_CHN_FOR_CAPTURE);
+                context->snapshot_len = stStream.pstPack->u32Len;
+                memcpy(context->snapshot_buf, stStream.pstPack->pu8Addr, MIN(sizeof(context->snapshot_buf), stStream.pstPack->u32Len));
             }
             else
             {
                 usleep(200 * 1000);
-            }   
+            }
+            MI_VENC_ReleaseStream(VENC_CHN_FOR_CAPTURE, &stStream);   
         }
         else
         {
-            usleep(100 * 1000);
+            usleep(200 * 1000);
         }
+    }
+    s32Ret = MI_VENC_StopRecvPic(VENC_CHN_FOR_CAPTURE);
+    if(MI_SUCCESS != s32Ret)
+    {
+        ST_ERR("ST_Venc_StopChannel fail, 0x%x\n", s32Ret);
     }
 }
 
@@ -348,7 +347,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE1, &stChnPort, &stChnPortParam);
-#if 0
+
                 memset(&stChnPort, 0, sizeof(MI_RGN_ChnPort_t));
                 stChnPort.eModId = E_MI_RGN_MODID_DIVP;
                 stChnPort.s32DevId = 0;
@@ -362,7 +361,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE2, &stChnPort, &stChnPortParam);
-#endif
+
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE, NULL);
                 (void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_WHITE, DMF_Font_Size_48x48);
@@ -372,12 +371,13 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE1, NULL);
                 (void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE1);
-#if 0
+
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE2, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE2, NULL);
                 (void)ST_OSD_DrawText(RGN_OSD_HANDLE2, stPoint, szTime, I4_WHITE, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE2);
-#endif            
+                usleep(500 * 1000);
+            
                 canvas_unlock();
             }
             if( context->settings.watermark_visible == 0 && CLOSE_OSD_FLAG == 0)
@@ -412,7 +412,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE1, &stChnPort, &stChnPortParam);
-#if 0
+
                 memset(&stChnPort, 0, sizeof(MI_RGN_ChnPort_t));
                 stChnPort.eModId = E_MI_RGN_MODID_DIVP;
                 stChnPort.s32DevId = 0;
@@ -426,7 +426,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8BgAlpha = 0;
                 stChnPortParam.unPara.stOsdChnPort.stOsdAlphaAttr.stAlphaPara.stArgb1555Alpha.u8FgAlpha = 0xFF;
                 MI_RGN_SetDisplayAttr(RGN_OSD_HANDLE2, &stChnPort, &stChnPortParam);
-#endif
+
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE, NULL);
                 //(void)ST_OSD_DrawText(RGN_OSD_HANDLE, stPoint, szTime, I4_RED, DMF_Font_Size_48x48);
@@ -436,12 +436,12 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE1, NULL);
                 //(void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE1);
-#if 0
+
                 (void)ST_OSD_GetCanvasInfo(RGN_OSD_HANDLE2, &pstCanvasInfo);
                 (void)ST_OSD_Clear(RGN_OSD_HANDLE2, NULL);
                 //(void)ST_OSD_DrawText(RGN_OSD_HANDLE1, stPoint, szTime, I4_RED, DMF_Font_Size_32x32);
                 (void)ST_OSD_Update(RGN_OSD_HANDLE2);
-#endif            
+           
                 CLOSE_OSD_FLAG = 1;
                 canvas_unlock();
             }
