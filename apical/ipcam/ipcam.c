@@ -310,8 +310,10 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 len += sprintf(szTime + len, "%02d:", tm->tm_hour);
                 len += sprintf(szTime + len, "%02d:", tm->tm_min);
                 len += sprintf(szTime + len, "%02d  ", tm->tm_sec);
-#if 0                
-                len += sprintf(szTime + len, "BV=%d", context->settings.soft_light_sensor_BV);
+#if 1                
+                len += sprintf(szTime + len, "LV=%d     ", context->settings.soft_light_sensor_LV);
+                len += sprintf(szTime + len, "SG=%d     ", context->settings.soft_light_sensor_SensorGain);
+                len += sprintf(szTime + len, "AWB=%f    ", context->settings.soft_light_sensor_AWB);
 #endif                
                 stPoint.u32X = 0;
                 stPoint.u32Y = 0;
@@ -1108,9 +1110,14 @@ static void* ftest_and_rpc_proc(void *argv)
 
 int soft_light_sensor(CONTEXT *context)
 {
-    int ret;
-    MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t isp_init;  //isp初始化返回值
-    static MI_ISP_AE_EXPO_INFO_TYPE_t       pExpInfo;  //判断白天黑夜的结构体
+    MI_S32 s32Ret = MI_ISP_OK;
+    MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t    isp_init;  //isp初始化返回值
+    MI_ISP_AE_EXPO_INFO_TYPE_t         pExpInfo;  //当前整体曝光信息
+    MI_ISP_AWB_HW_STATISTICS_TYPE_t  pAWBHWdata;  //AWB 硬件统计值
+    uint8_t *pstart = NULL;
+    uint8_t *pend   = NULL;
+    uint32_t rsum = 0, gbsum = 0;
+    float    fawb;
     int cur_irmode = context->last_irmode;
     if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
         printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
@@ -1119,82 +1126,101 @@ int soft_light_sensor(CONTEXT *context)
     if(!isp_init.stParaAPI.bFlag){
         printf("ISP init failed!\n");
         return -1;
-    }
+    } 
     if(context->status & FLAG_VMAIN_INITED){
-       ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
-       if (0 == ret)
-       {
-           context->settings.soft_light_sensor_BV = pExpInfo.s32BV;
-           //printf("BV = %d\n",context->settings.soft_light_sensor_BV);
-       }
-       else
-       {
-           printf("MI_ISP_AE_QueryExposureInfo failed!\n");
-       }
+        s32Ret = MI_ISP_AWB_GetHWStats(0, &pAWBHWdata);
+        pstart = pAWBHWdata.u8AwbBuffer;
+        pend   = pAWBHWdata.u8AwbBuffer + sizeof(pAWBHWdata.u8AwbBuffer);
+        if (MI_ISP_OK == s32Ret){
+            while (pstart < pend) {
+                rsum   += pstart[0];
+                gbsum  += pstart[1] + pstart[2];
+                pstart += 3;
+            }
+            fawb = (float)gbsum / (float)rsum;
+            //printf("fawb: %f\n", fawb);
+            context->settings.soft_light_sensor_AWB = fawb;
+        } else{
+            printf("MI_ISP_AWB_GetHWStats failed!\n");
+        }
+        s32Ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
+        if (MI_ISP_OK == s32Ret){
+            context->settings.soft_light_sensor_LV = pExpInfo.u32LVx10;
+            context->settings.soft_light_sensor_SensorGain = pExpInfo.stExpoValueLong.u32SensorGain;
+            //printf("LV = %d\n",context->settings.soft_light_sensor_LV);
+            //printf("SG = %d\n",context->settings.soft_light_sensor_SensorGain);
+        } else{
+            printf("MI_ISP_AE_QueryExposureInfo failed!\n");
+        }
+
+    } else {
+        return 0;
     }
-    if(!(context->status & FLAG_VMAIN_INITED)) return 0;
-    if (context->settings.standby || (context->status & FLAG_ENABLE_ZSCANNER) || context->settings.ir_en == 1) {
+
+    if (context->settings.standby || (context->status & FLAG_ENABLE_ZSCANNER)|| context->settings.ir_en == 1) {
         cur_irmode = 1;  //day mode
     }
     else if(context->settings.ir_en == 2){
         cur_irmode = 0;  //night mode
     }
-    else if(!context->settings.ir_en){
-        if(abs(pExpInfo.s32BV - context->settings.soft_light_sensor_BV) > 10000)
-        {  //亮度变化很大
-            usleep(4*1000*1000);
-            ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
-            if (0 == ret)
-            {
-                context->settings.soft_light_sensor_BV = pExpInfo.s32BV;
-                //printf("BV = %d\n",context->settings.soft_light_sensor_BV);
+    else if(context->settings.ir_en == 0){
+        sleep(2);
+        s32Ret = MI_ISP_AWB_GetHWStats(0, &pAWBHWdata);
+        pstart = pAWBHWdata.u8AwbBuffer;
+        pend   = pAWBHWdata.u8AwbBuffer + sizeof(pAWBHWdata.u8AwbBuffer);
+        if (MI_ISP_OK == s32Ret){
+            while (pstart < pend) {
+                rsum   += pstart[0];
+                gbsum  += pstart[1] + pstart[2];
+                pstart += 3;
             }
-            else
-            {
-                printf("MI_ISP_AE_QueryExposureInfo failed!\n");
+            fawb = (float)gbsum / (float)rsum;
+        } else{
+            printf("MI_ISP_AWB_GetHWStats failed!\n");
+        }
+        s32Ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
+        if (abs(pExpInfo.u32LVx10 - context->settings.soft_light_sensor_LV) >= 50) { //环境亮度变化很大
+            printf("light changed big!!!\n\n\n");
+            sleep(2);
+            s32Ret = MI_ISP_AWB_GetHWStats(0, &pAWBHWdata);
+            pstart = pAWBHWdata.u8AwbBuffer;
+            pend   = pAWBHWdata.u8AwbBuffer + sizeof(pAWBHWdata.u8AwbBuffer);
+            if (MI_ISP_OK == s32Ret){
+                while (pstart < pend) {
+                    rsum   += pstart[0];
+                    gbsum  += pstart[1] + pstart[2];
+                    pstart += 3;
+                }
+                fawb = (float)gbsum / (float)rsum;
+            } else{
+                printf("MI_ISP_AWB_GetHWStats failed!\n");
             }
-            if(context->last_irmode == 0)
-            {  //红外灯开启,BV普遍增大
-                if(pExpInfo.s32BV > -30000)
-                {
+            s32Ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
+            if(context->last_irmode == 1) { //day to night
+                if ((pExpInfo.u32LVx10 <= 20) && (pExpInfo.stExpoValueLong.u32SensorGain >= 8192)) {
+                    cur_irmode = 0;
+                    context->hwstate |= HW_LSEN_DOWN_OK;
+                }
+            } else if (context->last_irmode == 0) { //night to day
+                if ((pExpInfo.u32LVx10 >= 49) && (pExpInfo.stExpoValueLong.u32SensorGain <= 1700) && (fawb >= 1.90)) {
                     cur_irmode = 1;
                     context->hwstate |= HW_LSEN_UP_OK;
                 }
             }
-            else
-            {
-                if(pExpInfo.s32BV < -90000)
-                {
+        } else { //亮度变化不大
+            if(context->last_irmode == 1) { //day to night
+                if ((pExpInfo.u32LVx10 <= 20) && (pExpInfo.stExpoValueLong.u32SensorGain >= 8192)) {
                     cur_irmode = 0;
                     context->hwstate |= HW_LSEN_DOWN_OK;
                 }
-            }
-        }
-        else
-        {
-            if(context->last_irmode == 0 || context->last_irmode == -1)
-            {  //红外灯开启,BV普遍增大
-                if(pExpInfo.s32BV > -30000)
-                usleep(2*1000*1000);
-                if(pExpInfo.s32BV > -30000)
-                {
+            } else if (context->last_irmode == 0) { // night to day
+                if ((pExpInfo.u32LVx10 >= 49) && (pExpInfo.stExpoValueLong.u32SensorGain <= 1700) && (fawb >= 1.90)) {
                     cur_irmode = 1;
                     context->hwstate |= HW_LSEN_UP_OK;
                 }
             }
-            else
-            {
-                if(pExpInfo.s32BV < -90000)
-                usleep(2*1000*1000);
-                if(pExpInfo.s32BV < -90000)
-                {
-                    cur_irmode = 0;
-                    context->hwstate |= HW_LSEN_DOWN_OK;
-                }
-            }
-        }
+        }      
     }
-    context->settings.soft_light_sensor_LumY = pExpInfo.stExpoValueLong.u32US;
     if (context->last_irmode != cur_irmode) {
         MI_ISP_IQ_CONTRAST_TYPE_t attr; 
         MI_ISP_IQ_COLORTOGRAY_TYPE_t enflag;
