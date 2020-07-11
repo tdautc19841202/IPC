@@ -119,6 +119,7 @@ typedef struct {
     int             main_idr_counter;
     int             sub0_idr_counter;
     int             last_irmode;
+    int             cur_irmode;
     uint32_t        last_motion_record;
     uint32_t        last_motion_report;
     uint32_t        last_zbscan_tick;
@@ -1111,7 +1112,7 @@ int soft_light_sensor(CONTEXT *context)
     int ret;
     MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t isp_init;  //isp初始化返回值
     static MI_ISP_AE_EXPO_INFO_TYPE_t       pExpInfo;  //判断白天黑夜的结构体
-    int cur_irmode = context->last_irmode;
+    //int cur_irmode = context->last_irmode;
     if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
         printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
         return -1;
@@ -1133,6 +1134,7 @@ int soft_light_sensor(CONTEXT *context)
        }
     }
     if(!(context->status & FLAG_VMAIN_INITED)) return 0;
+#if 0
     if (context->settings.standby || (context->status & FLAG_ENABLE_ZSCANNER) || context->settings.ir_en == 1) {
         cur_irmode = 1;  //day mode
     }
@@ -1195,21 +1197,22 @@ int soft_light_sensor(CONTEXT *context)
         }
     }
     context->settings.soft_light_sensor_LumY = pExpInfo.stExpoValueLong.u32US;
-    if (context->last_irmode != cur_irmode) {
+#endif
+    if (context->last_irmode != context->cur_irmode) {
         MI_ISP_IQ_CONTRAST_TYPE_t attr; 
         MI_ISP_IQ_COLORTOGRAY_TYPE_t enflag;
-        enflag.bEnable = !cur_irmode;  //设定彩转灰功能的布尔值
+        enflag.bEnable = !context->cur_irmode;  //设定彩转灰功能的布尔值
         attr.bEnable = 1;  //表示设定对比度功能的布尔值
         attr.enOpType = 1; //表示设定对比度的工作模式（0为自动模式，1为手动）
         context->last_motion_report = get_tick_count(); // to avoid motion report
         //attr.stManual.stParaAPI.u32Lev   =  ;  //设定对比度、亮度、灰度的可变强度数值。值域范围：0 ~ 100
         MI_ISP_IQ_SetColorToGray(0, &enflag);
-        MI_ISP_IQ_SetContrast(0, &attr); if (!cur_irmode) usleep(500*1000);
-        MI_ISP_API_CmdLoadBinFile(0, cur_irmode ? context->ispbinday: context->ispbinight, 1234);
-        set_ircut(!cur_irmode);
-        set_gpio(GPIO_IR_LED, context->settings.ir_en == 1?0:context->settings.ir_en == 2?1:!cur_irmode);
-        context->last_irmode = cur_irmode;
-        printf("cur_irmode = %d\n", cur_irmode);
+        MI_ISP_IQ_SetContrast(0, &attr); if (!context->cur_irmode) usleep(500*1000);
+        MI_ISP_API_CmdLoadBinFile(0, context->cur_irmode ? context->ispbinday: context->ispbinight, 1234);
+        set_ircut(!context->cur_irmode);
+        set_gpio(GPIO_IR_LED, context->settings.ir_en == 1?0:context->settings.ir_en == 2?1:!context->cur_irmode);
+        context->last_irmode = context->cur_irmode;
+        printf("cur_irmode = %d\n", context->cur_irmode);
     }
     return 0;
 }
@@ -1241,7 +1244,8 @@ static void handle_button(CONTEXT *context, int *button_counter)
         if (factorytest == 1) {
             context->hwstate &= ~HW_MIC_TEST_OK;
             play_mp3_file(context, BEEP_AUDIO_FILE,0);
-            context->spkmic_test_tick = get_tick_count();
+            context->cur_irmode = !context->last_irmode;
+            //context->spkmic_test_tick = get_tick_count();
         }
     } else if (*button_counter == 15&& strcmp(context->settings.ft_mode, "smt") != 0) {
         if (factorytest == 0) {
@@ -1691,7 +1695,7 @@ static void* audio_capture_proc(void *argv)
             if (MI_SUCCESS == MI_AI_GetFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL, -1)) {
                 if (ftest) avkcps_audio(context->avkcps, frame.apVirAddr[0], frame.u32Len, 1);
                 for (i=0; i<frame.u32Len; i++) buffer_pcm[i] = alaw2pcm(((unsigned char *)frame.apVirAddr[0])[i]);   
-                mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
+                //mic_auto_test_run(context, (int16_t*)buffer_pcm, frame.u32Len*2); // mic test
                 if(!ftest) tuya_audio(frame.apVirAddr[0], frame.u32Len);
                 MI_AI_ReleaseFrame(AI_DEV_ID, AI_CHN_ID0, &frame, NULL);
             } else {
@@ -1814,6 +1818,7 @@ int main(int argc, char *argv[])
     // apply settings
     context->settings.standby = context->settings.mic_en   = context->settings.ir_en = context->last_irmode = -1;
     context->settings.paired  = context->settings.hflip_en = context->settings.md_en = context->settings.light_mode = -1;
+    context->cur_irmode  = 1;
     ipcam_apply_settings(context, &settings);
 
     pthread_create(&context->pthread_dmon, &context->pthread_attr, device_monitor_proc   , context);

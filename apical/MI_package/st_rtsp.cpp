@@ -1063,7 +1063,7 @@ void ST_DefaultArgs(ST_Config_S *pstConfig)
     pstConfig->s32UseVdf = 0;
     pstConfig->s32LoadIQ = 0;
     pstConfig->enRotation = E_MI_SYS_ROTATE_NONE;
-    pstConfig->en3dNrLevel = E_MI_VPE_3DNR_LEVEL1;
+    pstConfig->en3dNrLevel = E_MI_VPE_3DNR_LEVEL2;
 
     pstStreamAttr[0].bEnable = FALSE;
 
