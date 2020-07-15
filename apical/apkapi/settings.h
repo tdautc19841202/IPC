@@ -62,6 +62,8 @@ typedef struct {
     int  soft_light_sensor_LV;
     int  soft_light_sensor_SensorGain;
     float  soft_light_sensor_AWB;
+    uint32_t rsum, gsum, bsum;
+    int is_night;
 } IPCAMSETTINGS;
 
 void ipcam_settings_load(IPCAMSETTINGS *settings);

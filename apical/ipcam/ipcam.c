@@ -1116,7 +1116,7 @@ int soft_light_sensor(CONTEXT *context)
     MI_ISP_AWB_HW_STATISTICS_TYPE_t  pAWBHWdata;  //AWB 硬件统计值
     uint8_t *pstart = NULL;
     uint8_t *pend   = NULL;
-    uint32_t rsum = 0, gbsum = 0;
+    uint32_t rsum = 0, gbsum = 0, gsum = 0, bsum = 0;
     float    fawb;
     int cur_irmode = context->last_irmode;
     if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
@@ -1134,12 +1134,17 @@ int soft_light_sensor(CONTEXT *context)
         if (MI_ISP_OK == s32Ret){
             while (pstart < pend) {
                 rsum   += pstart[0];
+                gsum   += pstart[1];
+                bsum   += pstart[2];
                 gbsum  += pstart[1] + pstart[2];
                 pstart += 3;
             }
             fawb = (float)gbsum / (float)rsum;
             //printf("fawb: %f\n", fawb);
             context->settings.soft_light_sensor_AWB = fawb;
+            context->settings.rsum = rsum;
+            context->settings.gsum = gsum;
+            context->settings.bsum = bsum;      
         } else{
             printf("MI_ISP_AWB_GetHWStats failed!\n");
         }
@@ -1164,6 +1169,8 @@ int soft_light_sensor(CONTEXT *context)
         cur_irmode = 0;  //night mode
     }
     else if(context->settings.ir_en == 0){
+        cur_irmode = 1;  //day mode
+#if 0
         sleep(2);
         s32Ret = MI_ISP_AWB_GetHWStats(0, &pAWBHWdata);
         pstart = pAWBHWdata.u8AwbBuffer;
@@ -1220,8 +1227,11 @@ int soft_light_sensor(CONTEXT *context)
                 }
             }
         }      
+#endif
     }
     if (context->last_irmode != cur_irmode) {
+        if (cur_irmode) context->settings.is_night = 1;
+        else context->settings.is_night = 0;
         MI_ISP_IQ_CONTRAST_TYPE_t attr; 
         MI_ISP_IQ_COLORTOGRAY_TYPE_t enflag;
         enflag.bEnable = !cur_irmode;  //设定彩转灰功能的布尔值
@@ -1268,6 +1278,19 @@ static void handle_button(CONTEXT *context, int *button_counter)
             context->hwstate &= ~HW_MIC_TEST_OK;
             play_mp3_file(context, BEEP_AUDIO_FILE,0);
             context->spkmic_test_tick = get_tick_count();
+        }
+        else {
+            play_mp3_file(context, BEEP_AUDIO_FILE,0);
+            FILE *fp = fopen("/tmp/sdcard/samples.txt", "a");
+            if (fp) {
+                int fd = fileno(fp);
+                flock(fd, LOCK_EX);
+                fprintf(fp,"%d %d %d %d %d %d\n", context->settings.soft_light_sensor_SensorGain, context->settings.soft_light_sensor_LV, context->settings.rsum, context->settings.gsum, context->settings.bsum, context->settings.is_night);
+                fflush(fp);
+                fsync (fd);
+                flock (fd, LOCK_UN);
+                fclose(fp);
+            }
         }
     } else if (*button_counter == 15&& strcmp(context->settings.ft_mode, "smt") != 0) {
         if (factorytest == 0) {
