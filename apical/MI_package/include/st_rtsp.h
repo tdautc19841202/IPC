@@ -24,7 +24,7 @@
 #define RGN_OSD_HANDLE2                   2
 
 #define RGN_OSD_TIME_WIDTH        180 * 10
-#define RGN_OSD_TIME_HEIGHT        32 * 2
+#define RGN_OSD_TIME_HEIGHT        32 * 2 * 6
 
 #define USE_AUDIO                 1
 

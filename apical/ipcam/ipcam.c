@@ -310,8 +310,13 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 len += sprintf(szTime + len, "%02d:", tm->tm_hour);
                 len += sprintf(szTime + len, "%02d:", tm->tm_min);
                 len += sprintf(szTime + len, "%02d  ", tm->tm_sec);
-#if 0                
-                len += sprintf(szTime + len, "BV=%d", context->settings.soft_light_sensor_BV);
+#if 1                
+                len += sprintf(szTime + len, "LV=%d     ", context->settings.soft_light_sensor_LV);
+                len += sprintf(szTime + len, "SG=%d     ", context->settings.soft_light_sensor_SensorGain);
+                len += sprintf(szTime + len, "AWB=%f       ", context->settings.soft_light_sensor_AWB);
+                len += sprintf(szTime + len, "day2night LV<%d SG>%d   ", context->settings.dSensor_LV, context->settings.dSensor_Gain);
+                len += sprintf(szTime + len, "night2day LV>%d SG<%d AWB>%f   ", context->settings.nSensor_LV, context->settings.nSensor_Gain, context->settings.nSensor_AWB);
+                len += sprintf(szTime + len, "ir_en=%d", context->settings.ir_en);
 #endif                
                 stPoint.u32X = 0;
                 stPoint.u32Y = 0;
@@ -940,7 +945,6 @@ static void sig_handler(int sig)
 
 static void ipcam_apply_settings(CONTEXT *ctxt, IPCAMSETTINGS *newsettings)
 {
-    int ftest = strcmp(newsettings->ft_mode, "");
     int paired_changed = ctxt->settings.paired != newsettings->paired;
     int stdby_changed  = ctxt->settings.standby != newsettings->standby;
     int flip_changed   = ctxt->settings.hflip_en != newsettings->hflip_en || ctxt->settings.vflip_en != newsettings->vflip_en;
@@ -957,7 +961,7 @@ static void ipcam_apply_settings(CONTEXT *ctxt, IPCAMSETTINGS *newsettings)
     if (mdsen_changed) {
         motion_detect_sensitivity(ctxt->motion, newsettings->md_sensitivity);
     }
-    if (paired_changed && !newsettings->paired && !ftest) {
+    if (paired_changed && !newsettings->paired) {
         ctxt->status |=  FLAG_ENABLE_ZSCANNER;
     }
     if (flip_changed) {
@@ -1098,6 +1102,18 @@ static void* ftest_and_rpc_proc(void *argv)
             } else if (strstr(msg, "wifi_signal?") == msg) {
                 snprintf(msg, sizeof(msg), "wifi_signal:%d", get_wifi_signal());
                 len = strlen(msg) + 1;
+            } else if (strstr(msg, "nLV=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                context->settings.nSensor_LV = atoi(msg + 4);
+            } else if (strstr(msg, "nSG=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                context->settings.nSensor_Gain = atoi(msg + 4);
+            } else if (strstr(msg, "nAWB=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                context->settings.nSensor_AWB = (float)atof(msg + 5);
+            }  else if (strstr(msg, "dLV=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                context->settings.dSensor_LV = atoi(msg + 4);
+            } else if (strstr(msg, "dSG=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                context->settings.dSensor_Gain = atoi(msg + 4);
+            } else if (strstr(msg, "ir=") == msg && strcmp(context->settings.ft_mode, "smt") == 0) {
+                context->settings.ir_en = atoi(msg + 3);
             }
             sendto(sock, msg, len, 0, (struct sockaddr*)&client, clientlen);
         } 
@@ -1106,105 +1122,94 @@ static void* ftest_and_rpc_proc(void *argv)
     return NULL;
 }
 
-int soft_light_sensor(CONTEXT *context)
+int get_isp_data(CONTEXT *context)
 {
-    int ret;
-    MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t isp_init;  //isp初始化返回值
-    static MI_ISP_AE_EXPO_INFO_TYPE_t       pExpInfo;  //判断白天黑夜的结构体
-    int cur_irmode = context->last_irmode;
+    MI_S32 s32Ret = MI_ISP_OK;
+    MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t    isp_init;  //isp初始化返回值
+    MI_ISP_AE_EXPO_INFO_TYPE_t         pExpInfo;  //当前整体曝光信息
+    MI_ISP_AWB_HW_STATISTICS_TYPE_t  pAWBHWdata;  //AWB 硬件统计值
+    uint8_t *pstart = NULL;
+    uint8_t *pend   = NULL;
+    uint32_t rsum = 0, gbsum = 0;
+    float    fawb;
+    
     if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
-        printf("MI_ISP_IQ_GetParaInitStatus failed!\n");
         return -1;
     }
     if(!isp_init.stParaAPI.bFlag){
-        printf("ISP init failed!\n");
+        return -1;
+    } 
+    if(context->status & FLAG_VMAIN_INITED && context->status & FLAG_WIFI_CONNECTED){
+        s32Ret = MI_ISP_AWB_GetHWStats(0, &pAWBHWdata);
+        pstart = pAWBHWdata.u8AwbBuffer;
+        pend   = pAWBHWdata.u8AwbBuffer + sizeof(pAWBHWdata.u8AwbBuffer);
+        if (MI_ISP_OK == s32Ret){
+            while (pstart < pend) {
+                rsum   += pstart[0];
+                gbsum  += pstart[1] + pstart[2];
+                pstart += 3;
+            }
+            fawb = (float)gbsum / (float)rsum;
+            context->settings.soft_light_sensor_AWB = fawb;
+        } else{
+            printf("MI_ISP_AWB_GetHWStats failed!\n");
+        }
+        s32Ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
+        if (MI_ISP_OK == s32Ret){
+            context->settings.soft_light_sensor_LV = pExpInfo.u32LVx10;
+            context->settings.soft_light_sensor_SensorGain = pExpInfo.stExpoValueLong.u32SensorGain;
+        } else{
+            printf("MI_ISP_AE_QueryExposureInfo failed!\n");
+        }
+    } else {
+        return 0;
+    }
+}
+int soft_light_sensor(CONTEXT *context)
+{
+    MI_S32 s32Ret = MI_ISP_OK;
+    MI_ISP_IQ_PARAM_INIT_INFO_TYPE_t    isp_init;  //isp初始化返回值
+    int cur_irmode = context->last_irmode;
+
+    if( MI_ISP_IQ_GetParaInitStatus(0,&isp_init) != MI_ISP_OK){
         return -1;
     }
-    if(context->status & FLAG_VMAIN_INITED){
-       ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
-       if (0 == ret)
-       {
-           context->settings.soft_light_sensor_BV = pExpInfo.s32BV;
-           //printf("BV = %d\n",context->settings.soft_light_sensor_BV);
-       }
-       else
-       {
-           printf("MI_ISP_AE_QueryExposureInfo failed!\n");
-       }
-    }
-    if(!(context->status & FLAG_VMAIN_INITED)) return 0;
-    if (context->settings.standby || (context->status & FLAG_ENABLE_ZSCANNER) || context->settings.ir_en == 1) {
+    if(!isp_init.stParaAPI.bFlag){
+        return -1;
+    } 
+    if (context->settings.ir_en == 1) {
         cur_irmode = 1;  //day mode
     }
     else if(context->settings.ir_en == 2){
         cur_irmode = 0;  //night mode
     }
-    else if(!context->settings.ir_en){
-        if(abs(pExpInfo.s32BV - context->settings.soft_light_sensor_BV) > 10000)
-        {  //亮度变化很大
-            usleep(4*1000*1000);
-            ret = MI_ISP_AE_QueryExposureInfo(0,&pExpInfo);
-            if (0 == ret)
-            {
-                context->settings.soft_light_sensor_BV = pExpInfo.s32BV;
-                //printf("BV = %d\n",context->settings.soft_light_sensor_BV);
-            }
-            else
-            {
-                printf("MI_ISP_AE_QueryExposureInfo failed!\n");
-            }
-            if(context->last_irmode == 0)
-            {  //红外灯开启,BV普遍增大
-                if(pExpInfo.s32BV > -30000)
-                {
-                    cur_irmode = 1;
-                    context->hwstate |= HW_LSEN_UP_OK;
-                }
-            }
-            else
-            {
-                if(pExpInfo.s32BV < -90000)
-                {
+    else if(context->settings.ir_en == 0){
+        if(context->last_irmode == 1) { //day to night
+            if ((context->settings.soft_light_sensor_LV <= context->settings.dSensor_LV) && (context->settings.soft_light_sensor_SensorGain >= context->settings.dSensor_Gain)) {
+                sleep(5);
+                if ((context->settings.soft_light_sensor_LV <= context->settings.dSensor_LV) && (context->settings.soft_light_sensor_SensorGain >= context->settings.dSensor_Gain)) {
                     cur_irmode = 0;
                     context->hwstate |= HW_LSEN_DOWN_OK;
                 }
             }
-        }
-        else
-        {
-            if(context->last_irmode == 0 || context->last_irmode == -1)
-            {  //红外灯开启,BV普遍增大
-                if(pExpInfo.s32BV > -30000)
-                usleep(2*1000*1000);
-                if(pExpInfo.s32BV > -30000)
-                {
+        } else if (context->last_irmode == 0) { // night to day
+            if ((context->settings.soft_light_sensor_LV >= context->settings.nSensor_LV) && (context->settings.soft_light_sensor_SensorGain <= context->settings.nSensor_Gain) && (context->settings.soft_light_sensor_AWB >= context->settings.nSensor_AWB)) {
+                sleep(5);
+                if ((context->settings.soft_light_sensor_LV >= context->settings.nSensor_LV) && (context->settings.soft_light_sensor_SensorGain <= context->settings.nSensor_Gain) && (context->settings.soft_light_sensor_AWB >= context->settings.nSensor_AWB)) {
                     cur_irmode = 1;
                     context->hwstate |= HW_LSEN_UP_OK;
                 }
             }
-            else
-            {
-                if(pExpInfo.s32BV < -90000)
-                usleep(2*1000*1000);
-                if(pExpInfo.s32BV < -90000)
-                {
-                    cur_irmode = 0;
-                    context->hwstate |= HW_LSEN_DOWN_OK;
-                }
-            }
+        } else {
+            cur_irmode = 1;    
         }
-    }
-    context->settings.soft_light_sensor_LumY = pExpInfo.stExpoValueLong.u32US;
+    }      
     if (context->last_irmode != cur_irmode) {
-        MI_ISP_IQ_CONTRAST_TYPE_t attr; 
         MI_ISP_IQ_COLORTOGRAY_TYPE_t enflag;
         enflag.bEnable = !cur_irmode;  //设定彩转灰功能的布尔值
-        attr.bEnable = 1;  //表示设定对比度功能的布尔值
-        attr.enOpType = 1; //表示设定对比度的工作模式（0为自动模式，1为手动）
         context->last_motion_report = get_tick_count(); // to avoid motion report
-        //attr.stManual.stParaAPI.u32Lev   =  ;  //设定对比度、亮度、灰度的可变强度数值。值域范围：0 ~ 100
         MI_ISP_IQ_SetColorToGray(0, &enflag);
-        MI_ISP_IQ_SetContrast(0, &attr); if (!cur_irmode) usleep(500*1000);
+        if (!cur_irmode) usleep(500*1000);
         MI_ISP_API_CmdLoadBinFile(0, cur_irmode ? context->ispbinday: context->ispbinight, 1234);
         set_ircut(!cur_irmode);
         set_gpio(GPIO_IR_LED, context->settings.ir_en == 1?0:context->settings.ir_en == 2?1:!cur_irmode);
@@ -1485,8 +1490,14 @@ static void* device_monitor_proc(void *argv)
     pthread_setname_np(pthread_self(), "dmon"); 
     context->status |= FLAG_CHECK_WLAN_MAP;
     context->status &=~ FLAG_GET_WLAN_INFO;
+    context->settings.nSensor_LV = 49;
+    context->settings.nSensor_Gain = 1800;
+    context->settings.nSensor_AWB = 2.06;
+    context->settings.dSensor_LV = 20;
+    context->settings.dSensor_Gain = 8192;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (thread_counter % 10 == 0) { // 1s
+            get_isp_data(context);
             soft_light_sensor(context);
             run_sdcard_check (context);
             run_aging_test   (context, thread_counter);
@@ -1812,7 +1823,8 @@ int main(int argc, char *argv[])
     pthread_attr_init(&context->pthread_attr);
     pthread_attr_setstacksize(&context->pthread_attr, 128 * 1024);
     // apply settings
-    context->settings.standby = context->settings.mic_en   = context->settings.ir_en = context->last_irmode = -1;
+    context->settings.standby = context->settings.mic_en   =  context->last_irmode = -1;
+    context->settings.ir_en = 0;
     context->settings.paired  = context->settings.hflip_en = context->settings.md_en = context->settings.light_mode = -1;
     ipcam_apply_settings(context, &settings);
 

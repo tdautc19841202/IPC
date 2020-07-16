@@ -59,8 +59,15 @@ typedef struct {
     int  tuya_blub_on_off;
     int  tuya_pir_on_off;
     
-    int  soft_light_sensor_BV;
-    int  soft_light_sensor_LumY;
+    int  soft_light_sensor_LV;
+    int  soft_light_sensor_SensorGain;
+    float  soft_light_sensor_AWB;
+
+    int   nSensor_LV;
+    int   nSensor_Gain;
+    float nSensor_AWB;
+    int   dSensor_LV;
+    int   dSensor_Gain;
 } IPCAMSETTINGS;
 
 void ipcam_settings_load(IPCAMSETTINGS *settings);
