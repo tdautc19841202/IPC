@@ -1490,11 +1490,11 @@ static void* device_monitor_proc(void *argv)
     pthread_setname_np(pthread_self(), "dmon"); 
     context->status |= FLAG_CHECK_WLAN_MAP;
     context->status &=~ FLAG_GET_WLAN_INFO;
-    context->settings.nSensor_LV = 49;
-    context->settings.nSensor_Gain = 1800;
-    context->settings.nSensor_AWB = 1.96;
-    context->settings.dSensor_LV = 20;
-    context->settings.dSensor_Gain = 8192;
+    context->settings.nSensor_LV = 25;
+    context->settings.nSensor_Gain = 10000;
+    context->settings.nSensor_AWB = 1.81;
+    context->settings.dSensor_LV = 1;
+    context->settings.dSensor_Gain = 50000;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
         if (thread_counter % 10 == 0) { // 1s
             get_isp_data(context);
