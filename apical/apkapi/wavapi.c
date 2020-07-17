@@ -54,7 +54,7 @@ int wavein_init(int ftest)
 {
     MI_BOOL  bAiEnableVqe  = 1;         //语音质量增强
     MI_BOOL  bAiEnableAenc = 1;         //音频编码功能
-    MI_BOOL  bAiEnableHpf  = FALSE;     //高通滤波功能
+    MI_BOOL  bAiEnableHpf  = 1;     //高通滤波功能
     MI_BOOL  bAiEnableAgc  = 1;         //自动增益控制
     MI_BOOL  bAiEnableNr   = 1;     //语音降噪功能
     MI_BOOL  bAiEnableAec  = 1;         //回声抵消功能
@@ -252,40 +252,49 @@ void wavein_exit(void)
 }
 int waveout_init(void)
 {
-    // AioDevAttr_t tAudioDevAttr = {};
-    // AioChnAttr_t tAudioChnAttr = {};
-    MI_AUDIO_Attr_t tAudioDevAttr;
+    MI_AUDIO_Attr_t stAoSetAttr;
+    MI_AO_AdecConfig_t stAoSetAdecConfig;
+    MI_AO_VqeConfig_t stAoSetVqeConfig;
+    MI_AO_ChnParam_t stAoChnParam;
+    MI_BOOL bAoEnableVqe = 1;
+    MI_BOOL bAoSetVolume = 1;
 
-    // tAudioDevAttr.bitWidth   = 16;
-    // tAudioDevAttr.soundMode  = AUDIO_SOUND_MODE_MONO;
-    // tAudioDevAttr.Samplerate = AO_SAMPRATE;
-    // tAudioDevAttr.bufferLen  = bufsize;
-    tAudioDevAttr.eBitwidth   = E_MI_AUDIO_BIT_WIDTH_16;  //采样精度
-    tAudioDevAttr.eWorkmode   = E_MI_AUDIO_MODE_I2S_SLAVE; //I2S主模式
-    tAudioDevAttr.WorkModeSetting.stI2sConfig.bSyncClock = TRUE;   //AI AO异步，TRUE则同步（同步必须工作于Slave Mode）
-    tAudioDevAttr.WorkModeSetting.stI2sConfig.eFmt = E_MI_AUDIO_I2S_FMT_I2S_MSB; //I2S格式设置
-    tAudioDevAttr.WorkModeSetting.stI2sConfig.eMclk = E_MI_AUDIO_I2S_MCLK_0; //MCLK时钟设置（固定）
-    tAudioDevAttr.eSoundmode  = E_MI_AUDIO_SOUND_MODE_MONO; //单声道
-    // tAudioDevAttr.u32FrmNum   = 20;  //缓存帧数目（未确定）
-    tAudioDevAttr.u32PtNumPerFrm = MI_AUDIO_SAMPLE_PER_FRAME; //每帧的采样点个数（未确定）
-    tAudioDevAttr.u32ChnCnt = 1; //支持的通道数目(单声道为1)
-    tAudioDevAttr.eSamplerate = E_MI_AUDIO_SAMPLE_RATE_8000;  //采样率
-    
-    ExecFunc(MI_AO_SetPubAttr(AO_DEV_ID, &tAudioDevAttr),MI_SUCCESS);
+    stAoSetVqeConfig.bAgcOpen = 1;
+    stAoSetVqeConfig.bAnrOpen = 1;
+    stAoSetVqeConfig.bEqOpen = 0;
+    stAoSetVqeConfig.bHpfOpen = 1;
+    stAoSetVqeConfig.s32FrameSample = 128;
+    stAoSetVqeConfig.s32WorkSampleRate = 8000;
+    memcpy(&stAoSetVqeConfig.stAgcCfg, &stAgcCfg, sizeof(MI_AUDIO_AgcConfig_t));
+    memcpy(&stAoSetVqeConfig.stAnrCfg, &stAnrCfg, sizeof(MI_AUDIO_AnrConfig_t));
+    memcpy(&stAoSetVqeConfig.stEqCfg, &stEqCfg, sizeof(MI_AUDIO_EqConfig_t));
+    memcpy(&stAoSetVqeConfig.stHpfCfg, &stHpfCfg, sizeof(MI_AUDIO_HpfConfig_t));
 
-    // tAudioChnAttr.bEnable      = TRUE;
-    // tAudioChnAttr.mode         = USER_MODE;
-    // tAudioChnAttr.chn.chnID    = AO_CHN_ID;
-    // tAudioChnAttr.chn.chnType  = AO_CHANNEL;
-    // tAudioChnAttr.chn.deviceID = AO_DEV_ID;
-    // MI_AO_SetChnAttr(AO_CHN_ID, &tAudioChnAttr);
+    memset(&stAoSetAttr, 0x0, sizeof(MI_AUDIO_Attr_t));
+    stAoSetAttr.eBitwidth   = E_MI_AUDIO_BIT_WIDTH_16;  //采样精度
+    stAoSetAttr.eWorkmode   = E_MI_AUDIO_MODE_I2S_SLAVE; //I2S主模式
+    stAoSetAttr.WorkModeSetting.stI2sConfig.bSyncClock = FALSE;   //AI AO异步，TRUE则同步（同步必须工作于Slave Mode）
+    stAoSetAttr.WorkModeSetting.stI2sConfig.eFmt = E_MI_AUDIO_I2S_FMT_I2S_MSB; //I2S格式设置
+    stAoSetAttr.WorkModeSetting.stI2sConfig.eMclk = E_MI_AUDIO_I2S_MCLK_0; //MCLK时钟设置（固定）
+    stAoSetAttr.eSoundmode  = E_MI_AUDIO_SOUND_MODE_MONO; //单声道
+    stAoSetAttr.u32PtNumPerFrm = MI_AUDIO_SAMPLE_PER_FRAME; //每帧的采样点个数（未确定）
+    stAoSetAttr.u32ChnCnt = 1; //支持的通道数目(单声道为1)
+    stAoSetAttr.eSamplerate = E_MI_AUDIO_SAMPLE_RATE_8000;  //采样率 
+    ExecFunc(MI_AO_SetPubAttr(AO_DEV_ID, &stAoSetAttr),MI_SUCCESS);
 
-    // MI_AO_Enable   (AO_DEV_ID);
-    // MI_AO_EnableChn(AO_DEV_ID, AO_CHN_ID    );
-    // MI_AO_SetVolume(AO_DEV_ID, HW_SPK_VOLUME);
     ExecFunc(MI_AO_Enable   (AO_DEV_ID),MI_SUCCESS);
     ExecFunc(MI_AO_EnableChn(AO_DEV_ID, AO_CHN_ID),MI_SUCCESS);
-    ExecFunc(MI_AO_SetVolume(AO_DEV_ID, 1),MI_SUCCESS);
+    if(bAoEnableVqe)
+    {
+        ExecFunc(MI_AO_SetVqeAttr(AO_DEV_ID, AO_CHN_ID, &stAoSetVqeConfig), MI_SUCCESS);
+        ExecFunc(MI_AO_EnableVqe(AO_DEV_ID, AO_CHN_ID), MI_SUCCESS);
+    }
+
+    if (bAoSetVolume)
+    {
+        ExecFunc(MI_AO_SetVolume(AO_DEV_ID, -2), MI_SUCCESS);
+    }
+
     printf("waveout_init finish\n");
     return 0;
 }
