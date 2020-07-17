@@ -56,11 +56,11 @@ int wavein_init(int ftest)
     MI_BOOL  bAiEnableAenc = 1;         //音频编码功能
     MI_BOOL  bAiEnableHpf  = FALSE;     //高通滤波功能
     MI_BOOL  bAiEnableAgc  = 1;         //自动增益控制
-    MI_BOOL  bAiEnableNr   = FALSE;     //语音降噪功能
+    MI_BOOL  bAiEnableNr   = 1;     //语音降噪功能
     MI_BOOL  bAiEnableAec  = 1;         //回声抵消功能
     MI_BOOL  bAiEnableEq   = FALSE;     //均衡器功能
     MI_BOOL  bAiSetVolume  = TRUE;      //设置音频增益
-    MI_S32   s32AiVolume   = 14;        //音频增益电压
+    MI_S32   s32AiVolume   = 6;        //音频增益电压
     MI_AUDIO_Attr_t     stAiSetAttr;
     MI_AI_AencConfig_t  stAiSetAencConfig;
     MI_AI_VqeConfig_t   stAiSetVqeConfig;

@@ -310,7 +310,7 @@ void *UpdateRgnOsdTimeProc(void *argv)
                 len += sprintf(szTime + len, "%02d:", tm->tm_hour);
                 len += sprintf(szTime + len, "%02d:", tm->tm_min);
                 len += sprintf(szTime + len, "%02d  ", tm->tm_sec);
-#if 1                
+#if 0                
                 len += sprintf(szTime + len, "LV=%d     ", context->settings.soft_light_sensor_LV);
                 len += sprintf(szTime + len, "SG=%d     ", context->settings.soft_light_sensor_SensorGain);
                 len += sprintf(szTime + len, "AWB=%f       ", context->settings.soft_light_sensor_AWB);
@@ -1492,7 +1492,7 @@ static void* device_monitor_proc(void *argv)
     context->status &=~ FLAG_GET_WLAN_INFO;
     context->settings.nSensor_LV = 49;
     context->settings.nSensor_Gain = 1800;
-    context->settings.nSensor_AWB = 2.06;
+    context->settings.nSensor_AWB = 1.96;
     context->settings.dSensor_LV = 20;
     context->settings.dSensor_Gain = 8192;
     while (!(context->status & FLAG_EXIT_OTHER_THEADS)) {
