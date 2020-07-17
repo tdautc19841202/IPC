@@ -217,7 +217,7 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
 #endif
         stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_H264VBR;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxBitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 44;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 30;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MinQp = 24;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 0;
@@ -225,9 +225,9 @@ MI_S32 ST_StartPipeLine(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U32 u32Cr
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateDen = 1;
 
         stRcParam.stParamH264VBR.s32IPQPDelta = 3;
-        stRcParam.stParamH264VBR.u32MaxIQp = 44;
+        stRcParam.stParamH264VBR.u32MaxIQp = 30;
         stRcParam.stParamH264VBR.u32MinIQp = 24;
-        stRcParam.stParamH264VBR.u32MaxIPProp = 44;
+        stRcParam.stParamH264VBR.u32MaxIPProp = 30;
         stRcParam.stParamH264VBR.s32ChangePos = 100;
 
     }
@@ -485,17 +485,17 @@ MI_S32 ST_StartPipeLineWithDip(MI_U8 i, MI_U32 u32Width, MI_U32 u32Height, MI_U3
 #endif
         stChnAttr.stRcAttr.eRcMode = E_MI_VENC_RC_MODE_H264VBR;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxBitRate = pstStreamAttr[i].f32Mbps * 1024 * 1024;
-        stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 48;
+        stChnAttr.stRcAttr.stAttrH264Vbr.u32MaxQp = 35;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32MinQp = 28;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32Gop = pstStreamAttr[i].u32FrameRate * 2;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32StatTime = 0;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateNum = pstStreamAttr[i].u32FrameRate;
         stChnAttr.stRcAttr.stAttrH264Vbr.u32SrcFrmRateDen = 1;
 
-        stRcParam.stParamH264VBR.s32IPQPDelta = 0;
-        stRcParam.stParamH264VBR.u32MaxIQp = 48;
+        stRcParam.stParamH264VBR.s32IPQPDelta = 3;
+        stRcParam.stParamH264VBR.u32MaxIQp = 35;
         stRcParam.stParamH264VBR.u32MinIQp = 28;
-        stRcParam.stParamH264VBR.u32MaxIPProp = 50;
+        stRcParam.stParamH264VBR.u32MaxIPProp = 35;
         stRcParam.stParamH264VBR.s32ChangePos = 100;
 
     }
