@@ -19,10 +19,12 @@ case "$1" in
     make -C $PWD/wpa_supplicant -j8
     arm-buildroot-linux-uclibcgnueabihf-strip $PWD/wpa_supplicant/wpa_supplicant
     arm-buildroot-linux-uclibcgnueabihf-strip $PWD/wpa_supplicant/wpa_cli
+	arm-buildroot-linux-uclibcgnueabihf-strip $PWD/wpa_supplicant/wpa_passphrase
 
     mkdir -p $PROJECT_RELEASE_DIR/bin
     cp $PWD/wpa_supplicant/wpa_supplicant $PROJECT_RELEASE_DIR/bin
     cp $PWD/wpa_supplicant/wpa_cli        $PROJECT_RELEASE_DIR/bin
+	cp $PWD/wpa_supplicant/wpa_passphrase $PROJECT_RELEASE_DIR/bin
     ;;
 clean)
     make -C $PWD/wpa_supplicant clean

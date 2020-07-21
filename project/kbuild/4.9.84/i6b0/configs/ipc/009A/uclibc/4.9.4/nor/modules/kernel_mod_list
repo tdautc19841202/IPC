@@ -19,3 +19,4 @@ vfat.ko
 ntfs.ko
 sd_mod.ko
 ms_notify.ko
+cfg80211.ko

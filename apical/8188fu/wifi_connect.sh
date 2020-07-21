@@ -44,7 +44,8 @@ for i in { 1..3 }; do
     sleep 1
 done
 
-wpa_supplicant -i wlan0 -Dnl80211 -c /customer/data/cfg/wpa_supplicant.conf -B
+sleep 2
+wpa_supplicant -i wlan0 -Dnl80211 -c /customer/data/cfg/wpa_supplicant.conf &
 
 for i in { 1..3 }; do
     echo "wait wpa_supplicant started ..."
@@ -54,6 +55,6 @@ for i in { 1..3 }; do
     sleep 1
 done
 
-sleep 3
-udhcpc -i wlan0 -T 10 &
+sleep 2
+udhcpc -i wlan0 -T 1 &
 wifi_check.sh &

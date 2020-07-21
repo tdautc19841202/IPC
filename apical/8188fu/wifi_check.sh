@@ -17,7 +17,7 @@ do
       echo "WPA supplicant: wifi connection was lost";
       ipcam mp3 /customer/res/disconnect.mp3;
       kill `ps | awk '$5=="udhcpc" && $7=="wlan0" {printf $1}'`
-      ifconfig wlan0 0.0.0.0 && udhcpc -i wlan0 -T 10&
+      ifconfig wlan0 0.0.0.0 && udhcpc -i wlan0 -T 1 &
       NET_STATUS=down
       fi
     else

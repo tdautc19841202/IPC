@@ -1747,7 +1747,7 @@ static void* network_monitor_proc(void *argv)
             if (!ftest && get_mqtt_status() == 0 && (context->status & FLAG_HAVE_PAIRED) && network_sec_count % 5 == 0) // mqtt 未连接且设备已经成功配对过一次（每5秒判断一次）
             {
                 system("kill `ps | awk '$5==\"udhcpc\" && $7==\"wlan0\" {printf $1}'`");
-                system("udhcpc -i wlan0 &");
+                system("udhcpc -i wlan0 -T 1 &");
             }
         } else {
             context->status &=~ FLAG_WIFI_CONNECTED;
