@@ -182,6 +182,7 @@ rootfs:
 		sed -i '/grace.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 		sed -i '/sd_mod.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 		sed -i '/ms_notify.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/cfg80211.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 	fi;
 
 	if [ "$(DUAL_OS)" != "on" ]; then \

@@ -754,10 +754,11 @@ static void * scan_thread(void *argv)
         if(context->status & FLAG_ENABLE_ZSCANNER) {
             handle_zbar_scan(context,stBufInfo.stFrameData.pVirAddr[0]);
         }
-        else if(context->settings.md_en){
+        else if(context->settings.md_en && context->status & FLAG_WIFI_CONNECTED){
             handle_motion_det(context, stBufInfo.stFrameData.pVirAddr[0], diff);
         }
         MI_SYS_ChnOutputPortPutBuf(bufHandle);
+        usleep(500 * 1000);
     }
     zscanner_exit(context->zscanner);
     motion_detect_exit(context->motion);
