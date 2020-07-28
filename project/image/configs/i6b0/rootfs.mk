@@ -229,6 +229,7 @@ rootfs:
 			echo insmod /config/modules/$(KERNEL_VERSION)/$(SENSOR2) $(SENSOR2_OPT) >> $(OUTPUTDIR)/customer/demo.sh; \
 		fi;	\
 		sed -i 's/mi_sys.ko/mi_sys.ko cmdQBufSize=256 logBufSize=256/g' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i 's/mi_venc.ko/mi_venc.ko max_width=1920 max_height=1080/g' $(OUTPUTDIR)/customer/demo.sh; \
 		sed -i '/mi_iqserver.ko/,+4d' $(OUTPUTDIR)/customer/demo.sh;\
 		sed -i '/mi_isp.ko/,+4d' $(OUTPUTDIR)/customer/demo.sh;\
 		sed -i 's/mi_common/insmod \/config\/modules\/$(KERNEL_VERSION)\/mi_common.ko/g' $(OUTPUTDIR)/customer/demo.sh; \
