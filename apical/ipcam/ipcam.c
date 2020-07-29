@@ -1505,11 +1505,13 @@ static void* device_monitor_proc(void *argv)
             run_motor_test   (context, thread_counter, context->settings.ft_mode);
             handle_spk_pwroff(context);     
         }
+#if 0
         if(thread_counter % 20 == 0) { //2s
             if (context->status & FLAG_CHECK_WLAN_MAP){
                 run_wlan_map_check(context);
             }   
         }
+#endif    
         if(thread_counter % 60 == 0){ //6s
             ipcam_settings_save(&context->settings, 1);
         }
@@ -1814,7 +1816,7 @@ int main(int argc, char *argv[])
 
     signal(SIGINT , sig_handler);
     signal(SIGTERM, sig_handler);
-    context->motor = motor_init();
+    //context->motor = motor_init();
    
     get_dev_uid(context->devuid, sizeof(context->devuid));
     get_dev_sid(context->devsid, sizeof(context->devsid));
@@ -1835,7 +1837,7 @@ int main(int argc, char *argv[])
     pthread_create(&context->pthread_test, &context->pthread_attr, ftest_and_rpc_proc    , context);
     pthread_create(&context->pthread_rgn , &context->pthread_attr, UpdateRgnOsdTimeProc  , context);
     pthread_create(&context->pthread_audc, &context->pthread_attr, audio_capture_proc    , context);
-    pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
+    //pthread_create(&context->pthread_ptzm, &context->pthread_attr, ptz_move_control      , context);
     if(!ftest) tuya_ipc_main(context->devuid, context->devsid, NULL,&(context->exit_tuya));
     if (context->pthread_led ) pthread_join(context->pthread_led , NULL);
     if (context->pthread_dmon) pthread_join(context->pthread_dmon, NULL);

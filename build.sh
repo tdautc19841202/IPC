@@ -13,7 +13,7 @@ TOPDIR=$PWD
 	cd $TOPDIR/openssl        && ./build.sh $1
 	cd $TOPDIR/libnl          && ./build.sh $1
 	cd $TOPDIR/wpa_supplicant && ./build.sh $1
-	cd $TOPDIR/rtl8188fu      && ./build.sh $1
+#	cd $TOPDIR/rtl8188fu      && ./build.sh $1
 	cd $TOPDIR/rtlwifitool    && ./build.sh $1
 	cd $TOPDIR/libiconv       && ./build.sh $1
 	cd $TOPDIR/zbar           && ./build.sh $1

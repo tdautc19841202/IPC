@@ -44,7 +44,6 @@ for i in { 1..3 }; do
     sleep 1
 done
 
-sleep 2
 wpa_supplicant -i wlan0 -Dnl80211 -c /customer/data/cfg/wpa_supplicant.conf &
 
 for i in { 1..3 }; do
@@ -56,5 +55,5 @@ for i in { 1..3 }; do
 done
 
 sleep 2
-udhcpc -i wlan0 -T 1 &
+udhcpc -i wlan0 &
 wifi_check.sh &

@@ -6,7 +6,7 @@ WIFI_GPIO_A=`cat /tmp/gpio_wifi`
 kill `ps | awk '$5=="udhcpc" && $7=="wlan0" {printf $1}'`
 killall wpa_cli wpa_supplicant
 
-rmmod -f 8188fu
+rmmod -f ssw101b_wifi_usb
 rmmod -f cfg80211
 rmmod -f ehci_hcd
 rmmod -f usbcore
@@ -33,7 +33,7 @@ insmod /lib/modules/4.9.84/usb-common.ko
 insmod /lib/modules/4.9.84/usbcore.ko
 insmod /lib/modules/4.9.84/ehci-hcd.ko force_host=1
 insmod /lib/modules/4.9.84/cfg80211.ko
-insmod /lib/modules/4.9.84/8188fu.ko
+insmod /lib/modules/4.9.84/ssw101b_wifi_usb.ko
 
 for i in { 1..3 }; do
     echo "wait wifi driver loaded ..."

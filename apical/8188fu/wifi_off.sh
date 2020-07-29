@@ -3,7 +3,7 @@
 WIFI_GPIO=`cat /tmp/gpio_wifi`
 
 
-rmmod -f 8188fu
+rmmod -f ssw101b_wifi_usb
 rmmod -f cfg80211
 rmmod -f ehci_hcd
 rmmod -f usbcore
