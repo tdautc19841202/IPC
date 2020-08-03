@@ -183,6 +183,7 @@ rootfs:
 		sed -i '/sd_mod.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 		sed -i '/ms_notify.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 		sed -i '/cfg80211.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
+		sed -i '/exfat.ko/d' $(OUTPUTDIR)/customer/demo.sh; \
 	fi;
 
 	if [ "$(DUAL_OS)" != "on" ]; then \
@@ -244,6 +245,7 @@ rootfs:
 		rm $(OUTPUTDIR)/customer/demotemp.sh ; \
 	fi;
 	echo "/customer/bin/watchdog.sh &">> $(OUTPUTDIR)/customer/demo.sh; \
+	echo "mkdir /tmp/sdcard" >> $(OUTPUTDIR)/customer/demo.sh; \
 	echo mdev -s >> $(OUTPUTDIR)/customer/demo.sh
 	if [ $(BENCH) = "yes" ]; then \
 		cd $(PROJ_ROOT)/../bench ; \

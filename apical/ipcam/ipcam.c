@@ -844,8 +844,8 @@ static void run_sdcard_check(CONTEXT *context)
                     system("insmod /config/modules/4.9.84/fat.ko");
                     system("insmod /config/modules/4.9.84/msdos.ko");
                     system("insmod /config/modules/4.9.84/vfat.ko");
+                    system("insmod /config/modules/4.9.84/exfat.ko");
                     context->status &= ~FLAG_SD_FIRST_INSERT;
-                    system("mkdir /tmp/sdcard");
                 }
             }
             while (--retry) {

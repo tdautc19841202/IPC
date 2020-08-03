@@ -3,6 +3,7 @@ nls_utf8.ko
 fat.ko
 vfat.ko
 msdos.ko
+exfat.ko
 nfs.ko
 nfsv2.ko
 lockd.ko
