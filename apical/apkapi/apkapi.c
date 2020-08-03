@@ -40,6 +40,8 @@ int HW_SPK_VOLUME=  2;
 int GET_IP_FLAG  =  0;
 int AUTO_CONNECT =  0;
 int REMOVE_DEVICE=  0;
+char build_num_buf[32] = {0};
+
 int32_t get_build_num(void)
 {
     uint8_t year = 0, month = 0, day = 0, hour = 0, min = 0;
@@ -57,6 +59,7 @@ int32_t get_build_num(void)
     day  = (uint8_t)atoi(pDate + 4);
     hour = (uint8_t)atoi(pTime + 0);
     min  = (uint8_t)atoi(pTime + 3);
+    snprintf(build_num_buf, sizeof(build_num_buf), "%02d.%02d.%02d.%02d.%02d", year, month, day, hour, min);
     return year * 100000000L + month * 1000000L + day * 10000L + hour * 100L + min * 1L;
 }
 

@@ -13,6 +13,7 @@
 #include "tuya_ipc_media.h"
 #include "tuya_ipc_main.h"
 #include "tuya_iot_config.h"
+#include "apkapi.h"
 
 
 extern int ipcam_take_snapshot(void **buf, int *size);
@@ -66,7 +67,7 @@ OPERATE_RET IPC_APP_Init_SDK(WIFI_INIT_MODE_E init_mode, CHAR_T *uuid, CHAR_T *k
     strcpy(s_mgr_info.product_key, IPC_APP_PID);
     strcpy(s_mgr_info.uuid, uuid);
     strcpy(s_mgr_info.auth_key, key);
-    strcpy(s_mgr_info.dev_sw_version, IPC_APP_VERSION);
+    strcpy(s_mgr_info.dev_sw_version, build_num_buf);
     s_mgr_info.max_p2p_user = 5; //TUYA P2P supports 5 users at the same time, including live preview and playback
 
     PR_DEBUG("Init Value.storage_path %s", s_mgr_info.storage_path);

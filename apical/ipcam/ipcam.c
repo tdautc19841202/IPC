@@ -865,7 +865,8 @@ static void run_sdcard_check(CONTEXT *context)
                     printf("mkfs.vfat ok !\n");
                 }
             }
-            if (( mount(dev, SDCARD_MOUNT_PATH, "vfat" , MS_SYNCHRONOUS|MS_DIRSYNC, "fmask=022,dmask=022") == 0) \
+            if (( mount(dev, SDCARD_MOUNT_PATH, "vfat" , MS_SYNCHRONOUS|MS_DIRSYNC|MS_NOEXEC, "fmask=133,dmask=022") == 0
+               || mount(dev, SDCARD_MOUNT_PATH, "exfat", MS_SYNCHRONOUS|MS_DIRSYNC|MS_NOEXEC, "fmask=133,dmask=022") == 0)
                 && get_sdcard_status(&context->sdstatus->status, &context->sdstatus->total, &context->sdstatus->available) ) {
                 if (!(context->sdstatus->status & SDSTATUS_FORMATTING)) play_mp3_file(context, SDCARD_INSERT_FILE, 0);
                 if (file_exist(SDCARD_MOUNT_PATH"/uuid/{084629C0-A7F7-4725-B242-44442CD5ABAB}")) {
