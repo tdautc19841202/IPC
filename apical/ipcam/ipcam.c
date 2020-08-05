@@ -758,7 +758,6 @@ static void * scan_thread(void *argv)
             handle_motion_det(context, stBufInfo.stFrameData.pVirAddr[0], diff);
         }
         MI_SYS_ChnOutputPortPutBuf(bufHandle);
-        usleep(500 * 1000);
     }
     zscanner_exit(context->zscanner);
     motion_detect_exit(context->motion);
