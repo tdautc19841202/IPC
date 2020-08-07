@@ -20,10 +20,10 @@
 #include "apkapi.h"
 
 char HW_INFO_STR[128];
-int GPIO_LED_R   = 76;
-int GPIO_LED_G   = 77;
+int GPIO_LED_R   = 47;
+int GPIO_LED_G   = 44;
 int GPIO_LED_B   = 45;
-int GPIO_LED_U   = 77;
+int GPIO_LED_U   = 44;
 int GPIO_WIFI    = 14;
 int GPIO_BUTTON  = 66;
 int GPIO_SPK_PWR = 15;
