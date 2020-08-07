@@ -4,7 +4,7 @@ set -e
 
 APICAL_RELEASE_DIR=$PWD/../apical/release
 
-# export CC=gcc
+ export CC=gcc
 
 case "$1" in
 "")
