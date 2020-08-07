@@ -29,6 +29,7 @@ extern int  HW_SPK_VOLUME;
 extern int  GET_IP_FLAG  ;
 extern int  AUTO_CONNECT ;
 extern int  REMOVE_DEVICE;
+extern char build_num_buf[32];
 void apkapi_init(void);
 int  file_exist (char *file);
 void file_write (char *file, char *data);
