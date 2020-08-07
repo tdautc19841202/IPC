@@ -966,7 +966,7 @@ static void ipcam_apply_settings(CONTEXT *ctxt, IPCAMSETTINGS *newsettings)
     }
     if (flip_changed) {
         ctxt->last_motion_report = get_tick_count(); // to avoid motion report
-        MI_SNR_SetOrien(E_MI_SNR_PAD_ID_0, !newsettings->hflip_en, !newsettings->vflip_en);  //bMirror竖直翻转 bFlip水平翻转
+        MI_SNR_SetOrien(E_MI_SNR_PAD_ID_0, newsettings->hflip_en, newsettings->vflip_en);  //bMirror竖直翻转 bFlip水平翻转
     }
 
     if (stdby_changed) {
